@@ -1,0 +1,26 @@
+name = "rjmlaird-tools-orbital-calc"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+
+# Production: serve under tools.rjmlaird.co.uk/orbital-calc (zone must be on Cloudflare).
+# Uncomment once the zone is set up; until then `wrangler deploy` uses *.workers.dev.
+# routes = [{ pattern = "tools.rjmlaird.co.uk/orbital-calc*", zone_name = "rjmlaird.co.uk" }]
+
+# Later bindings:
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "tools"
+# database_id = "<id>"
+#
+# [[kv_namespaces]]
+# binding = "KV"
+# id = "<id>"
+#
+# [[r2_buckets]]
+# binding = "BUCKET"
+# bucket_name = "tools"
+
+# Fixed local ports so all apps can run together with `pnpm dev`.
+[dev]
+port = 8787
+inspector_port = 9229

@@ -1,0 +1,22 @@
+{
+  "name": "rjmlaird-tools",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "prettier": "@rjmlaird/prettier-config",
+  "devDependencies": {
+    "@rjmlaird/eslint-config": "workspace:*",
+    "@rjmlaird/prettier-config": "workspace:*",
+    "eslint": "^9.14.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3",
+    "wrangler": "^4.0.0"
+  }
+}
