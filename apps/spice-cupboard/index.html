@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spice Cupboard & Mix Manager</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        },
+                        darkbg: '#0f172a',
+                        darkcard: '#1e293b',
+                        darkborder: '#334155'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Crisp Culinary & Utility Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #14b8a6;
+        }
+        .glow-accent {
+            box-shadow: 0 0 15px rgba(20, 184, 166, 0.25);
+        }
+        .modal-backdrop {
+            background-color: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-12">
+
+    <!-- Navigation Bar -->
+    <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-teal-400 flex items-center justify-center shadow-lg shadow-brand-500/20 text-slate-950 font-bold text-xl">
+                        <i class="fa-solid fa-mortar-pestle"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight text-slate-100 flex items-center gap-2">
+                            Spice Cupboard <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30">Pro</span>
+                        </h1>
+                        <p class="text-xs text-slate-400 hidden sm:block">Inventory, Blends & Scaling Engine</p>
+                    </div>
+                </div>
+
+                <!-- Main Tabs Navigation -->
+                <nav class="flex space-x-1 sm:space-x-2 bg-slate-800/80 p-1 rounded-xl border border-slate-700">
+                    <button id="tab-btn-cupboard" onclick="switchTab('cupboard')" class="px-3 sm:px-5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 flex items-center gap-2 bg-brand-500 text-slate-950 font-semibold shadow-md">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span>My Cupboard</span>
+                        <span id="badge-cupboard-count" class="bg-slate-950/20 text-slate-950 px-2 py-0.2 rounded-full text-xs font-bold ml-1">0</span>
+                    </button>
+                    <button id="tab-btn-mixes" onclick="switchTab('mixes')" class="px-3 sm:px-5 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-200 transition-all duration-200 flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Spice Mixes</span>
+                        <span id="badge-mixes-count" class="bg-slate-700/60 text-slate-300 px-2 py-0.2 rounded-full text-xs font-bold ml-1">0</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Main Content Body -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex-grow w-full">
+
+        <!-- VIEW 1: MY SPICE CUPBOARD -->
+        <section id="view-cupboard" class="space-y-6">
+            <!-- Action & Filter Bar -->
+            <div class="bg-darkcard border border-darkborder rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                    <!-- Search Input -->
+                    <div class="relative flex-grow">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="cupboard-search" placeholder="Search spices (e.g. Cumin, Paprika)..." oninput="renderCupboard()"
+                            class="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors">
+                    </div>
+
+                    <!-- Category Filter -->
+                    <select id="cupboard-category-filter" onchange="renderCupboard()" 
+                        class="bg-slate-900 border border-slate-700 text-slate-300 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-brand-500 cursor-pointer">
+                        <option value="ALL">All Categories</option>
+                        <option value="Ground Spice">Ground Spice</option>
+                        <option value="Dried Herb">Dried Herb</option>
+                        <option value="Chilli / Heat">Chilli / Heat</option>
+                        <option value="Whole / Seed">Whole / Seed</option>
+                        <option value="Blend">Blend</option>
+                    </select>
+
+                    <!-- Stock Filter -->
+                    <select id="cupboard-stock-filter" onchange="renderCupboard()"
+                        class="bg-slate-900 border border-slate-700 text-slate-300 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-brand-500 cursor-pointer">
+                        <option value="ALL">All Status</option>
+                        <option value="IN_STOCK">In Stock Only</option>
+                        <option value="OUT_OF_STOCK">Out of Stock</option>
+                    </select>
+
+                    <!-- Add Spice Button -->
+                    <button onclick="openSpiceModal()" class="bg-brand-500 hover:bg-brand-400 text-slate-950 font-semibold px-4 py-2 rounded-xl text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-brand-500/10">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Spice</span>
+                    </button>
+                </div>
+
+                <!-- Sub-bar Status Summary & Reset -->
+                <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs text-slate-400">
+                    <div id="cupboard-stats-text">Showing 0 spices</div>
+                    <button onclick="resetDefaultSpices()" class="hover:text-slate-200 underline decoration-slate-600 flex items-center gap-1 transition-colors">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Reset Default Spices</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Spices Grid Display -->
+            <div id="cupboard-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Dynamically populated cards -->
+            </div>
+        </section>
+
+        <!-- VIEW 2: SPICE MIX SUGGESTIONS & SCALER -->
+        <section id="view-mixes" class="space-y-6 hidden">
+            <!-- Filter & Search Controls -->
+            <div class="bg-darkcard border border-darkborder rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <!-- Search Input -->
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="mix-search" placeholder="Search mixes or ingredients..." oninput="renderMixes()"
+                            class="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors">
+                    </div>
+
+                    <!-- Availability Filter -->
+                    <select id="mix-avail-filter" onchange="renderMixes()" 
+                        class="bg-slate-900 border border-slate-700 text-slate-300 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-brand-500 cursor-pointer">
+                        <option value="ALL">All Readiness</option>
+                        <option value="READY">Can Make Now (100% In Stock)</option>
+                        <option value="MISSING_1">Missing 1 Ingredient</option>
+                        <option value="MISSING_2_PLUS">Missing 2+ Ingredients</option>
+                    </select>
+
+                    <!-- Heat Level Filter -->
+                    <select id="mix-heat-filter" onchange="renderMixes()"
+                        class="bg-slate-900 border border-slate-700 text-slate-300 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-brand-500 cursor-pointer">
+                        <option value="ALL">All Heat Levels</option>
+                        <option value="Mild">Mild</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hot">Hot</option>
+                    </select>
+
+                    <!-- Cuisine / Tag Filter -->
+                    <select id="mix-tag-filter" onchange="renderMixes()"
+                        class="bg-slate-900 border border-slate-700 text-slate-300 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-brand-500 cursor-pointer">
+                        <option value="ALL">All Cuisines / Styles</option>
+                        <option value="Mexican / Tex-Mex">Mexican / Tex-Mex</option>
+                        <option value="Indian">Indian</option>
+                        <option value="Middle Eastern">Middle Eastern</option>
+                        <option value="African">African</option>
+                        <option value="American / BBQ">American / BBQ</option>
+                        <option value="Mediterranean / Italian">Mediterranean / Italian</option>
+                        <option value="Caribbean">Caribbean</option>
+                        <option value="General">General / Specialty</option>
+                    </select>
+                </div>
+
+                <!-- Summary statistics -->
+                <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs text-slate-400">
+                    <div id="mixes-stats-text">Showing 0 mixes</div>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Ready Now
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 ml-2"></span> Missing 1
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-slate-600 ml-2"></span> Missing 2+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mix Cards Grid -->
+            <div id="mixes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Dynamically populated mix cards -->
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL 1: ADD / EDIT SPICE -->
+    <div id="modal-spice" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+        <div class="bg-darkcard border border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-2xl relative space-y-5 animate-in fade-in zoom-in-95 duration-150">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 id="modal-spice-title" class="font-bold text-slate-100 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-pepper-hot text-brand-400"></i>
+                    <span>Add New Spice</span>
+                </h3>
+                <button onclick="closeSpiceModal()" class="text-slate-400 hover:text-slate-200 transition-colors p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="spice-form" onsubmit="handleSpiceSubmit(event)" class="space-y-4">
+                <input type="hidden" id="spice-id">
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Spice Name</label>
+                    <input type="text" id="spice-name" required placeholder="e.g. Smoked Paprika"
+                        class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Category</label>
+                    <select id="spice-category" required
+                        class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                        <option value="Ground Spice">Ground Spice</option>
+                        <option value="Dried Herb">Dried Herb</option>
+                        <option value="Chilli / Heat">Chilli / Heat</option>
+                        <option value="Whole / Seed">Whole / Seed</option>
+                        <option value="Blend">Blend</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <input type="checkbox" id="spice-instock" class="w-4 h-4 accent-brand-500 rounded cursor-pointer">
+                    <label for="spice-instock" class="text-sm font-medium text-slate-200 cursor-pointer">Currently in stock in cupboard</label>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="closeSpiceModal()" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800 transition-colors">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-brand-500 hover:bg-brand-400 text-slate-950 font-semibold rounded-xl text-sm transition-colors shadow-md shadow-brand-500/10">Save Spice</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: MIX DETAIL & SCALER -->
+    <div id="modal-mix" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden overflow-y-auto">
+        <div class="bg-darkcard border border-slate-700 rounded-2xl w-full max-w-2xl p-6 shadow-2xl relative space-y-6 my-8 max-h-[90vh] flex flex-col">
+            <!-- Modal Header -->
+            <div class="flex items-start justify-between border-b border-slate-800 pb-4">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span id="mix-detail-tag" class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-slate-800 text-brand-400 border border-slate-700">Tag</span>
+                        <span id="mix-detail-heat" class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">Mild</span>
+                    </div>
+                    <h2 id="mix-detail-title" class="text-2xl font-bold text-slate-100">Mix Title</h2>
+                    <p id="mix-detail-desc" class="text-xs text-slate-400 mt-1">Mix description goes here.</p>
+                </div>
+                <button onclick="closeMixModal()" class="text-slate-400 hover:text-slate-200 transition-colors p-1 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Scaler Selector Control -->
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Batch Scaling Multiplier</label>
+                    <p class="text-xs text-slate-500">Base ratio equals ~1-2 full tablespoons of mix</p>
+                </div>
+                <div id="scale-buttons" class="flex gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+                    <button onclick="setScale(1)" class="scale-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-brand-500 text-slate-950" data-scale="1">1x</button>
+                    <button onclick="setScale(2)" class="scale-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-slate-200" data-scale="2">2x</button>
+                    <button onclick="setScale(3)" class="scale-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-slate-200" data-scale="3">3x</button>
+                    <button onclick="setScale(4)" class="scale-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-slate-200" data-scale="4">4x</button>
+                    <button onclick="setScale(6)" class="scale-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-slate-200" data-scale="6">6x</button>
+                    <button onclick="setScale(8)" class="scale-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-slate-200" data-scale="8">8x</button>
+                </div>
+            </div>
+
+            <!-- Ingredients & Ratios List -->
+            <div class="flex-grow overflow-y-auto pr-1 space-y-4">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center justify-between">
+                        <span>Required Spice Ratios</span>
+                        <span id="mix-detail-avail-badge" class="text-[10px] normal-case font-normal">Status</span>
+                    </h3>
+                    <div id="mix-detail-ingredients" class="divide-y divide-slate-800/60 bg-slate-900/50 rounded-xl border border-slate-800 p-2">
+                        <!-- Ingredient rows -->
+                    </div>
+                </div>
+
+                <!-- Optional Add-ins / Recommended Pantry Items -->
+                <div id="mix-detail-addins-container" class="space-y-2">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Recommended Fresh / Pantry Add-Ins</h3>
+                    <div id="mix-detail-addins" class="text-xs text-slate-300 bg-slate-900/40 border border-slate-800 rounded-xl p-3 flex flex-wrap gap-2">
+                        <!-- Badges for addins -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Copy Button -->
+            <div class="border-t border-slate-800 pt-4 flex items-center justify-between">
+                <button onclick="copyRecipeToClipboard()" class="w-full bg-slate-800 hover:bg-slate-700 text-brand-400 font-semibold py-2.5 px-4 rounded-xl text-sm border border-slate-700 flex items-center justify-center gap-2 transition-all">
+                    <i class="fa-solid fa-copy"></i>
+                    <span>Copy Scaled Quantities to Clipboard</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           DEFAULT DATA LIBRARIES
+           ========================================================================== */
+
+        // Default Spice Cupboard Initial List
+        const DEFAULT_SPICES = [
+            { id: 'paprika', name: 'paprika', category: 'Ground Spice', inStock: true },
+            { id: 'smoked_paprika', name: 'smoked paprika', category: 'Ground Spice', inStock: true },
+            { id: 'mild_chilli_powder', name: 'mild chilli powder', category: 'Chilli / Heat', inStock: true },
+            { id: 'cayenne_pepper', name: 'cayenne pepper', category: 'Chilli / Heat', inStock: true },
+            { id: 'ground_cumin', name: 'ground cumin', category: 'Ground Spice', inStock: true },
+            { id: 'ground_coriander', name: 'ground coriander', category: 'Ground Spice', inStock: true },
+            { id: 'turmeric', name: 'turmeric', category: 'Ground Spice', inStock: true },
+            { id: 'garlic_powder', name: 'garlic powder', category: 'Ground Spice', inStock: true },
+            { id: 'onion_powder', name: 'onion powder', category: 'Ground Spice', inStock: true },
+            { id: 'dried_oregano', name: 'dried oregano', category: 'Dried Herb', inStock: true },
+            { id: 'ginger_powder', name: 'ginger powder', category: 'Ground Spice', inStock: false },
+            { id: 'clove_powder', name: 'clove powder', category: 'Ground Spice', inStock: false },
+            { id: 'garam_masala', name: 'garam masala', category: 'Blend', inStock: true },
+            { id: 'tandoori_masala', name: 'tandoori masala', category: 'Blend', inStock: false },
+            { id: 'fenugreek', name: 'fenugreek', category: 'Ground Spice', inStock: false },
+            { id: 'mustard_seeds', name: 'mustard seeds', category: 'Whole / Seed', inStock: true },
+            { id: 'cardamom', name: 'cardamom', category: 'Whole / Seed', inStock: false },
+            { id: 'dried_thyme', name: 'dried thyme', category: 'Dried Herb', inStock: true },
+            { id: 'dried_rosemary', name: 'dried rosemary', category: 'Dried Herb', inStock: true },
+            { id: 'cinnamon', name: 'cinnamon', category: 'Ground Spice', inStock: true },
+            { id: 'nutmeg', name: 'nutmeg', category: 'Ground Spice', inStock: true },
+            { id: 'bay_leaves', name: 'bay leaves', category: 'Dried Herb', inStock: true },
+            { id: 'sumac', name: 'sumac', category: 'Ground Spice', inStock: false },
+            { id: 'star_anise', name: 'star anise', category: 'Whole / Seed', inStock: false },
+            { id: 'dried_basil', name: 'dried basil', category: 'Dried Herb', inStock: true },
+            { id: 'fennel_seeds', name: 'fennel seeds', category: 'Whole / Seed', inStock: false },
+            { id: 'allspice', name: 'allspice', category: 'Ground Spice', inStock: true },
+            { id: 'black_pepper', name: 'black pepper', category: 'Ground Spice', inStock: true },
+            { id: 'white_pepper', name: 'white pepper', category: 'Ground Spice', inStock: false },
+            { id: 'chili_flakes', name: 'chili flakes', category: 'Chilli / Heat', inStock: true }
+        ];
+
+        // Extensive Spice Blends Recipes Engine
+        // Ratios are in parts (usually measured in tsp/tbsp base)
+        const SPICE_MIXES = [
+            {
+                id: 'fajita_seasoning',
+                name: 'Fajita Seasoning',
+                tag: 'Mexican / Tex-Mex',
+                heat: 'Mild',
+                desc: 'Classic smokey, earthy blend ideal for skillet chicken, beef, or grilled vegetable fajitas.',
+                parts: [
+                    { spice: 'chili flakes', qty: 1, unit: 'tsp' },
+                    { spice: 'paprika', qty: 1, unit: 'tbsp' },
+                    { spice: 'ground cumin', qty: 2, unit: 'tsp' },
+                    { spice: 'garlic powder', qty: 1, unit: 'tsp' },
+                    { spice: 'onion powder', qty: 1, unit: 'tsp' },
+                    { spice: 'dried oregano', qty: 1, unit: 'tsp' }
+                ],
+                addIns: ['1 tsp fine sea salt', '½ tsp sugar', 'Fresh lime juice']
+            },
+            {
+                id: 'bbq_seasoning',
+                name: 'BBQ Rub / Seasoning',
+                tag: 'American / BBQ',
+                heat: 'Mild',
+                desc: 'Rich, sweet, and smoky dry rub for ribs, pulled pork, grilled chicken, or roasted corn.',
+                parts: [
+                    { spice: 'smoked paprika', qty: 2, unit: 'tbsp' },
+                    { spice: 'garlic powder', qty: 1, unit: 'tbsp' },
+                    { spice: 'onion powder', qty: 1, unit: 'tbsp' },
+                    { spice: 'black pepper', qty: 1, unit: 'tsp' },
+                    { spice: 'mustard seeds', qty: 1, unit: 'tsp' },
+                    { spice: 'cayenne pepper', qty: 0.5, unit: 'tsp' }
+                ],
+                addIns: ['2 tbsp brown sugar', '1 tbsp kosher salt', '1 tsp smoked salt']
+            },
+            {
+                id: 'chicken_seasoning',
+                name: 'All-Purpose Chicken Seasoning',
+                tag: 'General',
+                heat: 'Mild',
+                desc: 'Herbaceous, aromatic blend that renders crispy skin and deep savory flavor for poultry.',
+                parts: [
+                    { spice: 'garlic powder', qty: 1, unit: 'tbsp' },
+                    { spice: 'onion powder', qty: 1, unit: 'tbsp' },
+                    { spice: 'dried thyme', qty: 1, unit: 'tsp' },
+                    { spice: 'dried rosemary', qty: 1, unit: 'tsp' },
+                    { spice: 'paprika', qty: 1, unit: 'tsp' },
+                    { spice: 'black pepper', qty: 1, unit: 'tsp' }
+                ],
+                addIns: ['1 tsp salt', '1 tbsp olive oil', 'Fresh lemon zest']
+            },
+            {
+                id: 'chip_fries_seasoning',
+                name: 'Seasoned Salt for Chips & Fries',
+                tag: 'General',
+                heat: 'Mild',
+                desc: 'Addictive takeout-style chip spice to elevate homemade french fries and potato wedges.',
+                parts: [
+                    { spice: 'paprika', qty: 2, unit: 'tsp' },
+                    { spice: 'garlic powder', qty: 1, unit: 'tsp' },
+                    { spice: 'onion powder', qty: 1, unit: 'tsp' },
+                    { spice: 'celery salt', qty: 1, unit: 'tsp' },
+                    { spice: 'cayenne pepper', qty: 0.25, unit: 'tsp' }
+                ],
+                addIns: ['2 tbsp fine table salt', '½ tsp white sugar']
+            },
+            {
+                id: 'taco_seasoning',
+                name: 'Taco Seasoning',
+                tag: 'Mexican / Tex-Mex',
+                heat: 'Medium',
+                desc: 'Robust Mexican-style spice mix perfect for minced beef, turkey, or black bean taco fillings.',
+                parts: [
+                    { spice: 'ground cumin', qty: 1, unit: 'tbsp' },
+                    { spice: 'mild chilli powder', qty: 1, unit: 'tbsp' },
+                    { spice: 'paprika', qty: 1, unit: 'tsp' },
+                    { spice: 'garlic powder', qty: 1, unit: 'tsp' },
+                    { spice: 'onion powder', qty: 1, unit: 'tsp' },
+                    { spice: 'dried oregano', qty: 1, unit: 'tsp' },
+                    { spice: 'chili flakes', qty: 0.5, unit: 'tsp' }
+                ],
+                addIns: ['1 tsp salt', '½ tsp cornstarch (for thickening sauce)']
+            },
+            {
+                id: 'peri_peri_seasoning',
+                name: 'Peri-Peri Spice Blend',
+                tag: 'African',
+                heat: 'Hot',
+                desc: 'Fiery Portuguese-African chilli rub with zesty citrus and garlic undertones.',
+                parts: [
+                    { spice: 'paprika', qty: 1, unit: 'tbsp' },
+                    { spice: 'cayenne pepper', qty: 1.5, unit: 'tsp' },
+                    { spice: 'garlic powder', qty: 1, unit: 'tsp' },
+                    { spice: 'onion powder', qty: 1, unit: 'tsp' },
+                    { spice: 'dried oregano', qty: 1, unit: 'tsp' },
+                    { spice: 'ginger powder', qty: 0.5, unit: 'tsp' },
+                    { spice: 'cardamom', qty: 0.25, unit: 'tsp' }
+                ],
+                addIns: ['1 tsp salt', '2 tbsp lemon juice', '2 tbsp olive oil']
+            },
+            {
+                id: 'cajun_seasoning',
+                name: 'Cajun Spice Blend',
+                tag: 'American / BBQ',
+                heat: 'Medium',
+                desc: 'Louisiana bayou blend with spicy heat and aromatic herbs for jambalaya, gumbo, or catfish.',
+                parts: [
+                    { spice: 'paprika', qty: 1, unit: 'tbsp' },
+                    { spice: 'garlic powder', qty: 1, unit: 'tbsp' },
+                    { spice: 'onion powder', qty: 1, unit: 'tsp' },
+                    { spice: 'black pepper', qty: 1, unit: 'tsp' },
+                    { spice: 'cayenne pepper', qty: 1, unit: 'tsp' },
+                    { spice: 'dried oregano', qty: 1, unit: 'tsp' },
+                    { spice: 'dried thyme', qty: 1, unit: 'tsp' }
+                ],
+                addIns: ['1 tsp salt', 'Melted butter for blackening seafood']
+            },
+            {
+                id: 'harissa_blend',
+                name: 'Harissa Spice Blend',
+                tag: 'Middle Eastern',
+                heat: 'Hot',
+                desc: 'North African fragrant chilli blend. Mix with olive oil for authentic harissa paste.',
+                parts: [
+                    { spice: 'smoked paprika', qty: 1, unit: 'tbsp' },
+                    { spice: 'ground cumin', qty: 1, unit: 'tbsp' },
+                    { spice: 'ground coriander', qty: 1, unit: 'tbsp' },
+                    { spice: 'cayenne pepper', qty: 1, unit: 'tsp' },
+                    { spice: 'chili flakes', qty: 1, unit: 'tsp' },
+                    { spice: 'garlic powder', qty: 1, unit: 'tsp' },
+                    { spice: 'caraway seeds', qty: 0.5, unit: 'tsp' }
+                ],
+                addIns: ['1 tsp sea salt', '3 tbsp olive oil', '1 tbsp tomato paste']
+            },
+            {
+                id: 'curry_madras_blend',
+                name: 'BIR Madras Curry Powder',
+                tag: 'Indian',
+                heat: 'Medium',
+                desc: 'British Indian Restaurant style fragrant curry powder with golden turmeric and coriander.',
+                parts: [
+                    { spice: 'ground coriander', qty: 2, unit: 'tbsp' },
+                    { spice: 'ground cumin', qty: 1, unit: 'tbsp' },
+                    { spice: 'turmeric', qty: 1, unit: 'tbsp' },
+                    { spice: 'ginger powder', qty: 1, unit: 'tsp' },
+                    { spice: 'mustard seeds', qty: 1, unit: 'tsp' },
+                    { spice: 'mild chilli powder', qty: 1, unit: 'tsp' },
+                    { spice: 'fenugreek', qty: 0.5, unit: 'tsp' }
+                ],
+                addIns: ['Garlic paste', 'Fresh ginger root', 'Coconut milk']
+            },
+            {
+                id: 'chilli_seasoning',
+                name: 'Chilli Con Carne Blend',
+                tag: 'Mexican / Tex-Mex',
+                heat: 'Medium',
+                desc: 'Deep, earthy seasoning tailored for rich slow-cooked chilli con carne.',
+                parts: [
+                    { spice: 'mild chilli powder', qty: 2, unit: 'tbsp' },
+                    { spice: 'ground cumin', qty: 1, unit: 'tbsp' },
+                    { spice: 'garlic powder', qty: 1, unit: 'tsp' },
+                    { spice: 'dried oregano', qty: 1, unit: 'tsp' },
+                    { spice: 'cinnamon', qty: 0.25, unit: 'tsp' },
+                    { spice: 'cayenne pepper', qty: 0.5, unit: 'tsp' }
+                ],
+                addIns: ['1 square dark chocolate (70%)', '1 cup beef stock']
+            },
+            {
+                id: 'rogan_josh_blend',
+                name: 'Rogan Josh Spice Mix',
+                tag: 'Indian',
+                heat: 'Medium',
+                desc: 'Aromatic Kashmiri curry blend noted for warm spices, cardamom, and vibrant red color.',
+                parts: [
+                    { spice: 'paprika', qty: 1, unit: 'tbsp' },
+                    { spice: 'ground coriander', qty: 1, unit: 'tbsp' },
+                    { spice: 'ground cumin', qty: 2, unit: 'tsp' },
+                    { spice: 'ginger powder', qty: 1, unit: 'tsp' },
+                    { spice: 'cardamom', qty: 1, unit: 'tsp' },
+                    { spice: 'garam masala', qty: 1, unit: 'tsp' },
+                    { spice: 'cinnamon', qty: 0.5, unit: 'tsp' },
+                    { spice: 'clove powder', qty: 0.25, unit: 'tsp' }
+                ],
+                addIns: ['Plain Greek yogurt', 'Tomato puree']
+            },
+            {
+                id: 'ras_el_hanout',
+                name: 'Ras el Hanout',
+                tag: 'Middle Eastern',
+                heat: 'Mild',
+                desc: 'Moroccan "top of the shop" complex spice mix featuring floral, sweet, and savory notes.',
+                parts: [
+                    { spice: 'ground cumin', qty: 1, unit: 'tbsp' },
+                    { spice: 'ground coriander', qty: 1, unit: 'tbsp' },
+                    { spice: 'cinnamon', qty: 1, unit: 'tsp' },
+                    { spice: 'ginger powder', qty: 1, unit: 'tsp' },
+                    { spice: 'allspice', qty: 0.5, unit: 'tsp' },
+                    { spice: 'cardamom', qty: 0.5, unit: 'tsp' },
+                    { spice: 'nutmeg', qty: 0.25, unit: 'tsp' },
+                    { spice: 'clove powder', qty: 0.25, unit: 'tsp' }
+                ],
+                addIns: ['Dried rose petals (optional)', 'Honey for tagines']
+            },
+            {
+                id: 'jamaican_jerk',
+                name: 'Jamaican Jerk Seasoning',
+                tag: 'Caribbean',
+                heat: 'Hot',
+                desc: 'Famous Caribbean rub dominated by allspice, nutmeg, thyme, and spicy chilli pepper.',
+                parts: [
+                    { spice: 'allspice', qty: 1, unit: 'tbsp' },
+                    { spice: 'dried thyme', qty: 1, unit: 'tbsp' },
+                    { spice: 'garlic powder', qty: 1, unit: 'tsp' },
+                    { spice: 'onion powder', qty: 1, unit: 'tsp' },
+                    { spice: 'cayenne pepper', qty: 1, unit: 'tsp' },
+                    { spice: 'cinnamon', qty: 0.5, unit: 'tsp' },
+                    { spice: 'nutmeg', qty: 0.5, unit: 'tsp' }
+                ],
+                addIns: ['2 tbsp brown sugar', 'Spring onions', 'Fresh lime juice']
+            },
+            {
+                id: 'italian_seasoning',
+                name: 'Classic Italian Herb Blend',
+                tag: 'Mediterranean / Italian',
+                heat: 'Mild',
+                desc: 'Essential Mediterranean dried herb combination for pasta sauce, pizza, and roasted veggies.',
+                parts: [
+                    { spice: 'dried oregano', qty: 2, unit: 'tbsp' },
+                    { spice: 'dried basil', qty: 2, unit: 'tbsp' },
+                    { spice: 'dried thyme', qty: 1, unit: 'tbsp' },
+                    { spice: 'dried rosemary', qty: 1, unit: 'tbsp' },
+                    { spice: 'garlic powder', qty: 1, unit: 'tsp' }
+                ],
+                addIns: ['Extra virgin olive oil', 'Grated Parmesan cheese']
+            },
+            {
+                id: 'garam_masala_mix',
+                name: 'House Garam Masala Blend',
+                tag: 'Indian',
+                heat: 'Mild',
+                desc: 'Warming Indian finishing spice mix added towards the end of cooking for perfume and depth.',
+                parts: [
+                    { spice: 'ground cumin', qty: 1, unit: 'tbsp' },
+                    { spice: 'ground coriander', qty: 1, unit: 'tbsp' },
+                    { spice: 'cardamom', qty: 1, unit: 'tsp' },
+                    { spice: 'black pepper', qty: 1, unit: 'tsp' },
+                    { spice: 'cinnamon', qty: 1, unit: 'tsp' },
+                    { spice: 'clove powder', qty: 0.5, unit: 'tsp' },
+                    { spice: 'nutmeg', qty: 0.5, unit: 'tsp' }
+                ],
+                addIns: ['Fresh coriander leaves (cilantro)']
+            },
+            {
+                id: 'zaatar_blend',
+                name: 'Za\'atar Style Herb & Spice Mix',
+                tag: 'Middle Eastern',
+                heat: 'Mild',
+                desc: 'Tangy, nutty Levantine condiment for dipping flatbreads with olive oil or roasting chicken.',
+                parts: [
+                    { spice: 'sumac', qty: 2, unit: 'tbsp' },
+                    { spice: 'dried oregano', qty: 1, unit: 'tbsp' },
+                    { spice: 'dried thyme', qty: 1, unit: 'tbsp' },
+                    { spice: 'fennel seeds', qty: 1, unit: 'tsp' },
+                    { spice: 'black pepper', qty: 0.5, unit: 'tsp' }
+                ],
+                addIns: ['2 tbsp toasted sesame seeds', '1 tsp coarse sea salt', 'Good olive oil']
+            },
+            {
+                id: 'shawarma_seasoning',
+                name: 'Shawarma Seasoning',
+                tag: 'Middle Eastern',
+                heat: 'Medium',
+                desc: 'Aromatic Middle Eastern spice marinade for rotisserie style chicken, lamb, or oyster mushrooms.',
+                parts: [
+                    { spice: 'ground cumin', qty: 1, unit: 'tbsp' },
+                    { spice: 'ground coriander', qty: 1, unit: 'tbsp' },
+                    { spice: 'garlic powder', qty: 1, unit: 'tsp' },
+                    { spice: 'paprika', qty: 1, unit: 'tsp' },
+                    { spice: 'turmeric', qty: 1, unit: 'tsp' },
+                    { spice: 'cinnamon', qty: 0.5, unit: 'tsp' },
+                    { spice: 'cayenne pepper', qty: 0.5, unit: 'tsp' }
+                ],
+                addIns: ['Lemon juice', 'Yogurt or Tahini']
+            },
+            {
+                id: 'chimichurri_blend',
+                name: 'Dry Chimichurri Spice Mix',
+                tag: 'General',
+                heat: 'Medium',
+                desc: 'Argentinian herb blend. Hydrate with olive oil & vinegar for steak topping.',
+                parts: [
+                    { spice: 'dried oregano', qty: 2, unit: 'tbsp' },
+                    { spice: 'garlic powder', qty: 1, unit: 'tbsp' },
+                    { spice: 'dried basil', qty: 1, unit: 'tbsp' },
+                    { spice: 'chili flakes', qty: 1, unit: 'tsp' },
+                    { spice: 'black pepper', qty: 1, unit: 'tsp' }
+                ],
+                addIns: ['¼ cup red wine vinegar', '½ cup olive oil', 'Fresh chopped parsley']
+            },
+            {
+                id: 'berbere_blend',
+                name: 'Berbere (Ethiopian Spice)',
+                tag: 'African',
+                heat: 'Hot',
+                desc: 'Essential Ethiopian vibrant blend for lentils, doro wat stews, and grilled meats.',
+                parts: [
+                    { spice: 'cayenne pepper', qty: 1, unit: 'tbsp' },
+                    { spice: 'paprika', qty: 1, unit: 'tbsp' },
+                    { spice: 'ginger powder', qty: 1, unit: 'tsp' },
+                    { spice: 'garlic powder', qty: 1, unit: 'tsp' },
+                    { spice: 'cardamom', qty: 0.5, unit: 'tsp' },
+                    { spice: 'cinnamon', qty: 0.5, unit: 'tsp' },
+                    { spice: 'fenugreek', qty: 0.5, unit: 'tsp' },
+                    { spice: 'allspice', qty: 0.25, unit: 'tsp' }
+                ],
+                addIns: ['1 tsp fine sea salt']
+            },
+            {
+                id: 'baharat_blend',
+                name: 'Baharat Spice Mix',
+                tag: 'Middle Eastern',
+                heat: 'Mild',
+                desc: 'Warming, versatile all-purpose Middle Eastern spice for pilafs, lamb, and beef marinades.',
+                parts: [
+                    { spice: 'black pepper', qty: 1, unit: 'tbsp' },
+                    { spice: 'ground cumin', qty: 1, unit: 'tbsp' },
+                    { spice: 'ground coriander', qty: 1, unit: 'tbsp' },
+                    { spice: 'cinnamon', qty: 1, unit: 'tsp' },
+                    { spice: 'clove powder', qty: 0.5, unit: 'tsp' },
+                    { spice: 'cardamom', qty: 0.5, unit: 'tsp' },
+                    { spice: 'nutmeg', qty: 0.5, unit: 'tsp' },
+                    { spice: 'paprika', qty: 1, unit: 'tsp' }
+                ],
+                addIns: ['Butter or olive oil for sautéing base onions']
+            },
+            {
+                id: 'old_bay_style',
+                name: 'Coastal Seafood Seasoning',
+                tag: 'American / BBQ',
+                heat: 'Medium',
+                desc: 'Classic savoury seasoning for crab boils, shrimp, salmon, and clam chowder.',
+                parts: [
+                    { spice: 'celery salt', qty: 1, unit: 'tbsp' },
+                    { spice: 'paprika', qty: 1, unit: 'tsp' },
+                    { spice: 'black pepper', qty: 0.5, unit: 'tsp' },
+                    { spice: 'cayenne pepper', qty: 0.25, unit: 'tsp' },
+                    { spice: 'mustard seeds', qty: 0.5, unit: 'tsp' },
+                    { spice: 'nutmeg', qty: 0.25, unit: 'tsp' },
+                    { spice: 'allspice', qty: 0.25, unit: 'tsp' },
+                    { spice: 'ginger powder', qty: 0.25, unit: 'tsp' }
+                ],
+                addIns: ['Melted butter', 'Fresh lemon wedges']
+            },
+            {
+                id: 'everything_bagel',
+                name: 'Everything Bagel Seasoning',
+                tag: 'General',
+                heat: 'Mild',
+                desc: 'Crunchy, savoury seed seasoning for avocado toast, eggs, cream cheese, and salads.',
+                parts: [
+                    { spice: 'garlic powder', qty: 1, unit: 'tbsp' },
+                    { spice: 'onion powder', qty: 1, unit: 'tbsp' },
+                    { spice: 'fennel seeds', qty: 1, unit: 'tsp' },
+                    { spice: 'black pepper', qty: 0.5, unit: 'tsp' }
+                ],
+                addIns: ['1 tbsp white sesame seeds', '1 tbsp black sesame seeds', '1 tbsp poppy seeds', '1 tbsp flaky sea salt']
+            },
+            {
+                id: 'panch_phoron',
+                name: 'Panch Phoron (Bengali 5 Spice)',
+                tag: 'Indian',
+                heat: 'Mild',
+                desc: 'Whole spice blend used for tempering oils in eastern Indian dal, vegetables, and fish.',
+                parts: [
+                    { spice: 'fennel seeds', qty: 1, unit: 'tbsp' },
+                    { spice: 'mustard seeds', qty: 1, unit: 'tbsp' },
+                    { spice: 'fenugreek', qty: 1, unit: 'tsp' },
+                    { spice: 'ground cumin', qty: 1, unit: 'tbsp' }
+                ],
+                addIns: ['Mustard oil or Ghee for tempering']
+            },
+            {
+                id: 'pumpkin_spice',
+                name: 'Pumpkin Pie Spice',
+                tag: 'General',
+                heat: 'Mild',
+                desc: 'Warm autumn baking blend for lattes, pumpkin pies, oatmeal, and sweet potato dishes.',
+                parts: [
+                    { spice: 'cinnamon', qty: 2, unit: 'tbsp' },
+                    { spice: 'ginger powder', qty: 1, unit: 'tsp' },
+                    { spice: 'nutmeg', qty: 1, unit: 'tsp' },
+                    { spice: 'allspice', qty: 0.5, unit: 'tsp' },
+                    { spice: 'clove powder', qty: 0.5, unit: 'tsp' }
+                ],
+                addIns: ['Brown sugar', 'Maple syrup', 'Vanilla extract']
+            }
+        ];
+
+        /* ==========================================================================
+           APPLICATION STATE & LOCAL STORAGE
+           ========================================================================== */
+
+        let cupboardSpices = [];
+        let currentScale = 1;
+        let activeMixForModal = null;
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            loadCupboardData();
+            renderCupboard();
+            renderMixes();
+            updateTabCounts();
+        });
+
+        // Load data from localStorage or preload defaults
+        function loadCupboardData() {
+            const stored = localStorage.getItem('spice_cupboard_data');
+            if (stored) {
+                try {
+                    cupboardSpices = JSON.parse(stored);
+                } catch (e) {
+                    cupboardSpices = [...DEFAULT_SPICES];
+                }
+            } else {
+                cupboardSpices = [...DEFAULT_SPICES];
+                saveCupboardData();
+            }
+        }
+
+        function saveCupboardData() {
+            localStorage.setItem('spice_cupboard_data', JSON.stringify(cupboardSpices));
+            updateTabCounts();
+        }
+
+        function resetDefaultSpices() {
+            if (confirm("Reset cupboard to standard default spices list? Custom edits will be restored to default.")) {
+                cupboardSpices = JSON.parse(JSON.stringify(DEFAULT_SPICES));
+                saveCupboardData();
+                renderCupboard();
+                renderMixes();
+                showToast("Cupboard reset to defaults!", "info");
+            }
+        }
+
+        /* ==========================================================================
+           TAB SWITCHING
+           ========================================================================== */
+
+        function switchTab(tabName) {
+            const cupboardView = document.getElementById('view-cupboard');
+            const mixesView = document.getElementById('view-mixes');
+            const cupboardBtn = document.getElementById('tab-btn-cupboard');
+            const mixesBtn = document.getElementById('tab-btn-mixes');
+
+            if (tabName === 'cupboard') {
+                cupboardView.classList.remove('hidden');
+                mixesView.classList.add('hidden');
+
+                cupboardBtn.className = "px-3 sm:px-5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 flex items-center gap-2 bg-brand-500 text-slate-950 font-semibold shadow-md";
+                mixesBtn.className = "px-3 sm:px-5 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-200 transition-all duration-200 flex items-center gap-2";
+            } else {
+                cupboardView.classList.add('hidden');
+                mixesView.classList.remove('hidden');
+
+                mixesBtn.className = "px-3 sm:px-5 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 flex items-center gap-2 bg-brand-500 text-slate-950 font-semibold shadow-md";
+                cupboardBtn.className = "px-3 sm:px-5 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-200 transition-all duration-200 flex items-center gap-2";
+
+                // Re-render mixes to ensure fresh availability calculations
+                renderMixes();
+            }
+        }
+
+        function updateTabCounts() {
+            document.getElementById('badge-cupboard-count').textContent = cupboardSpices.length;
+            document.getElementById('badge-mixes-count').textContent = SPICE_MIXES.length;
+        }
+
+        /* ==========================================================================
+           CUPBOARD RENDER & MANAGEMENT
+           ========================================================================== */
+
+        function renderCupboard() {
+            const grid = document.getElementById('cupboard-grid');
+            const searchVal = document.getElementById('cupboard-search').value.toLowerCase().trim();
+            const catVal = document.getElementById('cupboard-category-filter').value;
+            const stockVal = document.getElementById('cupboard-stock-filter').value;
+
+            const filtered = cupboardSpices.filter(s => {
+                const matchesSearch = s.name.toLowerCase().includes(searchVal);
+                const matchesCat = catVal === 'ALL' || s.category === catVal;
+                const matchesStock = stockVal === 'ALL' ||
+                    (stockVal === 'IN_STOCK' && s.inStock) ||
+                    (stockVal === 'OUT_OF_STOCK' && !s.inStock);
+                return matchesSearch && matchesCat && matchesStock;
+            });
+
+            // Sort alphabetically by name
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
+
+            document.getElementById('cupboard-stats-text').textContent = `Showing ${filtered.length} of ${cupboardSpices.length} spices`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-darkcard rounded-2xl border border-darkborder">
+                        <i class="fa-solid fa-box-open text-4xl text-slate-600 mb-3"></i>
+                        <p class="text-slate-300 font-medium">No spices found</p>
+                        <p class="text-xs text-slate-500 mt-1">Try adjusting your filters or add a new spice.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(spice => {
+                return `
+                    <div class="bg-darkcard border ${spice.inStock ? 'border-slate-700/80' : 'border-slate-800/60 opacity-60'} rounded-2xl p-4 flex flex-col justify-between hover:border-brand-500/50 transition-all duration-200">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-slate-900 text-slate-400 border border-slate-800">
+                                    ${spice.category}
+                                </span>
+                                <div class="flex items-center gap-1">
+                                    <button onclick="openSpiceModal('${spice.id}')" class="text-slate-400 hover:text-slate-200 p-1 rounded transition-colors text-xs" title="Edit">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                    <button onclick="deleteSpice('${spice.id}')" class="text-slate-500 hover:text-rose-400 p-1 rounded transition-colors text-xs" title="Delete">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <h3 class="font-bold text-slate-100 text-base capitalize mb-3">${escapeHtml(spice.name)}</h3>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between">
+                            <span class="text-xs font-medium ${spice.inStock ? 'text-emerald-400' : 'text-slate-500'}">
+                                ${spice.inStock ? '<i class="fa-solid fa-circle-check mr-1"></i> In Stock' : '<i class="fa-solid fa-circle-xmark mr-1"></i> Out of Stock'}
+                            </span>
+                            <button onclick="toggleSpiceStock('${spice.id}')" 
+                                class="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${spice.inStock ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-brand-500/20 hover:bg-brand-500/30 text-brand-400 border border-brand-500/30'}">
+                                ${spice.inStock ? 'Mark Out' : 'Mark In'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleSpiceStock(id) {
+            const spice = cupboardSpices.find(s => s.id === id);
+            if (spice) {
+                spice.inStock = !spice.inStock;
+                saveCupboardData();
+                renderCupboard();
+                renderMixes();
+                showToast(`${spice.name} updated`, "success");
+            }
+        }
+
+        function deleteSpice(id) {
+            const spice = cupboardSpices.find(s => s.id === id);
+            if (spice && confirm(`Are you sure you want to remove "${spice.name}" from your cupboard?`)) {
+                cupboardSpices = cupboardSpices.filter(s => s.id !== id);
+                saveCupboardData();
+                renderCupboard();
+                renderMixes();
+                showToast("Spice removed", "info");
+            }
+        }
+
+        function openSpiceModal(id = null) {
+            const modal = document.getElementById('modal-spice');
+            const title = document.getElementById('modal-spice-title');
+            const form = document.getElementById('spice-form');
+
+            form.reset();
+
+            if (id) {
+                const spice = cupboardSpices.find(s => s.id === id);
+                if (spice) {
+                    document.getElementById('spice-id').value = spice.id;
+                    document.getElementById('spice-name').value = spice.name;
+                    document.getElementById('spice-category').value = spice.category;
+                    document.getElementById('spice-instock').checked = spice.inStock;
+                    title.innerHTML = `<i class="fa-solid fa-pen text-brand-400"></i><span>Edit Spice</span>`;
+                }
+            } else {
+                document.getElementById('spice-id').value = '';
+                document.getElementById('spice-instock').checked = true;
+                title.innerHTML = `<i class="fa-solid fa-pepper-hot text-brand-400"></i><span>Add New Spice</span>`;
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeSpiceModal() {
+            document.getElementById('modal-spice').classList.add('hidden');
+        }
+
+        function handleSpiceSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('spice-id').value;
+            const name = document.getElementById('spice-name').value.trim().toLowerCase();
+            const category = document.getElementById('spice-category').value;
+            const inStock = document.getElementById('spice-instock').checked;
+
+            if (!name) return;
+
+            if (id) {
+                // Update
+                const idx = cupboardSpices.findIndex(s => s.id === id);
+                if (idx !== -1) {
+                    cupboardSpices[idx] = { id, name, category, inStock };
+                }
+            } else {
+                // Create
+                const newId = name.replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
+                cupboardSpices.push({ id: newId, name, category, inStock });
+            }
+
+            saveCupboardData();
+            renderCupboard();
+            renderMixes();
+            closeSpiceModal();
+            showToast("Spice saved successfully!", "success");
+        }
+
+        /* ==========================================================================
+           SPICE MIXES & AVAILABILITY ENGINE
+           ========================================================================== */
+
+        // Check availability of a mix based on current stock
+        function getMixAvailability(mix) {
+            const missing = [];
+            const available = [];
+
+            mix.parts.forEach(part => {
+                // Check if user has spice in stock (case-insensitive fuzzy/exact match)
+                const inStock = cupboardSpices.some(s => 
+                    s.inStock && s.name.toLowerCase().trim() === part.spice.toLowerCase().trim()
+                );
+
+                if (inStock) {
+                    available.push(part.spice);
+                } else {
+                    missing.push(part.spice);
+                }
+            });
+
+            return {
+                isReady: missing.length === 0,
+                missingCount: missing.length,
+                missingList: missing,
+                availableList: available,
+                totalCount: mix.parts.length
+            };
+        }
+
+        function renderMixes() {
+            const grid = document.getElementById('mixes-grid');
+            const searchVal = document.getElementById('mix-search').value.toLowerCase().trim();
+            const availVal = document.getElementById('mix-avail-filter').value;
+            const heatVal = document.getElementById('mix-heat-filter').value;
+            const tagVal = document.getElementById('mix-tag-filter').value;
+
+            const evaluated = SPICE_MIXES.map(mix => {
+                return {
+                    ...mix,
+                    avail: getMixAvailability(mix)
+                };
+            });
+
+            const filtered = evaluated.filter(mix => {
+                // Search match
+                const nameMatch = mix.name.toLowerCase().includes(searchVal);
+                const ingredientMatch = mix.parts.some(p => p.spice.toLowerCase().includes(searchVal));
+                const matchesSearch = nameMatch || ingredientMatch;
+
+                // Heat filter
+                const matchesHeat = heatVal === 'ALL' || mix.heat === heatVal;
+
+                // Tag filter
+                const matchesTag = tagVal === 'ALL' || mix.tag === tagVal;
+
+                // Avail filter
+                let matchesAvail = true;
+                if (availVal === 'READY') matchesAvail = mix.avail.isReady;
+                else if (availVal === 'MISSING_1') matchesAvail = mix.avail.missingCount === 1;
+                else if (availVal === 'MISSING_2_PLUS') matchesAvail = mix.avail.missingCount >= 2;
+
+                return matchesSearch && matchesHeat && matchesTag && matchesAvail;
+            });
+
+            // Sort: Ready first, then missing 1, then rest
+            filtered.sort((a, b) => {
+                if (a.avail.missingCount !== b.avail.missingCount) {
+                    return a.avail.missingCount - b.avail.missingCount;
+                }
+                return a.name.localeCompare(b.name);
+            });
+
+            document.getElementById('mixes-stats-text').textContent = `Showing ${filtered.length} of ${SPICE_MIXES.length} spice blends`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-darkcard rounded-2xl border border-darkborder">
+                        <i class="fa-solid fa-blender text-4xl text-slate-600 mb-3"></i>
+                        <p class="text-slate-300 font-medium">No spice mixes match your filters</p>
+                        <p class="text-xs text-slate-500 mt-1">Try relaxing your search criteria or adding more spices to your cupboard.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(mix => {
+                const avail = mix.avail;
+
+                // Availability badge styling
+                let statusBadge = '';
+                if (avail.isReady) {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> Can make now</span>`;
+                } else if (avail.missingCount === 1) {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation"></i> Missing 1 ingredient</span>`;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-xmark"></i> Missing ${avail.missingCount} ingredients</span>`;
+                }
+
+                // Heat pill styling
+                let heatColor = 'text-blue-400 bg-blue-500/10 border-blue-500/20';
+                if (mix.heat === 'Medium') heatColor = 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+                if (mix.heat === 'Hot') heatColor = 'text-rose-400 bg-rose-500/10 border-rose-500/20';
+
+                return `
+                    <div class="bg-darkcard border ${avail.isReady ? 'border-brand-500/40 glow-accent' : 'border-darkborder'} rounded-2xl p-5 flex flex-col justify-between hover:border-brand-500/60 transition-all duration-200">
+                        <div>
+                            <!-- Header tags -->
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-900 text-slate-400 border border-slate-800">${mix.tag}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${heatColor} border">${mix.heat}</span>
+                            </div>
+
+                            <h3 class="font-bold text-slate-100 text-lg mb-1">${escapeHtml(mix.name)}</h3>
+                            <p class="text-xs text-slate-400 mb-4 line-clamp-2">${escapeHtml(mix.desc)}</p>
+
+                            <!-- Ingredients Overview Preview -->
+                            <div class="space-y-1.5 mb-4">
+                                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Required Spices (${mix.parts.length}):</div>
+                                <div class="flex flex-wrap gap-1">
+                                    ${mix.parts.map(p => {
+                                        const inStock = cupboardSpices.some(s => s.inStock && s.name.toLowerCase().trim() === p.spice.toLowerCase().trim());
+                                        return `<span class="text-xs px-2 py-0.5 rounded-md ${inStock ? 'bg-slate-800 text-slate-300' : 'bg-rose-950/40 text-rose-300 border border-rose-800/40 line-through'} capitalize">${p.spice}</span>`;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
+                            ${statusBadge}
+                            <button onclick="openMixModal('${mix.id}')" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold rounded-xl text-xs transition-colors flex items-center gap-1">
+                                <span>Scale & Make</span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /* ==========================================================================
+           SCALING & PORTION CALCULATOR LOGIC
+           ========================================================================== */
+
+        function openMixModal(mixId) {
+            const mix = SPICE_MIXES.find(m => m.id === mixId);
+            if (!mix) return;
+
+            activeMixForModal = mix;
+            currentScale = 1;
+
+            document.getElementById('mix-detail-title').textContent = mix.name;
+            document.getElementById('mix-detail-desc').textContent = mix.desc;
+            document.getElementById('mix-detail-tag').textContent = mix.tag;
+            document.getElementById('mix-detail-heat').textContent = mix.heat;
+
+            // Heat Pill
+            const heatEl = document.getElementById('mix-detail-heat');
+            if (mix.heat === 'Mild') heatEl.className = 'text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20';
+            else if (mix.heat === 'Medium') heatEl.className = 'text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20';
+            else heatEl.className = 'text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20';
+
+            // Add-ins
+            const addinsBox = document.getElementById('mix-detail-addins');
+            const addinsContainer = document.getElementById('mix-detail-addins-container');
+            if (mix.addIns && mix.addIns.length > 0) {
+                addinsContainer.classList.remove('hidden');
+                addinsBox.innerHTML = mix.addIns.map(item => `
+                    <span class="px-2.5 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs flex items-center gap-1.5 border border-slate-700">
+                        <i class="fa-solid fa-plus text-brand-400 text-[10px]"></i> ${escapeHtml(item)}
+                    </span>
+                `).join('');
+            } else {
+                addinsContainer.classList.add('hidden');
+            }
+
+            renderScaledIngredients();
+            document.getElementById('modal-mix').classList.remove('hidden');
+        }
+
+        function closeMixModal() {
+            document.getElementById('modal-mix').classList.add('hidden');
+        }
+
+        function setScale(scaleVal) {
+            currentScale = scaleVal;
+            
+            // Update active state on scale buttons
+            document.querySelectorAll('.scale-btn').forEach(btn => {
+                if (parseInt(btn.getAttribute('data-scale')) === scaleVal) {
+                    btn.className = "scale-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all bg-brand-500 text-slate-950";
+                } else {
+                    btn.className = "scale-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-slate-200";
+                }
+            });
+
+            renderScaledIngredients();
+        }
+
+        // Formats numerical culinary values into fractions e.g. 1 1/2 tsp
+        function formatCulinaryQuantity(totalVal, unit) {
+            // Check if converting tsp to tbsp when totalVal >= 3 tsp
+            let displayUnit = unit;
+            let val = totalVal;
+
+            if (unit === 'tsp' && val >= 3) {
+                val = val / 3;
+                displayUnit = 'tbsp';
+            }
+
+            const whole = Math.floor(val);
+            const remainder = val - whole;
+
+            let fractionStr = '';
+            // Match standard culinary fractions
+            if (Math.abs(remainder - 0.25) < 0.08) fractionStr = '¼';
+            else if (Math.abs(remainder - 0.33) < 0.08) fractionStr = '⅓';
+            else if (Math.abs(remainder - 0.5) < 0.08) fractionStr = '½';
+            else if (Math.abs(remainder - 0.66) < 0.08) fractionStr = '⅔';
+            else if (Math.abs(remainder - 0.75) < 0.08) fractionStr = '¾';
+
+            let quantityFormatted = '';
+            if (whole > 0 && fractionStr) {
+                quantityFormatted = `${whole} ${fractionStr}`;
+            } else if (whole > 0) {
+                quantityFormatted = `${whole}`;
+            } else if (fractionStr) {
+                quantityFormatted = `${fractionStr}`;
+            } else {
+                quantityFormatted = `${val.toFixed(1)}`;
+            }
+
+            return `${quantityFormatted} ${displayUnit}`;
+        }
+
+        function renderScaledIngredients() {
+            if (!activeMixForModal) return;
+
+            const listEl = document.getElementById('mix-detail-ingredients');
+            const avail = getMixAvailability(activeMixForModal);
+
+            // Update modal status badge
+            const availBadge = document.getElementById('mix-detail-avail-badge');
+            if (avail.isReady) {
+                availBadge.className = 'text-[11px] normal-case font-bold text-emerald-400';
+                availBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> All items in stock';
+            } else {
+                availBadge.className = 'text-[11px] normal-case font-bold text-rose-400';
+                availBadge.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Missing: ${avail.missingList.join(', ')}`;
+            }
+
+            listEl.innerHTML = activeMixForModal.parts.map(part => {
+                const totalQty = part.qty * currentScale;
+                const formattedQtyStr = formatCulinaryQuantity(totalQty, part.unit);
+                const inStock = cupboardSpices.some(s => s.inStock && s.name.toLowerCase().trim() === part.spice.toLowerCase().trim());
+
+                return `
+                    <div class="py-2.5 px-3 flex items-center justify-between text-sm">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid ${inStock ? 'fa-check text-emerald-400' : 'fa-xmark text-rose-400'} text-xs"></i>
+                            <span class="font-medium capitalize ${inStock ? 'text-slate-100' : 'text-rose-300 line-through'}">${escapeHtml(part.spice)}</span>
+                        </div>
+                        <div class="font-mono font-bold text-brand-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
+                            ${formattedQtyStr}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function copyRecipeToClipboard() {
+            if (!activeMixForModal) return;
+
+            let text = `🌿 ${activeMixForModal.name} (${currentScale}x Batch)\n`;
+            text += `-----------------------------------\n`;
+
+            activeMixForModal.parts.forEach(p => {
+                const totalQty = p.qty * currentScale;
+                const formatted = formatCulinaryQuantity(totalQty, p.unit);
+                text += `• ${formatted} - ${p.spice}\n`;
+            });
+
+            if (activeMixForModal.addIns && activeMixForModal.addIns.length > 0) {
+                text += `\nOptional Add-ins:\n`;
+                activeMixForModal.addIns.forEach(a => {
+                    text += `+ ${a}\n`;
+                });
+            }
+
+            // Fallback clipboard execution
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Recipe copied to clipboard!", "success");
+            } catch (err) {
+                showToast("Failed to copy", "error");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        /* ==========================================================================
+           UTILITIES & TOAST NOTIFICATIONS
+           ========================================================================== */
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            let bg = 'bg-slate-800 text-slate-100 border-slate-700';
+            let icon = 'fa-circle-info text-brand-400';
+
+            if (type === 'success') {
+                bg = 'bg-slate-900 text-emerald-300 border-emerald-500/30';
+                icon = 'fa-circle-check text-emerald-400';
+            } else if (type === 'error') {
+                bg = 'bg-slate-900 text-rose-300 border-rose-500/30';
+                icon = 'fa-circle-xmark text-rose-400';
+            }
+
+            toast.className = `${bg} border px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold flex items-center gap-2 pointer-events-auto transition-all duration-300 transform translate-y-2 opacity-0`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${escapeHtml(message)}</span>`;
+
+            container.appendChild(toast);
+
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            // Remove after 3s
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => {
+                    if (toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

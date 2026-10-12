@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini-Bar Inventory & Cocktail Planner Pro</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        },
+                        darkbg: '#0f172a',
+                        darkcard: '#1e293b',
+                        darkborder: '#334155'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Bar & Cocktail Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #14b8a6;
+        }
+        .glow-accent {
+            box-shadow: 0 0 15px rgba(20, 184, 166, 0.25);
+        }
+        .modal-backdrop {
+            background-color: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col pb-16">
+
+    <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & App Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-teal-400 flex items-center justify-center shadow-lg shadow-brand-500/20 text-slate-950 font-bold text-xl">
+                        <i class="fa-solid fa-martini-glass-citrus"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-sm sm:text-base leading-tight text-slate-100 flex items-center gap-2">
+                            Mini-Bar Planner <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30">Pro</span>
+                        </h1>
+                        <p class="text-[11px] text-slate-400 hidden sm:block">Inventory, Cocktail Matcher & Scaling</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex space-x-1 sm:space-x-2 bg-slate-800/80 p-1 rounded-xl border border-slate-700 overflow-x-auto max-w-full">
+                    <button id="tab-btn-planner" onclick="switchTab('planner')" class="px-2.5 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-brand-500 text-slate-950 shadow-md whitespace-nowrap">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span class="hidden md:inline">Can Make</span>
+                        <span id="badge-ready-count" class="bg-slate-950/20 text-slate-950 px-1.5 py-0.2 rounded-full text-xs font-bold">0</span>
+                    </button>
+                    <button id="tab-btn-inventory" onclick="switchTab('inventory')" class="px-2.5 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5 whitespace-nowrap">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span>Bar Stock</span>
+                        <span id="badge-inv-count" class="bg-slate-800 text-slate-300 px-1.5 py-0.2 rounded-full text-xs font-bold">0</span>
+                    </button>
+                    <button id="tab-btn-recipes" onclick="switchTab('recipes')" class="px-2.5 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5 whitespace-nowrap">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span>Cocktails</span>
+                        <span id="badge-rec-count" class="bg-slate-800 text-slate-300 px-1.5 py-0.2 rounded-full text-xs font-bold">0</span>
+                    </button>
+                    <button id="tab-btn-shopping" onclick="switchTab('shopping')" class="px-2.5 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5 whitespace-nowrap">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span>Shopping</span>
+                        <span id="badge-shop-count" class="bg-slate-800 text-slate-300 px-1.5 py-0.2 rounded-full text-xs font-bold">0</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex-grow w-full">
+
+        <!-- ================= VIEW 1: WHAT CAN I MAKE? (PLANNER) ================= -->
+        <section id="view-planner" class="space-y-6">
+            <!-- Filter & Search Panel -->
+            <div class="bg-darkcard border border-darkborder rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                    <div class="relative lg:col-span-2">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="planner-search" placeholder="Search cocktails or ingredients..." oninput="renderPlanner()"
+                            class="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500">
+                    </div>
+
+                    <select id="planner-status-filter" onchange="renderPlanner()" class="bg-slate-900 border border-slate-700 text-slate-300 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-brand-500">
+                        <option value="ALL">All Readiness Status</option>
+                        <option value="READY">Can Make Now (Ready)</option>
+                        <option value="MISSING_1">Missing 1 Ingredient</option>
+                        <option value="MISSING_2_PLUS">Missing 2+ Ingredients</option>
+                    </select>
+
+                    <select id="planner-spirit-filter" onchange="renderPlanner()" class="bg-slate-900 border border-slate-700 text-slate-300 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-brand-500">
+                        <option value="ALL">All Base Spirits</option>
+                        <option value="Gin">Gin</option>
+                        <option value="Vodka">Vodka</option>
+                        <option value="Rum">Rum</option>
+                        <option value="Whisky">Whisky</option>
+                        <option value="Tequila">Tequila</option>
+                        <option value="Brandy">Brandy</option>
+                        <option value="Liqueur">Liqueur / Other</option>
+                    </select>
+
+                    <select id="planner-strength-filter" onchange="renderPlanner()" class="bg-slate-900 border border-slate-700 text-slate-300 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-brand-500">
+                        <option value="ALL">All Strengths & Types</option>
+                        <option value="low">Low Strength</option>
+                        <option value="medium">Medium Strength</option>
+                        <option value="strong">Strong Spirit-Forward</option>
+                        <option value="mocktail">Alcohol-Free / Mocktail</option>
+                    </select>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between pt-2 border-t border-slate-800 text-xs text-slate-400 gap-2">
+                    <div id="planner-stats-text">Showing 0 cocktails</div>
+                    <div class="flex items-center gap-3">
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Ready Now</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Missing 1</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-slate-600"></span> Missing 2+</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cocktail Cards Grid -->
+            <div id="planner-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Dynamically Rendered -->
+            </div>
+        </section>
+
+        <!-- ================= VIEW 2: BAR INVENTORY ================= -->
+        <section id="view-inventory" class="space-y-6 hidden">
+            <!-- Action & Filter Toolbar -->
+            <div class="bg-darkcard border border-darkborder rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                    <div class="relative flex-grow">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="inv-search" placeholder="Search bar ingredients (e.g. Gin, Lime, Vermouth)..." oninput="renderInventory()"
+                            class="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500">
+                    </div>
+
+                    <select id="inv-category-filter" onchange="renderInventory()" class="bg-slate-900 border border-slate-700 text-slate-300 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-brand-500">
+                        <option value="ALL">All Categories</option>
+                        <option value="Base spirits">Base Spirits</option>
+                        <option value="Liqueurs and fortified wines">Liqueurs & Fortified Wines</option>
+                        <option value="Mixers">Mixers</option>
+                        <option value="Juices and fresh produce">Juices & Fresh Produce</option>
+                        <option value="Syrups and sweeteners">Syrups & Sweeteners</option>
+                        <option value="Bitters and seasonings">Bitters & Seasonings</option>
+                        <option value="Garnishes">Garnishes</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <select id="inv-stock-filter" onchange="renderInventory()" class="bg-slate-900 border border-slate-700 text-slate-300 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-brand-500">
+                        <option value="ALL">All Stock Status</option>
+                        <option value="IN_STOCK">In Stock Only</option>
+                        <option value="OUT_OF_STOCK">Out of Stock</option>
+                        <option value="LOW_STOCK">Low Stock Warning</option>
+                    </select>
+
+                    <button onclick="openInventoryModal()" class="bg-brand-500 hover:bg-brand-400 text-slate-950 font-semibold px-4 py-2 rounded-xl text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-brand-500/10 whitespace-nowrap">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Item</span>
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between pt-2 border-t border-slate-800 text-xs text-slate-400 gap-2">
+                    <div id="inv-stats-text">Showing 0 ingredients</div>
+                    <div class="flex items-center gap-4">
+                        <button onclick="resetDefaultInventory()" class="hover:text-slate-200 underline decoration-slate-600 flex items-center gap-1 transition-colors">
+                            <i class="fa-solid fa-rotate-left"></i><span>Reset Starter Stock</span>
+                        </button>
+                        <button onclick="exportData()" class="hover:text-brand-400 flex items-center gap-1 transition-colors">
+                            <i class="fa-solid fa-download"></i><span>Export Backup</span>
+                        </button>
+                        <label class="hover:text-brand-400 flex items-center gap-1 cursor-pointer transition-colors">
+                            <i class="fa-solid fa-upload"></i><span>Import JSON</span>
+                            <input type="file" id="import-file" accept=".json" onchange="importData(event)" class="hidden">
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Grid -->
+            <div id="inventory-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Dynamically Rendered -->
+            </div>
+        </section>
+
+        <!-- ================= VIEW 3: COCKTAIL RECIPE LIBRARY ================= -->
+        <section id="view-recipes" class="space-y-6 hidden">
+            <!-- Toolbar -->
+            <div class="bg-darkcard border border-darkborder rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                    <div class="relative flex-grow">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="recipe-search" placeholder="Search cocktail recipes or ingredients..." oninput="renderRecipesList()"
+                            class="w-full pl-10 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500">
+                    </div>
+
+                    <select id="recipe-fav-filter" onchange="renderRecipesList()" class="bg-slate-900 border border-slate-700 text-slate-300 text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-brand-500">
+                        <option value="ALL">All Recipes</option>
+                        <option value="FAVOURITES">Favourites Only ★</option>
+                    </select>
+
+                    <button onclick="openRecipeModal()" class="bg-brand-500 hover:bg-brand-400 text-slate-950 font-semibold px-4 py-2 rounded-xl text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-brand-500/10 whitespace-nowrap">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>New Recipe</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs text-slate-400">
+                    <div id="recipes-stats-text">Showing 0 recipes</div>
+                    <button onclick="resetDefaultRecipes()" class="hover:text-slate-200 underline decoration-slate-600 flex items-center gap-1 transition-colors">
+                        <i class="fa-solid fa-rotate-left"></i><span>Reset Default Recipes</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recipes Grid -->
+            <div id="recipes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Dynamically Rendered -->
+            </div>
+        </section>
+
+        <!-- ================= VIEW 4: SHOPPING LIST ================= -->
+        <section id="view-shopping" class="space-y-6 hidden">
+            <div class="bg-darkcard border border-darkborder rounded-2xl p-5 shadow-xl space-y-4">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-cart-shopping text-brand-400"></i>
+                            <span>Bar Shopping List</span>
+                        </h2>
+                        <p class="text-xs text-slate-400">Auto-generated from missing required cocktail ingredients and low-stock items.</p>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <button onclick="clearCompletedShopping()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition-colors border border-slate-700">Clear Ticked</button>
+                        <button onclick="copyShoppingList()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-brand-400 text-xs font-semibold rounded-xl transition-colors border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-copy"></i> Copy Text</button>
+                    </div>
+                </div>
+
+                <!-- Add Custom Shopping Item Form -->
+                <form onsubmit="addCustomShoppingItem(event)" class="flex gap-2 pt-2 border-t border-slate-800">
+                    <input type="text" id="custom-shop-input" placeholder="Add custom item to shopping list (e.g. Fresh Mint, Cocktail Napkins)..." required
+                        class="flex-grow px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                    <button type="submit" class="bg-brand-500 hover:bg-brand-400 text-slate-950 font-semibold px-4 py-2 rounded-xl text-sm transition-all whitespace-nowrap">Add</button>
+                </form>
+            </div>
+
+            <!-- Shopping Items List -->
+            <div id="shopping-list-container" class="bg-darkcard border border-darkborder rounded-2xl p-5 shadow-xl">
+                <!-- Dynamically Rendered -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= MODAL: RECIPE SCALER & DETAIL ================= -->
+    <div id="modal-recipe-detail" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden overflow-y-auto">
+        <div class="bg-darkcard border border-slate-700 rounded-2xl w-full max-w-2xl p-6 shadow-2xl relative space-y-6 my-8 max-h-[90vh] flex flex-col">
+            <!-- Header -->
+            <div class="flex items-start justify-between border-b border-slate-800 pb-4">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span id="modal-rec-spirit" class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-slate-800 text-brand-400 border border-slate-700">Spirit</span>
+                        <span id="modal-rec-strength" class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">Strength</span>
+                        <span id="modal-rec-alc" class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">Alcohol</span>
+                    </div>
+                    <h2 id="modal-rec-title" class="text-2xl font-bold text-slate-100">Cocktail Name</h2>
+                    <p id="modal-rec-desc" class="text-xs text-slate-400 mt-1">Description</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="modal-rec-fav-btn" onclick="toggleModalRecipeFav()" class="text-slate-400 hover:text-amber-400 p-2 text-lg transition-colors"><i class="fa-solid fa-star"></i></button>
+                    <button onclick="closeRecipeDetailModal()" class="text-slate-400 hover:text-slate-200 p-2 text-lg transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
+            <!-- Scaler Control (1 to 12) -->
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">Servings / Batch Scale</label>
+                    <p class="text-[11px] text-slate-500">Quantities auto-scaled & rounded for practical bar measurement</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="changeScale(-1)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold flex items-center justify-center transition-colors">-</button>
+                    <span id="scale-display-val" class="font-bold text-brand-400 text-base w-12 text-center">1 Serv</span>
+                    <button onclick="changeScale(1)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold flex items-center justify-center transition-colors">+</button>
+                </div>
+            </div>
+
+            <!-- Ingredients & Method Scrollable Area -->
+            <div class="flex-grow overflow-y-auto pr-1 space-y-4">
+                <!-- Stock Readiness Banner -->
+                <div id="modal-rec-readiness-banner" class="p-3 rounded-xl border text-xs flex items-center justify-between">
+                    <span>Readiness status</span>
+                    <button onclick="addMissingToShoppingFromModal()" class="px-2.5 py-1 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold rounded-lg transition-colors"><i class="fa-solid fa-cart-plus mr-1"></i> Add Missing to Shopping</button>
+                </div>
+
+                <div>
+                    <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Ingredients & Scaled Quantities</h3>
+                    <div id="modal-rec-ingredients-list" class="divide-y divide-slate-800/60 bg-slate-900/50 rounded-xl border border-slate-800 p-2">
+                        <!-- Rendered rows -->
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div class="bg-slate-900/50 border border-slate-800 p-3 rounded-xl space-y-1">
+                        <div class="font-bold text-slate-400 uppercase tracking-wider"><i class="fa-solid fa-glass-water mr-1 text-brand-400"></i> Glassware</div>
+                        <div id="modal-rec-glass" class="text-slate-200 font-medium">Glass</div>
+                    </div>
+                    <div class="bg-slate-900/50 border border-slate-800 p-3 rounded-xl space-y-1">
+                        <div class="font-bold text-slate-400 uppercase tracking-wider"><i class="fa-solid fa-lemon mr-1 text-brand-400"></i> Garnish</div>
+                        <div id="modal-rec-garnish" class="text-slate-200 font-medium">Garnish</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/50 border border-slate-800 p-3 rounded-xl space-y-1 text-xs">
+                    <div class="font-bold text-slate-400 uppercase tracking-wider"><i class="fa-solid fa-list-check mr-1 text-brand-400"></i> Preparation Method</div>
+                    <p id="modal-rec-method" class="text-slate-200 leading-relaxed">Method steps...</p>
+                </div>
+            </div>
+
+            <!-- Footer Copy Button -->
+            <div class="border-t border-slate-800 pt-4 flex gap-3">
+                <button onclick="copyScaledRecipeText()" class="flex-grow bg-slate-800 hover:bg-slate-700 text-brand-400 font-semibold py-2.5 px-4 rounded-xl text-sm border border-slate-700 flex items-center justify-center gap-2 transition-all">
+                    <i class="fa-solid fa-copy"></i>
+                    <span>Copy Scaled Ingredients & Method</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: EDIT/ADD INVENTORY ITEM ================= -->
+    <div id="modal-inventory-form" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden overflow-y-auto">
+        <div class="bg-darkcard border border-slate-700 rounded-2xl w-full max-w-md p-6 shadow-2xl relative space-y-5 my-8">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 id="inv-modal-title" class="font-bold text-slate-100 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-bottle-droplet text-brand-400"></i>
+                    <span>Add Bar Ingredient</span>
+                </h3>
+                <button onclick="closeInventoryModal()" class="text-slate-400 hover:text-slate-200 transition-colors p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form id="inventory-form" onsubmit="handleInventorySubmit(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="inv-item-id">
+
+                <div>
+                    <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1">Ingredient Name</label>
+                    <input type="text" id="inv-name" required placeholder="e.g. London Dry Gin, Angostura Bitters"
+                        class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1">Category</label>
+                    <select id="inv-category" required class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                        <option value="Base spirits">Base spirits</option>
+                        <option value="Liqueurs and fortified wines">Liqueurs and fortified wines</option>
+                        <option value="Mixers">Mixers</option>
+                        <option value="Juices and fresh produce">Juices and fresh produce</option>
+                        <option value="Syrups and sweeteners">Syrups and sweeteners</option>
+                        <option value="Bitters and seasonings">Bitters and seasonings</option>
+                        <option value="Garnishes">Garnishes</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1">Container Size (ml)</label>
+                        <input type="number" id="inv-container-size" placeholder="e.g. 700" min="0" step="1"
+                            class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1">Remaining (ml / pcs)</label>
+                        <input type="number" id="inv-remaining" placeholder="e.g. 500" min="0" step="1"
+                            class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="inv-instock" class="w-4 h-4 accent-brand-500 rounded cursor-pointer">
+                        <label for="inv-instock" class="font-medium text-slate-200 cursor-pointer">In Stock</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="inv-perishable" class="w-4 h-4 accent-brand-500 rounded cursor-pointer">
+                        <label for="inv-perishable" class="font-medium text-slate-200 cursor-pointer">Perishable Produce</label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1">Best-Before Date (Optional)</label>
+                    <input type="date" id="inv-bestbefore" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1">Notes / Brand</label>
+                    <input type="text" id="inv-notes" placeholder="e.g. Tanqueray No. 10"
+                        class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="closeInventoryModal()" class="px-4 py-2 rounded-xl font-medium text-slate-400 hover:bg-slate-800 transition-colors">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-brand-500 hover:bg-brand-400 text-slate-950 font-semibold rounded-xl transition-colors shadow-md shadow-brand-500/10">Save Ingredient</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL: EDIT/ADD CUSTOM RECIPE ================= -->
+    <div id="modal-recipe-form" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden overflow-y-auto">
+        <div class="bg-darkcard border border-slate-700 rounded-2xl w-full max-w-2xl p-6 shadow-2xl relative space-y-5 my-8 max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 id="recipe-modal-title" class="font-bold text-slate-100 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-book-bookmark text-brand-400"></i>
+                    <span>Add Custom Cocktail Recipe</span>
+                </h3>
+                <button onclick="closeRecipeModal()" class="text-slate-400 hover:text-slate-200 transition-colors p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form id="recipe-form" onsubmit="handleRecipeSubmit(event)" class="space-y-4 text-xs flex-grow overflow-y-auto pr-1">
+                <input type="hidden" id="rec-id">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1">Cocktail Name</label>
+                        <input type="text" id="rec-name" required placeholder="e.g. Paper Plane"
+                            class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1">Base Spirit</label>
+                        <select id="rec-base-spirit" required class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                            <option value="Gin">Gin</option>
+                            <option value="Vodka">Vodka</option>
+                            <option value="Rum">Rum</option>
+                            <option value="Whisky">Whisky</option>
+                            <option value="Tequila">Tequila</option>
+                            <option value="Brandy">Brandy</option>
+                            <option value="Liqueur">Liqueur / Other</option>
+                            <option value="Mocktail">Mocktail (Alcohol-Free)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1">Short Description / Flavour Profile</label>
+                    <input type="text" id="rec-desc" required placeholder="e.g. Equal parts bitter, citrus, and herbal whiskey cocktail."
+                        class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1">Strength</label>
+                        <select id="rec-strength" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="strong">Strong</option>
+                            <option value="mocktail">Alcohol-Free</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1">Glassware</label>
+                        <input type="text" id="rec-glassware" required placeholder="Coupe glass"
+                            class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1">Garnish</label>
+                        <input type="text" id="rec-garnish-text" placeholder="Lemon twist"
+                            class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                    </div>
+                </div>
+
+                <!-- Dynamic Ingredients Builder -->
+                <div class="space-y-2 pt-2 border-t border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <label class="font-bold text-slate-300 uppercase tracking-wider">Recipe Ingredients (Single Serving)</label>
+                        <button type="button" onclick="addRecipeIngredientRow()" class="text-xs text-brand-400 hover:text-brand-300 font-semibold"><i class="fa-solid fa-plus mr-1"></i> Add Ingredient</button>
+                    </div>
+                    <div id="recipe-ingredients-builder" class="space-y-2">
+                        <!-- Rows injected via JS -->
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-800">
+                    <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1">Preparation Method</label>
+                    <textarea id="rec-method" rows="3" required placeholder="Shake with ice and strain into chilled glassware..."
+                        class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-brand-500"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="closeRecipeModal()" class="px-4 py-2 rounded-xl font-medium text-slate-400 hover:bg-slate-800 transition-colors">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-brand-500 hover:bg-brand-400 text-slate-950 font-semibold rounded-xl transition-colors shadow-md shadow-brand-500/10">Save Recipe</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT APP LOGIC ================= -->
+    <script>
+        /* ==========================================================================
+           DEFAULT STARTER INVENTORY (Practical Home Bar Stock)
+           ========================================================================== */
+        const DEFAULT_INVENTORY = [
+            { id: 'gin_londondry', name: 'London Dry Gin', category: 'Base spirits', inStock: true, remaining: 700, containerSize: 700, perishable: false, bestBefore: '', notes: 'Tanqueray or Beefeater' },
+            { id: 'vodka', name: 'Vodka', category: 'Base spirits', inStock: true, remaining: 750, containerSize: 750, perishable: false, bestBefore: '', notes: 'Standard clean vodka' },
+            { id: 'rum_white', name: 'White Rum', category: 'Base spirits', inStock: true, remaining: 700, containerSize: 700, perishable: false, bestBefore: '', notes: 'Havana Club 3 Años or Bacardi' },
+            { id: 'rum_dark', name: 'Dark Rum', category: 'Base spirits', inStock: false, remaining: 0, containerSize: 700, perishable: false, bestBefore: '', notes: 'Jamaican or Demerara' },
+            { id: 'whisky_bourbon', name: 'Bourbon Whiskey', category: 'Base spirits', inStock: true, remaining: 750, containerSize: 750, perishable: false, bestBefore: '', notes: 'Maker’s Mark or Bulleit' },
+            { id: 'tequila_blanco', name: 'Tequila Blanco', category: 'Base spirits', inStock: true, remaining: 700, containerSize: 700, perishable: false, bestBefore: '', notes: '100% Agave' },
+            { id: 'brandy_cognac', name: 'Brandy / Cognac', category: 'Base spirits', inStock: false, remaining: 0, containerSize: 700, perishable: false, bestBefore: '', notes: 'VSOP' },
+            { id: 'vermouth_dry', name: 'Dry Vermouth', category: 'Liqueurs and fortified wines', inStock: true, remaining: 375, containerSize: 750, perishable: true, bestBefore: '2026-12-31', notes: 'Keep refrigerated after opening' },
+            { id: 'vermouth_sweet', name: 'Sweet Red Vermouth', category: 'Liqueurs and fortified wines', inStock: true, remaining: 500, containerSize: 750, perishable: true, bestBefore: '2026-12-31', notes: 'Carpano Antica or Martini Rosso' },
+            { id: 'triple_sec', name: 'Triple Sec / Cointreau', category: 'Liqueurs and fortified wines', inStock: true, remaining: 500, containerSize: 700, perishable: false, bestBefore: '', notes: 'Orange liqueur' },
+            { id: 'coffee_liqueur', name: 'Coffee Liqueur', category: 'Liqueurs and fortified wines', inStock: true, remaining: 700, containerSize: 700, perishable: false, bestBefore: '', notes: 'Kahlúa or Tia Maria' },
+            { id: 'amaro_aperol', name: 'Aperol', category: 'Liqueurs and fortified wines', inStock: true, remaining: 700, containerSize: 700, perishable: false, bestBefore: '', notes: 'Bitter orange aperitif' },
+            { id: 'amaro_campari', name: 'Campari', category: 'Liqueurs and fortified wines', inStock: false, remaining: 0, containerSize: 700, perishable: false, bestBefore: '', notes: 'Classic red bitter' },
+            { id: 'tonic_water', name: 'Tonic Water', category: 'Mixers', inStock: true, remaining: 600, containerSize: 600, perishable: false, bestBefore: '', notes: 'Indian Tonic' },
+            { id: 'soda_water', name: 'Soda Water', category: 'Mixers', inStock: true, remaining: 1000, containerSize: 1000, perishable: false, bestBefore: '', notes: 'Sparkling mineral water' },
+            { id: 'cola', name: 'Cola', category: 'Mixers', inStock: false, remaining: 0, containerSize: 1000, perishable: false, bestBefore: '', notes: '' },
+            { id: 'ginger_beer', name: 'Ginger Beer', category: 'Mixers', inStock: true, remaining: 750, containerSize: 750, perishable: false, bestBefore: '', notes: 'Spicy ginger brew' },
+            { id: 'ginger_ale', name: 'Ginger Ale', category: 'Mixers', inStock: false, remaining: 0, containerSize: 750, perishable: false, bestBefore: '', notes: '' },
+            { id: 'lemonade', name: 'Lemonade', category: 'Mixers', inStock: false, remaining: 0, containerSize: 1000, perishable: false, bestBefore: '', notes: '' },
+            { id: 'lemon_juice', name: 'Fresh Lemons', category: 'Juices and fresh produce', inStock: true, remaining: 4, containerSize: 6, perishable: true, bestBefore: '', notes: 'Fresh citrus fruit' },
+            { id: 'lime_juice', name: 'Fresh Limes', category: 'Juices and fresh produce', inStock: true, remaining: 5, containerSize: 6, perishable: true, bestBefore: '', notes: 'Fresh citrus fruit' },
+            { id: 'orange_juice', name: 'Orange Juice', category: 'Juices and fresh produce', inStock: false, remaining: 0, containerSize: 1000, perishable: true, bestBefore: '', notes: '' },
+            { id: 'cranberry_juice', name: 'Cranberry Juice', category: 'Juices and fresh produce', inStock: false, remaining: 0, containerSize: 1000, perishable: false, bestBefore: '', notes: '' },
+            { id: 'simple_syrup', name: 'Simple Syrup', category: 'Syrups and sweeteners', inStock: true, remaining: 250, containerSize: 300, perishable: true, bestBefore: '', notes: '1:1 sugar and water' },
+            { id: 'grenadine', name: 'Grenadine', category: 'Syrups and sweeteners', inStock: false, remaining: 0, containerSize: 500, perishable: false, bestBefore: '', notes: 'Pomegranate syrup' },
+            { id: 'honey', name: 'Honey Syrup', category: 'Syrups and sweeteners', inStock: true, remaining: 200, containerSize: 300, perishable: false, bestBefore: '', notes: '3:1 honey to warm water' },
+            { id: 'angostura_bitters', name: 'Angostura Bitters', category: 'Bitters and seasonings', inStock: true, remaining: 100, containerSize: 100, perishable: false, bestBefore: '', notes: 'Aromatic cocktail bitters' },
+            { id: 'orange_bitters', name: 'Orange Bitters', category: 'Bitters and seasonings', inStock: false, remaining: 0, containerSize: 100, perishable: false, bestBefore: '', notes: '' },
+            { id: 'salt', name: 'Sea Salt', category: 'Bitters and seasonings', inStock: true, remaining: 500, containerSize: 500, perishable: false, bestBefore: '', notes: 'Rim glasses' },
+            { id: 'olives', name: 'Cocktail Olives', category: 'Garnishes', inStock: true, remaining: 20, containerSize: 30, perishable: false, bestBefore: '', notes: 'Stuffed green olives' },
+            { id: 'cherries', name: 'Maraschino Cherries', category: 'Garnishes', inStock: true, remaining: 15, containerSize: 25, perishable: false, bestBefore: '', notes: 'Cocktail cherries' },
+            { id: 'mint', name: 'Fresh Mint Leaves', category: 'Garnishes', inStock: true, remaining: 10, containerSize: 20, perishable: true, bestBefore: '', notes: 'Fresh sprigs' },
+            { id: 'cucumber', name: 'Cucumber Slices', category: 'Garnishes', inStock: false, remaining: 0, containerSize: 1, perishable: true, bestBefore: '', notes: '' },
+            { id: 'espresso', name: 'Fresh Espresso', category: 'Other', inStock: true, remaining: 120, containerSize: 200, perishable: true, bestBefore: '', notes: 'Chilled espresso shot' },
+            { id: 'ice', name: 'Ice Cubes', category: 'Other', inStock: true, remaining: 1000, containerSize: 1000, perishable: true, bestBefore: '', notes: 'Freezer stocked' },
+            { id: 'egg_white', name: 'Egg White', category: 'Other', inStock: false, remaining: 0, containerSize: 4, perishable: true, bestBefore: '', notes: 'For sours / froth' }
+        ];
+
+        /* ==========================================================================
+           DEFAULT CURATED HOUSE COCKTAIL RECIPES
+           ========================================================================== */
+        const DEFAULT_RECIPES = [
+            {
+                id: 'gin_tonic',
+                name: 'Gin and Tonic',
+                baseSpirit: 'Gin',
+                strength: 'medium',
+                alcType: 'alcoholic',
+                desc: 'The iconic highball. Crisp, effervescent, and wonderfully refreshing with botanical gin.',
+                glassware: 'Highball glass',
+                garnish: 'Lime wedge or cucumber ribbon',
+                ingredients: [
+                    { name: 'London Dry Gin', amount: 50, unit: 'ml', required: true },
+                    { name: 'Tonic Water', amount: 150, unit: 'ml', required: true },
+                    { name: 'Ice Cubes', amount: 100, unit: 'ml', required: true }
+                ],
+                method: 'Fill a highball glass with ice cubes. Pour in the gin, top up with chilled tonic water, and gently stir once to combine.',
+                favourite: true,
+                sourceName: 'House Spec',
+                sourceUrl: ''
+            },
+            {
+                id: 'martini',
+                name: 'Dry Martini',
+                baseSpirit: 'Gin',
+                strength: 'strong',
+                alcType: 'alcoholic',
+                desc: 'The undisputed king of cocktails. Sophisticated, bone-dry, and ice-cold.',
+                glassware: 'Coupe or martini glass',
+                garnish: 'Lemon twist or cocktail olive',
+                ingredients: [
+                    { name: 'London Dry Gin', amount: 60, unit: 'ml', required: true },
+                    { name: 'Dry Vermouth', amount: 15, unit: 'ml', required: true },
+                    { name: 'Cocktail Olives', amount: 1, unit: 'pieces', required: false }
+                ],
+                method: 'Combine gin and dry vermouth in a mixing glass filled with ice. Stir thoroughly until chilled, then strain into a chilled coupe glass. Garnish with an olive or lemon twist.',
+                favourite: true,
+                sourceName: 'Classic House Spec',
+                sourceUrl: ''
+            },
+            {
+                id: 'negroni',
+                name: 'Negroni',
+                baseSpirit: 'Gin',
+                strength: 'strong',
+                alcType: 'alcoholic',
+                desc: 'A magnificent Italian classic balancing bitter aperitif, sweet vermouth, and punchy gin.',
+                glassware: 'Rocks glass',
+                garnish: 'Orange peel twist',
+                ingredients: [
+                    { name: 'London Dry Gin', amount: 30, unit: 'ml', required: true },
+                    { name: 'Aperol', amount: 30, unit: 'ml', required: true },
+                    { name: 'Sweet Red Vermouth', amount: 30, unit: 'ml', required: true }
+                ],
+                method: 'Pour all ingredients directly into a rocks glass filled with large ice cubes. Stir well for 20 seconds and garnish with an expressed orange peel.',
+                favourite: true,
+                sourceName: 'IBA Official Spec',
+                sourceUrl: ''
+            },
+            {
+                id: 'old_fashioned',
+                name: 'Old Fashioned',
+                baseSpirit: 'Whisky',
+                strength: 'strong',
+                alcType: 'alcoholic',
+                desc: 'Timeless bourbon cocktail highlighting caramel and oak notes with aromatic bitters.',
+                glassware: 'Rocks glass',
+                garnish: 'Orange peel & maraschino cherry',
+                ingredients: [
+                    { name: 'Bourbon Whiskey', amount: 60, unit: 'ml', required: true },
+                    { name: 'Simple Syrup', amount: 10, unit: 'ml', required: true },
+                    { name: 'Angostura Bitters', amount: 3, unit: 'dashes', required: true },
+                    { name: 'Maraschino Cherries', amount: 1, unit: 'pieces', required: false }
+                ],
+                method: 'Add simple syrup and bitters to a glass, add ice and bourbon, and stir gently until well chilled.',
+                favourite: false,
+                sourceName: 'House Spec',
+                sourceUrl: ''
+            },
+            {
+                id: 'margarita',
+                name: 'Margarita',
+                baseSpirit: 'Tequila',
+                strength: 'strong',
+                alcType: 'alcoholic',
+                desc: 'Bright, zesty, and refreshing blend of agave blanco tequila, orange liqueur, and fresh lime.',
+                glassware: 'Margarita glass or rocks glass',
+                garnish: 'Lime wheel & salt rim',
+                ingredients: [
+                    { name: 'Tequila Blanco', amount: 50, unit: 'ml', required: true },
+                    { name: 'Triple Sec / Cointreau', amount: 25, unit: 'ml', required: true },
+                    { name: 'Fresh Limes', amount: 30, unit: 'ml', required: true },
+                    { name: 'Sea Salt', amount: 1, unit: 'tsp', required: false }
+                ],
+                method: 'Rim glass with sea salt. Shake all liquid ingredients vigorously with ice, then strain over fresh ice into the prepared glass.',
+                favourite: true,
+                sourceName: 'Classic Spec',
+                sourceUrl: ''
+            },
+            {
+                id: 'daiquiri',
+                name: 'Daiquiri',
+                baseSpirit: 'Rum',
+                strength: 'medium',
+                alcType: 'alcoholic',
+                desc: 'The purest test of a rum cocktail. Crisp, tart, and perfectly balanced.',
+                glassware: 'Coupe glass',
+                garnish: 'Lime wheel',
+                ingredients: [
+                    { name: 'White Rum', amount: 60, unit: 'ml', required: true },
+                    { name: 'Fresh Limes', amount: 30, unit: 'ml', required: true },
+                    { name: 'Simple Syrup', amount: 20, unit: 'ml', required: true }
+                ],
+                method: 'Add rum, freshly squeezed lime juice, and simple syrup to a shaker with ice. Shake hard for 10-12 seconds and double strain into a chilled coupe.',
+                favourite: false,
+                sourceName: 'Hemingway Spec',
+                sourceUrl: ''
+            },
+            {
+                id: 'mojito',
+                name: 'Mojito',
+                baseSpirit: 'Rum',
+                strength: 'medium',
+                alcType: 'alcoholic',
+                desc: 'Cuban highball uniting fresh mint, lime, white rum, and sparkling soda water.',
+                glassware: 'Highball glass',
+                garnish: 'Fresh mint sprig & lime wedge',
+                ingredients: [
+                    { name: 'White Rum', amount: 50, unit: 'ml', required: true },
+                    { name: 'Fresh Limes', amount: 25, unit: 'ml', required: true },
+                    { name: 'Simple Syrup', amount: 20, unit: 'ml', required: true },
+                    { name: 'Fresh Mint Leaves', amount: 8, unit: 'pieces', required: true },
+                    { name: 'Soda Water', amount: 100, unit: 'ml', required: true }
+                ],
+                method: 'Gently muddle mint leaves with simple syrup and lime juice in a glass. Add rum and crushed ice, top with soda water, and stir gently.',
+                favourite: true,
+                sourceName: 'Havana House Spec',
+                sourceUrl: ''
+            },
+            {
+                id: 'whiskey_sour',
+                name: 'Whiskey Sour',
+                baseSpirit: 'Whisky',
+                strength: 'medium',
+                alcType: 'alcoholic',
+                desc: 'Velvety smooth sour featuring bourbon, fresh lemon, and sweetness.',
+                glassware: 'Rocks glass',
+                garnish: 'Maraschino cherry & lemon slice',
+                ingredients: [
+                    { name: 'Bourbon Whiskey', amount: 60, unit: 'ml', required: true },
+                    { name: 'Fresh Lemons', amount: 30, unit: 'ml', required: true },
+                    { name: 'Simple Syrup', amount: 20, unit: 'ml', required: true },
+                    { name: 'Angostura Bitters', amount: 2, unit: 'dashes', required: false }
+                ],
+                method: 'Shake bourbon, lemon juice, and syrup vigorously with ice. Strain over fresh ice in a rocks glass. Add a couple drops of bitters on top.',
+                favourite: false,
+                sourceName: 'Traditional Spec',
+                sourceUrl: ''
+            },
+            {
+                id: 'moscow_mule',
+                name: 'Moscow Mule',
+                baseSpirit: 'Vodka',
+                strength: 'medium',
+                alcType: 'alcoholic',
+                desc: 'Spicy and refreshing copper mug cocktail combining vodka, fiery ginger beer, and lime.',
+                glassware: 'Copper mug or rocks glass',
+                garnish: 'Lime wedge & mint sprig',
+                ingredients: [
+                    { name: 'Vodka', amount: 50, unit: 'ml', required: true },
+                    { name: 'Ginger Beer', amount: 120, unit: 'ml', required: true },
+                    { name: 'Fresh Limes', amount: 15, unit: 'ml', required: true }
+                ],
+                method: 'Fill mug with ice, pour in vodka and fresh lime juice, top with chilled ginger beer, and stir.',
+                favourite: false,
+                sourceName: 'Classic Spec',
+                sourceUrl: ''
+            },
+            {
+                id: 'espresso_martini',
+                name: 'Espresso Martini',
+                baseSpirit: 'Vodka',
+                strength: 'medium',
+                alcType: 'alcoholic',
+                desc: 'Rich, creamy pick-me-up cocktail with freshly brewed espresso, vodka, and coffee liqueur.',
+                glassware: 'Coupe or martini glass',
+                garnish: 'Three coffee beans',
+                ingredients: [
+                    { name: 'Vodka', amount: 40, unit: 'ml', required: true },
+                    { name: 'Coffee Liqueur', amount: 20, unit: 'ml', required: true },
+                    { name: 'Fresh Espresso', amount: 30, unit: 'ml', required: true },
+                    { name: 'Simple Syrup', amount: 10, unit: 'ml', required: false }
+                ],
+                method: 'Shake hard with lots of ice until ice-cold and frothy. Strain into a chilled martini glass.',
+                favourite: true,
+                sourceName: 'London Club Spec',
+                sourceUrl: ''
+            },
+            {
+                id: 'tom_collins',
+                name: 'Tom Collins',
+                baseSpirit: 'Gin',
+                strength: 'low',
+                alcType: 'alcoholic',
+                desc: 'Effervescent gin lemonade. Light, crisp, and exceptionally thirst-quenching.',
+                glassware: 'Highball glass',
+                garnish: 'Lemon slice & maraschino cherry',
+                ingredients: [
+                    { name: 'London Dry Gin', amount: 50, unit: 'ml', required: true },
+                    { name: 'Fresh Lemons', amount: 30, unit: 'ml', required: true },
+                    { name: 'Simple Syrup', amount: 20, unit: 'ml', required: true },
+                    { name: 'Soda Water', amount: 100, unit: 'ml', required: true }
+                ],
+                method: 'Shake gin, lemon juice, and syrup with ice. Strain into a tall glass with ice and top with soda water.',
+                favourite: false,
+                sourceName: 'IBA Spec',
+                sourceUrl: ''
+            },
+            {
+                id: 'aperol_spritz',
+                name: 'Aperol Spritz',
+                baseSpirit: 'Liqueur',
+                strength: 'low',
+                alcType: 'alcoholic',
+                desc: 'The quintessential Italian aperitivo. Bittersweet, sparkling, and vibrant orange.',
+                glassware: 'Wine glass',
+                garnish: 'Orange slice',
+                ingredients: [
+                    { name: 'Aperol', amount: 60, unit: 'ml', required: true },
+                    { name: 'Soda Water', amount: 30, unit: 'ml', required: true }
+                ],
+                method: 'Fill a large wine glass with ice, add Aperol and soda water, and stir.',
+                favourite: true,
+                sourceName: 'Venetian Spec',
+                sourceUrl: ''
+            }
+        ];
+
+        /* ==========================================================================
+           APPLICATION STATE MANAGEMENT & LOCAL STORAGE
+           ========================================================================== */
+        let barInventory = [];
+        let cocktailRecipes = [];
+        let shoppingList = [];
+        let currentScale = 1;
+        let activeModalRecipe = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadAppData();
+            switchTab('planner');
+            updateBadgeCounts();
+        });
+
+        function loadAppData() {
+            // Inventory
+            const storedInv = localStorage.getItem('minibar_inventory_v1');
+            if (storedInv) {
+                try { barInventory = JSON.parse(storedInv); } catch(e) { barInventory = [...DEFAULT_INVENTORY]; }
+            } else {
+                barInventory = [...DEFAULT_INVENTORY];
+                saveInventory();
+            }
+
+            // Recipes
+            const storedRec = localStorage.getItem('minibar_recipes_v1');
+            if (storedRec) {
+                try { cocktailRecipes = JSON.parse(storedRec); } catch(e) { cocktailRecipes = [...DEFAULT_RECIPES]; }
+            } else {
+                cocktailRecipes = [...DEFAULT_RECIPES];
+                saveRecipes();
+            }
+
+            // Shopping List
+            const storedShop = localStorage.getItem('minibar_shopping_v1');
+            if (storedShop) {
+                try { shoppingList = JSON.parse(storedShop); } catch(e) { shoppingList = []; }
+            } else {
+                shoppingList = [];
+                saveShopping();
+            }
+        }
+
+        function saveInventory() {
+            localStorage.setItem('minibar_inventory_v1', JSON.stringify(barInventory));
+            updateBadgeCounts();
+        }
+
+        function saveRecipes() {
+            localStorage.setItem('minibar_recipes_v1', JSON.stringify(cocktailRecipes));
+            updateBadgeCounts();
+        }
+
+        function saveShopping() {
+            localStorage.setItem('minibar_shopping_v1', JSON.stringify(shoppingList));
+            updateBadgeCounts();
+        }
+
+        function updateBadgeCounts() {
+            const readyCount = cocktailRecipes.filter(r => getRecipeMatchStatus(r).isReady).length;
+            document.getElementById('badge-ready-count').textContent = readyCount;
+            document.getElementById('badge-inv-count').textContent = barInventory.length;
+            document.getElementById('badge-rec-count').textContent = cocktailRecipes.length;
+            const uncheckedShop = shoppingList.filter(s => !s.completed).length;
+            document.getElementById('badge-shop-count').textContent = uncheckedShop;
+        }
+
+        /* ==========================================================================
+           TAB ROUTING & SWITCHING
+           ========================================================================== */
+        function switchTab(tabName) {
+            const views = ['planner', 'inventory', 'recipes', 'shopping'];
+            views.forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+                document.getElementById(`tab-btn-${v}`).className = "px-2.5 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-400 hover:text-slate-200 transition-all flex items-center gap-1.5 whitespace-nowrap";
+            });
+
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tabName}`).className = "px-2.5 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 bg-brand-500 text-slate-950 shadow-md whitespace-nowrap";
+
+            if (tabName === 'planner') renderPlanner();
+            if (tabName === 'inventory') renderInventory();
+            if (tabName === 'recipes') renderRecipesList();
+            if (tabName === 'shopping') renderShoppingList();
+        }
+
+        /* ==========================================================================
+           INGREDIENT MATCHING ENGINE
+           ========================================================================== */
+        function getRecipeMatchStatus(recipe) {
+            let requiredTotal = 0;
+            let requiredAvailable = 0;
+            let missingRequired = [];
+            let missingOptional = [];
+
+            recipe.ingredients.forEach(ing => {
+                // Check if user has matching ingredient in stock
+                const invItem = barInventory.find(i => i.name.toLowerCase().trim() === ing.name.toLowerCase().trim());
+                const isInStock = invItem && invItem.inStock;
+
+                if (ing.required) {
+                    requiredTotal++;
+                    if (isInStock) {
+                        requiredAvailable++;
+                    } else {
+                        missingRequired.push(ing.name);
+                    }
+                } else {
+                    if (!isInStock) {
+                        missingOptional.push(ing.name);
+                    }
+                }
+            });
+
+            const isReady = requiredAvailable === requiredTotal;
+            const missingCount = missingRequired.length;
+
+            return {
+                isReady,
+                requiredTotal,
+                requiredAvailable,
+                missingRequired,
+                missingOptional,
+                missingCount
+            };
+        }
+
+        /* ==========================================================================
+           VIEW 1: PLANNER ("WHAT CAN I MAKE?")
+           ========================================================================== */
+        function renderPlanner() {
+            const grid = document.getElementById('planner-grid');
+            const search = document.getElementById('planner-search').value.toLowerCase().trim();
+            const statusFilter = document.getElementById('planner-status-filter').value;
+            const spiritFilter = document.getElementById('planner-spirit-filter').value;
+            const strengthFilter = document.getElementById('planner-strength-filter').value;
+
+            const evaluated = cocktailRecipes.map(r => ({
+                ...r,
+                match: getRecipeMatchStatus(r)
+            }));
+
+            const filtered = evaluated.filter(r => {
+                const matchesSearch = r.name.toLowerCase().includes(search) || r.ingredients.some(i => i.name.toLowerCase().includes(search));
+                const matchesSpirit = spiritFilter === 'ALL' || r.baseSpirit === spiritFilter;
+                const matchesStrength = strengthFilter === 'ALL' || r.strength === strengthFilter;
+
+                let matchesStatus = true;
+                if (statusFilter === 'READY') matchesStatus = r.match.isReady;
+                else if (statusFilter === 'MISSING_1') matchesStatus = r.match.missingCount === 1;
+                else if (statusFilter === 'MISSING_2_PLUS') matchesStatus = r.match.missingCount >= 2;
+
+                return matchesSearch && matchesSpirit && matchesStrength && matchesStatus;
+            });
+
+            // Sort: Ready first, then missing 1, then alphabetical
+            filtered.sort((a, b) => {
+                if (a.match.missingCount !== b.match.missingCount) {
+                    return a.match.missingCount - b.match.missingCount;
+                }
+                return a.name.localeCompare(b.name);
+            });
+
+            document.getElementById('planner-stats-text').textContent = `Showing ${filtered.length} of ${cocktailRecipes.length} cocktail recipes`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-darkcard rounded-2xl border border-darkborder">
+                        <i class="fa-solid fa-martini-glass text-4xl text-slate-600 mb-3"></i>
+                        <p class="text-slate-300 font-medium">No matching cocktails found</p>
+                        <p class="text-xs text-slate-500 mt-1">Try resetting filters or stocking up on more ingredients in your Bar Stock.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(r => {
+                const match = r.match;
+                let statusBadge = '';
+                if (match.isReady) {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> Can make now</span>`;
+                } else if (match.missingCount === 1) {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation"></i> Missing 1 required</span>`;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700 flex items-center gap-1.5"><i class="fa-solid fa-xmark"></i> Missing ${match.missingCount} required</span>`;
+                }
+
+                return `
+                    <div class="bg-darkcard border ${match.isReady ? 'border-brand-500/50 glow-accent' : 'border-darkborder'} rounded-2xl p-5 flex flex-col justify-between hover:border-brand-500/70 transition-all duration-200">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-900 text-brand-400 border border-slate-800">${r.baseSpirit}</span>
+                                <div class="flex items-center gap-1.5">
+                                    ${r.favourite ? '<i class="fa-solid fa-star text-amber-400 text-xs"></i>' : ''}
+                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">${match.requiredAvailable}/${match.requiredTotal} ready</span>
+                                </div>
+                            </div>
+
+                            <h3 class="font-bold text-slate-100 text-lg mb-1">${escapeHtml(r.name)}</h3>
+                            <p class="text-xs text-slate-400 mb-4 line-clamp-2">${escapeHtml(r.desc)}</p>
+
+                            <div class="space-y-1.5 mb-4">
+                                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Ingredients:</div>
+                                <div class="flex flex-wrap gap-1">
+                                    ${r.ingredients.map(i => {
+                                        const invItem = barInventory.find(inv => inv.name.toLowerCase().trim() === i.name.toLowerCase().trim());
+                                        const inStock = invItem && invItem.inStock;
+                                        return `<span class="text-xs px-2 py-0.5 rounded-md ${inStock ? 'bg-slate-800 text-slate-300' : 'bg-rose-950/40 text-rose-300 border border-rose-800/40 line-through'}">${i.amount}${i.unit} ${i.name}</span>`;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
+                            ${statusBadge}
+                            <button onclick="openRecipeDetailModal('${r.id}')" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold rounded-xl text-xs transition-colors flex items-center gap-1">
+                                <span>View & Scale</span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /* ==========================================================================
+           VIEW 2: BAR INVENTORY MANAGEMENT
+           ========================================================================== */
+        function renderInventory() {
+            const grid = document.getElementById('inventory-grid');
+            const search = document.getElementById('inv-search').value.toLowerCase().trim();
+            const catFilter = document.getElementById('inv-category-filter').value;
+            const stockFilter = document.getElementById('inv-stock-filter').value;
+
+            const filtered = barInventory.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(search) || (item.notes && item.notes.toLowerCase().includes(search));
+                const matchesCat = catFilter === 'ALL' || item.category === catFilter;
+
+                let matchesStock = true;
+                if (stockFilter === 'IN_STOCK') matchesStock = item.inStock;
+                else if (stockFilter === 'OUT_OF_STOCK') matchesStock = !item.inStock;
+                else if (stockFilter === 'LOW_STOCK') {
+                    matchesStock = item.inStock && item.containerSize > 0 && item.remaining <= (item.containerSize * 0.2);
+                }
+
+                return matchesSearch && matchesCat && matchesStock;
+            });
+
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
+
+            document.getElementById('inv-stats-text').textContent = `Showing ${filtered.length} of ${barInventory.length} items`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-darkcard rounded-2xl border border-darkborder">
+                        <i class="fa-solid fa-bottle-empty text-4xl text-slate-600 mb-3"></i>
+                        <p class="text-slate-300 font-medium">No ingredients found</p>
+                        <p class="text-xs text-slate-500 mt-1">Add items using the "+ Add Item" button.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => {
+                // Low stock warning check (<= 20% remaining if container size > 0)
+                const isLow = item.inStock && item.containerSize > 0 && item.remaining <= (item.containerSize * 0.2);
+
+                return `
+                    <div class="bg-darkcard border ${item.inStock ? 'border-slate-700/80' : 'border-slate-800/60 opacity-60'} rounded-2xl p-4 flex flex-col justify-between hover:border-brand-500/50 transition-all">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-slate-900 text-slate-400 border border-slate-800">
+                                    ${item.category}
+                                </span>
+                                <div class="flex items-center gap-1">
+                                    <button onclick="openInventoryModal('${item.id}')" class="text-slate-400 hover:text-slate-200 p-1 rounded text-xs" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                                    <button onclick="deleteInventoryItem('${item.id}')" class="text-slate-500 hover:text-rose-400 p-1 rounded text-xs" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
+                                </div>
+                            </div>
+
+                            <h3 class="font-bold text-slate-100 text-base mb-1">${escapeHtml(item.name)}</h3>
+                            ${item.notes ? `<p class="text-xs text-slate-400 mb-3">${escapeHtml(item.notes)}</p>` : '<div class="mb-3"></div>'}
+
+                            <div class="space-y-1 text-xs text-slate-300 mb-3">
+                                ${item.containerSize > 0 ? `
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>Remaining:</span>
+                                        <span class="font-bold text-slate-200">${item.remaining} / ${item.containerSize} ml</span>
+                                    </div>
+                                    <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden border border-slate-800">
+                                        <div class="bg-brand-500 h-full rounded-full" style="width: ${Math.min(100, (item.remaining / item.containerSize) * 100)}%"></div>
+                                    </div>
+                                ` : ''}
+                                ${isLow ? `<div class="text-[10px] text-amber-400 font-semibold mt-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Low stock warning</div>` : ''}
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
+                            <span class="text-xs font-medium ${item.inStock ? 'text-emerald-400' : 'text-slate-500'}">
+                                ${item.inStock ? '<i class="fa-solid fa-circle-check mr-1"></i> In Stock' : '<i class="fa-solid fa-circle-xmark mr-1"></i> Out'}
+                            </span>
+                            <button onclick="toggleInventoryStock('${item.id}')" 
+                                class="px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${item.inStock ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-brand-500/20 hover:bg-brand-500/30 text-brand-400 border border-brand-500/30'}">
+                                ${item.inStock ? 'Mark Out' : 'Mark In'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleInventoryStock(id) {
+            const item = barInventory.find(i => i.id === id);
+            if (item) {
+                item.inStock = !item.inStock;
+                saveInventory();
+                renderInventory();
+                renderPlanner();
+                showToast(`${item.name} stock updated`, "success");
+            }
+        }
+
+        function deleteInventoryItem(id) {
+            const item = barInventory.find(i => i.id === id);
+            if (item && confirm(`Remove "${item.name}" from bar inventory?`)) {
+                barInventory = barInventory.filter(i => i.id !== id);
+                saveInventory();
+                renderInventory();
+                renderPlanner();
+                showToast("Ingredient deleted", "info");
+            }
+        }
+
+        function resetDefaultInventory() {
+            if (confirm("Reset bar inventory to standard starter stock?")) {
+                barInventory = JSON.parse(JSON.stringify(DEFAULT_INVENTORY));
+                saveInventory();
+                renderInventory();
+                renderPlanner();
+                showToast("Bar stock reset to default", "info");
+            }
+        }
+
+        function openInventoryModal(id = null) {
+            const modal = document.getElementById('modal-inventory-form');
+            const title = document.getElementById('inv-modal-title');
+            const form = document.getElementById('inventory-form');
+            form.reset();
+
+            if (id) {
+                const item = barInventory.find(i => i.id === id);
+                if (item) {
+                    document.getElementById('inv-item-id').value = item.id;
+                    document.getElementById('inv-name').value = item.name;
+                    document.getElementById('inv-category').value = item.category;
+                    document.getElementById('inv-container-size').value = item.containerSize || '';
+                    document.getElementById('inv-remaining').value = item.remaining || '';
+                    document.getElementById('inv-instock').checked = item.inStock;
+                    document.getElementById('inv-perishable').checked = item.perishable;
+                    document.getElementById('inv-bestbefore').value = item.bestBefore || '';
+                    document.getElementById('inv-notes').value = item.notes || '';
+                    title.innerHTML = `<i class="fa-solid fa-pen text-brand-400"></i><span>Edit Bar Ingredient</span>`;
+                }
+            } else {
+                document.getElementById('inv-item-id').value = '';
+                document.getElementById('inv-instock').checked = true;
+                title.innerHTML = `<i class="fa-solid fa-bottle-droplet text-brand-400"></i><span>Add Bar Ingredient</span>`;
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeInventoryModal() {
+            document.getElementById('modal-inventory-form').classList.add('hidden');
+        }
+
+        function handleInventorySubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('inv-item-id').value;
+            const name = document.getElementById('inv-name').value.trim();
+            const category = document.getElementById('inv-category').value;
+            const containerSize = parseFloat(document.getElementById('inv-container-size').value) || 0;
+            const remaining = parseFloat(document.getElementById('inv-remaining').value) || 0;
+            const inStock = document.getElementById('inv-instock').checked;
+            const perishable = document.getElementById('inv-perishable').checked;
+            const bestBefore = document.getElementById('inv-bestbefore').value;
+            const notes = document.getElementById('inv-notes').value.trim();
+
+            if (!name) return;
+
+            if (id) {
+                const idx = barInventory.findIndex(i => i.id === id);
+                if (idx !== -1) {
+                    barInventory[idx] = { id, name, category, containerSize, remaining, inStock, perishable, bestBefore, notes };
+                }
+            } else {
+                const newId = name.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now();
+                barInventory.push({ id: newId, name, category, containerSize, remaining, inStock, perishable, bestBefore, notes });
+            }
+
+            saveInventory();
+            renderInventory();
+            renderPlanner();
+            closeInventoryModal();
+            showToast("Ingredient saved successfully", "success");
+        }
+
+        /* ==========================================================================
+           VIEW 3: COCKTAIL RECIPE LIBRARY
+           ========================================================================== */
+        function renderRecipesList() {
+            const grid = document.getElementById('recipes-grid');
+            const search = document.getElementById('recipe-search').value.toLowerCase().trim();
+            const favFilter = document.getElementById('recipe-fav-filter').value;
+
+            const filtered = cocktailRecipes.filter(r => {
+                const matchesSearch = r.name.toLowerCase().includes(search) || r.baseSpirit.toLowerCase().includes(search) || r.ingredients.some(i => i.name.toLowerCase().includes(search));
+                const matchesFav = favFilter === 'ALL' || (favFilter === 'FAVOURITES' && r.favourite);
+                return matchesSearch && matchesFav;
+            });
+
+            filtered.sort((a, b) => a.name.localeCompare(b.name));
+
+            document.getElementById('recipes-stats-text').textContent = `Showing ${filtered.length} of ${cocktailRecipes.length} recipes`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-darkcard rounded-2xl border border-darkborder">
+                        <i class="fa-solid fa-book-open text-4xl text-slate-600 mb-3"></i>
+                        <p class="text-slate-300 font-medium">No recipes found</p>
+                        <p class="text-xs text-slate-500 mt-1">Click "+ New Recipe" to add custom cocktail creations.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(r => {
+                return `
+                    <div class="bg-darkcard border border-darkborder rounded-2xl p-5 flex flex-col justify-between hover:border-brand-500/50 transition-all">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-900 text-brand-400 border border-slate-800">${r.baseSpirit}</span>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="toggleRecipeFavourite('${r.id}')" class="text-sm ${r.favourite ? 'text-amber-400' : 'text-slate-600 hover:text-slate-400'}"><i class="fa-solid fa-star"></i></button>
+                                    <button onclick="duplicateRecipe('${r.id}')" class="text-slate-400 hover:text-slate-200 text-xs p-1" title="Duplicate"><i class="fa-solid fa-copy"></i></button>
+                                    <button onclick="deleteRecipe('${r.id}')" class="text-slate-500 hover:text-rose-400 text-xs p-1" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
+                                </div>
+                            </div>
+
+                            <h3 class="font-bold text-slate-100 text-lg mb-1">${escapeHtml(r.name)}</h3>
+                            <p class="text-xs text-slate-400 mb-4 line-clamp-2">${escapeHtml(r.desc)}</p>
+
+                            <div class="space-y-1 mb-4">
+                                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Glass: <span class="text-slate-200 font-normal">${escapeHtml(r.glassware)}</span></div>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
+                            <span class="text-xs text-slate-400">${r.ingredients.length} ingredients</span>
+                            <button onclick="openRecipeDetailModal('${r.id}')" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold rounded-xl text-xs transition-colors flex items-center gap-1">
+                                <span>View Recipe</span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleRecipeFavourite(id) {
+            const rec = cocktailRecipes.find(r => r.id === id);
+            if (rec) {
+                rec.favourite = !rec.favourite;
+                saveRecipes();
+                renderRecipesList();
+                renderPlanner();
+                showToast(rec.favourite ? "Added to favourites" : "Removed from favourites", "success");
+            }
+        }
+
+        function duplicateRecipe(id) {
+            const rec = cocktailRecipes.find(r => r.id === id);
+            if (rec) {
+                const clone = JSON.parse(JSON.stringify(rec));
+                clone.id = 'recipe_' + Date.now();
+                clone.name = rec.name + ' (Copy)';
+                clone.favourite = false;
+                cocktailRecipes.push(clone);
+                saveRecipes();
+                renderRecipesList();
+                renderPlanner();
+                showToast("Recipe duplicated", "success");
+            }
+        }
+
+        function deleteRecipe(id) {
+            const rec = cocktailRecipes.find(r => r.id === id);
+            if (rec && confirm(`Delete recipe "${rec.name}"?`)) {
+                cocktailRecipes = cocktailRecipes.filter(r => r.id !== id);
+                saveRecipes();
+                renderRecipesList();
+                renderPlanner();
+                showToast("Recipe deleted", "info");
+            }
+        }
+
+        function resetDefaultRecipes() {
+            if (confirm("Reset recipe library to default curated collection?")) {
+                cocktailRecipes = JSON.parse(JSON.stringify(DEFAULT_RECIPES));
+                saveRecipes();
+                renderRecipesList();
+                renderPlanner();
+                showToast("Recipes reset to default", "info");
+            }
+        }
+
+        /* ==========================================================================
+           RECIPE DETAIL & SCALER MODAL
+           ========================================================================== */
+        function openRecipeDetailModal(id) {
+            const rec = cocktailRecipes.find(r => r.id === id);
+            if (!rec) return;
+
+            activeModalRecipe = rec;
+            currentScale = 1;
+
+            document.getElementById('modal-rec-title').textContent = rec.name;
+            document.getElementById('modal-rec-desc').textContent = rec.desc;
+            document.getElementById('modal-rec-spirit').textContent = rec.baseSpirit;
+            document.getElementById('modal-rec-strength').textContent = `Strength: ${rec.strength}`;
+            document.getElementById('modal-rec-alc').textContent = rec.alcType || 'alcoholic';
+            document.getElementById('modal-rec-glass').textContent = rec.glassware;
+            document.getElementById('modal-rec-garnish').textContent = rec.garnish || 'None';
+            document.getElementById('modal-rec-method').textContent = rec.method;
+
+            const favBtn = document.getElementById('modal-rec-fav-btn');
+            favBtn.className = rec.favourite ? "text-amber-400 p-2 text-lg transition-colors" : "text-slate-400 hover:text-amber-400 p-2 text-lg transition-colors";
+
+            renderModalScaledIngredients();
+            document.getElementById('modal-recipe-detail').classList.remove('hidden');
+        }
+
+        function closeRecipeDetailModal() {
+            document.getElementById('modal-recipe-detail').classList.add('hidden');
+        }
+
+        function toggleModalRecipeFav() {
+            if (activeModalRecipe) {
+                activeModalRecipe.favourite = !activeModalRecipe.favourite;
+                saveRecipes();
+                renderRecipesList();
+                renderPlanner();
+                const favBtn = document.getElementById('modal-rec-fav-btn');
+                favBtn.className = activeModalRecipe.favourite ? "text-amber-400 p-2 text-lg transition-colors" : "text-slate-400 hover:text-amber-400 p-2 text-lg transition-colors";
+                showToast(activeModalRecipe.favourite ? "Added to favourites" : "Removed from favourites", "success");
+            }
+        }
+
+        function changeScale(delta) {
+            currentScale = Math.max(1, Math.min(12, currentScale + delta));
+            document.getElementById('scale-display-val').textContent = `${currentScale} Serv${currentScale > 1 ? 's' : ''}`;
+            renderModalScaledIngredients();
+        }
+
+        // Smart rounding for practical bar quantities (e.g. no 0.37 ml, round to nearest 5ml or 2.5ml)
+        function formatScaledQuantity(amount, unit) {
+            if (!amount) return '';
+            const scaled = amount * currentScale;
+
+            if (unit === 'ml') {
+                // Round to nearest 5ml for practical measuring, or 2.5ml for small modifiers
+                const rounded = Math.round(scaled / 5) * 5;
+                return `${Math.max(5, rounded)} ml`;
+            } else if (unit === 'dashes') {
+                return `${Math.round(scaled)} dashes`;
+            } else if (unit === 'tsp') {
+                return `${(Math.round(scaled * 2) / 2)} tsp`;
+            } else if (unit === 'pieces') {
+                return `${Math.round(scaled)} pcs`;
+            }
+            return `${Math.round(scaled)} ${unit}`;
+        }
+
+        function renderModalScaledIngredients() {
+            if (!activeModalRecipe) return;
+
+            const listEl = document.getElementById('modal-rec-ingredients-list');
+            const match = getRecipeMatchStatus(activeModalRecipe);
+
+            const banner = document.getElementById('modal-rec-readiness-banner');
+            if (match.isReady) {
+                banner.className = "p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs flex items-center justify-between";
+                banner.innerHTML = `<span><i class="fa-solid fa-circle-check mr-1.5"></i> You have all required ingredients in stock!</span>`;
+            } else {
+                banner.className = "p-3 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs flex items-center justify-between";
+                banner.innerHTML = `<span><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Missing required: ${match.missingRequired.join(', ')}</span>
+                                    <button onclick="addMissingToShoppingFromModal()" class="px-2.5 py-1 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold rounded-lg transition-colors"><i class="fa-solid fa-cart-plus mr-1"></i> Add to Shopping</button>`;
+            }
+
+            listEl.innerHTML = activeModalRecipe.ingredients.map(i => {
+                const invItem = barInventory.find(inv => inv.name.toLowerCase().trim() === i.name.toLowerCase().trim());
+                const inStock = invItem && invItem.inStock;
+                const formattedQty = formatScaledQuantity(i.amount, i.unit);
+
+                return `
+                    <div class="py-2.5 px-3 flex items-center justify-between text-sm">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid ${inStock ? 'fa-check text-emerald-400' : 'fa-xmark text-rose-400'} text-xs"></i>
+                            <span class="font-medium ${inStock ? 'text-slate-100' : 'text-rose-300 line-through'}">${escapeHtml(i.name)}</span>
+                            ${!i.required ? '<span class="text-[10px] text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">Optional</span>' : ''}
+                        </div>
+                        <div class="font-mono font-bold text-brand-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
+                            ~${formattedQty}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addMissingToShoppingFromModal() {
+            if (!activeModalRecipe) return;
+            const match = getRecipeMatchStatus(activeModalRecipe);
+
+            match.missingRequired.forEach(missingName => {
+                // Check if already in shopping list
+                const exists = shoppingList.some(s => s.name.toLowerCase().trim() === missingName.toLowerCase().trim());
+                if (!exists) {
+                    shoppingList.push({
+                        id: 'shop_' + Date.now() + Math.random(),
+                        name: missingName,
+                        completed: false,
+                        source: `Recipe: ${activeModalRecipe.name}`
+                    });
+                }
+            });
+
+            saveShopping();
+            showToast("Missing ingredients added to shopping list!", "success");
+        }
+
+        function copyScaledRecipeText() {
+            if (!activeModalRecipe) return;
+
+            let text = `🍸 ${activeModalRecipe.name} (${currentScale} Serving${currentScale > 1 ? 's' : ''})\n`;
+            text += `Glassware: ${activeModalRecipe.glassware}\n`;
+            text += `Garnish: ${activeModalRecipe.garnish || 'None'}\n`;
+            text += `-----------------------------------\n`;
+
+            activeModalRecipe.ingredients.forEach(i => {
+                const qty = formatScaledQuantity(i.amount, i.unit);
+                text += `• ~${qty} ${i.name}${i.required ? '' : ' (Optional)'}\n`;
+            });
+
+            text += `\nMethod:\n${activeModalRecipe.method}\n`;
+
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Recipe copied to clipboard", "success");
+            } catch (err) {
+                showToast("Failed to copy", "error");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        /* ==========================================================================
+           CUSTOM RECIPE BUILDER MODAL
+           ========================================================================== */
+        function openRecipeModal() {
+            const modal = document.getElementById('modal-recipe-form');
+            document.getElementById('recipe-form').reset();
+            document.getElementById('rec-id').value = '';
+            
+            // Start with 2 default rows
+            document.getElementById('recipe-ingredients-builder').innerHTML = '';
+            addRecipeIngredientRow();
+            addRecipeIngredientRow();
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeRecipeModal() {
+            document.getElementById('modal-recipe-form').classList.add('hidden');
+        }
+
+        function addRecipeIngredientRow(name = '', amount = 50, unit = 'ml', required = true) {
+            const container = document.getElementById('recipe-ingredients-builder');
+            const rowId = 'row_' + Date.now() + Math.random();
+
+            const row = document.createElement('div');
+            row.id = rowId;
+            row.className = "flex items-center gap-2 bg-slate-900 p-2 rounded-xl border border-slate-800";
+            row.innerHTML = `
+                <input type="text" placeholder="Ingredient name" value="${name}" class="rec-ing-name flex-grow px-3 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-brand-500" required>
+                <input type="number" placeholder="Amt" value="${amount}" min="0" step="0.5" class="rec-ing-amount w-16 px-2 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-brand-500" required>
+                <select class="rec-ing-unit w-20 px-2 py-1.5 bg-slate-950 border border-slate-700 rounded-lg text-xs text-slate-100 focus:outline-none focus:border-brand-500">
+                    <option value="ml" ${unit==='ml'?'selected':''}>ml</option>
+                    <option value="dashes" ${unit==='dashes'?'selected':''}>dashes</option>
+                    <option value="tsp" ${unit==='tsp'?'selected':''}>tsp</option>
+                    <option value="pieces" ${unit==='pieces'?'selected':''}>pcs</option>
+                </select>
+                <label class="flex items-center gap-1 text-[11px] text-slate-300 whitespace-nowrap cursor-pointer">
+                    <input type="checkbox" class="rec-ing-req accent-brand-500" ${required?'checked':''}> Req
+                </label>
+                <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-slate-500 hover:text-rose-400 p-1"><i class="fa-solid xmark fa-trash-can text-xs"></i></button>
+            `;
+            container.appendChild(row);
+        }
+
+        function handleRecipeSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('rec-name').value.trim();
+            const baseSpirit = document.getElementById('rec-base-spirit').value;
+            const desc = document.getElementById('rec-desc').value.trim();
+            const strength = document.getElementById('rec-strength').value;
+            const glassware = document.getElementById('rec-glassware').value.trim();
+            const garnish = document.getElementById('rec-garnish-text').value.trim();
+            const method = document.getElementById('rec-method').value.trim();
+
+            const rows = document.querySelectorAll('#recipe-ingredients-builder > div');
+            const ingredients = [];
+
+            rows.forEach(r => {
+                const ingName = r.querySelector('.rec-ing-name').value.trim();
+                const amount = parseFloat(r.querySelector('.rec-ing-amount').value) || 0;
+                const unit = r.querySelector('.rec-ing-unit').value;
+                const required = r.querySelector('.rec-ing-req').checked;
+
+                if (ingName) {
+                    ingredients.push({ name: ingName, amount, unit, required });
+                }
+            });
+
+            if (ingredients.length === 0) {
+                alert("Please add at least one ingredient.");
+                return;
+            }
+
+            const newRecipe = {
+                id: 'recipe_' + Date.now(),
+                name,
+                baseSpirit,
+                strength,
+                alcType: baseSpirit === 'Mocktail' ? 'mocktail' : 'alcoholic',
+                desc,
+                glassware,
+                garnish,
+                ingredients,
+                method,
+                favourite: false
+            };
+
+            cocktailRecipes.push(newRecipe);
+            saveRecipes();
+            renderRecipesList();
+            renderPlanner();
+            closeRecipeModal();
+            showToast("Custom recipe saved successfully!", "success");
+        }
+
+        /* ==========================================================================
+           VIEW 4: SHOPPING LIST MANAGEMENT
+           ========================================================================== */
+        function renderShoppingList() {
+            const container = document.getElementById('shopping-list-container');
+
+            // Auto-gather missing required ingredients from all recipes & low stock items
+            const autoList = [];
+            cocktailRecipes.forEach(r => {
+                const match = getRecipeMatchStatus(r);
+                match.missingRequired.forEach(missingName => {
+                    if (!autoList.includes(missingName)) autoList.push(missingName);
+                });
+            });
+
+            // Combine with manual shopping items
+            const activeItemsCount = shoppingList.length;
+
+            if (autoList.length === 0 && activeItemsCount === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <i class="fa-solid fa-basket-shopping text-4xl text-slate-600 mb-3"></i>
+                        <p class="text-slate-300 font-medium">Your shopping list is empty</p>
+                        <p class="text-xs text-slate-500 mt-1">Missing cocktail ingredients or low-stock items will appear here automatically.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<div class="space-y-6">';
+
+            // Auto-detected section
+            if (autoList.length > 0) {
+                html += `
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Auto-Detected Missing Ingredients</h3>
+                        <div class="space-y-2">
+                            ${autoList.map(itemName => {
+                                const alreadyAdded = shoppingList.some(s => s.name.toLowerCase().trim() === itemName.toLowerCase().trim());
+                                return `
+                                    <div class="flex items-center justify-between bg-slate-900 border border-slate-800 p-3 rounded-xl">
+                                        <div class="flex items-center gap-2.5">
+                                            <i class="fa-solid fa-triangle-exclamation text-amber-400 text-xs"></i>
+                                            <span class="text-sm font-medium text-slate-200 capitalize">${escapeHtml(itemName)}</span>
+                                        </div>
+                                        ${alreadyAdded ? '<span class="text-xs text-slate-500">Already in list</span>' : `<button onclick="addAutoItemToShopping('${escapeHtml(itemName)}')" class="px-3 py-1 bg-brand-500 hover:bg-brand-400 text-slate-950 font-bold text-xs rounded-lg transition-colors">Add to List</button>`}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Manual & Saved Shopping List Items
+            html += `
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Current Shopping Items (${shoppingList.length})</h3>
+                    <div class="space-y-2">
+                        ${shoppingList.map(item => `
+                            <div class="flex items-center justify-between bg-slate-900 border ${item.completed ? 'border-slate-800/40 opacity-50' : 'border-slate-800'} p-3 rounded-xl transition-all">
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" ${item.completed ? 'checked' : ''} onchange="toggleShoppingItem('${item.id}')" class="w-4 h-4 accent-brand-500 rounded cursor-pointer">
+                                    <span class="text-sm font-medium ${item.completed ? 'line-through text-slate-500' : 'text-slate-100'} capitalize">${escapeHtml(item.name)}</span>
+                                    ${item.source ? `<span class="text-[10px] text-slate-500 bg-slate-800 px-2 py-0.5 rounded">${escapeHtml(item.source)}</span>` : ''}
+                                </div>
+                                <button onclick="deleteShoppingItem('${item.id}')" class="text-slate-500 hover:text-rose-400 text-xs p-1"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>`;
+
+            container.innerHTML = html;
+        }
+
+        function addAutoItemToShopping(name) {
+            const exists = shoppingList.some(s => s.name.toLowerCase().trim() === name.toLowerCase().trim());
+            if (!exists) {
+                shoppingList.push({
+                    id: 'shop_' + Date.now() + Math.random(),
+                    name,
+                    completed: false,
+                    source: 'Auto-detected'
+                });
+                saveShopping();
+                renderShoppingList();
+                showToast(`Added ${name} to shopping list`, "success");
+            }
+        }
+
+        function addCustomShoppingItem(e) {
+            e.preventDefault();
+            const input = document.getElementById('custom-shop-input');
+            const name = input.value.trim();
+            if (!name) return;
+
+            shoppingList.push({
+                id: 'shop_' + Date.now(),
+                name,
+                completed: false,
+                source: 'Manual'
+            });
+            input.value = '';
+            saveShopping();
+            renderShoppingList();
+            showToast("Added item to shopping list", "success");
+        }
+
+        function toggleShoppingItem(id) {
+            const item = shoppingList.find(s => s.id === id);
+            if (item) {
+                item.completed = !item.completed;
+                saveShopping();
+                renderShoppingList();
+            }
+        }
+
+        function deleteShoppingItem(id) {
+            shoppingList = shoppingList.filter(s => s.id !== id);
+            saveShopping();
+            renderShoppingList();
+        }
+
+        function clearCompletedShopping() {
+            shoppingList = shoppingList.filter(s => !s.completed);
+            saveShopping();
+            renderShoppingList();
+            showToast("Cleared ticked items", "info");
+        }
+
+        function copyShoppingList() {
+            let text = `🛒 Mini-Bar Shopping List\n`;
+            text += `-----------------------------------\n`;
+            shoppingList.forEach(s => {
+                if (!s.completed) text += `[ ] ${s.name}\n`;
+            });
+
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Shopping list copied to clipboard", "success");
+            } catch (err) {
+                showToast("Failed to copy", "error");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        /* ==========================================================================
+           DATA BACKUP: JSON EXPORT & IMPORT
+           ========================================================================= */
+        function exportData() {
+            const backup = {
+                version: 1,
+                timestamp: new Date().toISOString(),
+                inventory: barInventory,
+                recipes: cocktailRecipes,
+                shopping: shoppingList
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `minibar_backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+            showToast("Backup exported successfully", "success");
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!confirm("Importing backup data will overwrite your current inventory and custom recipes. Continue?")) {
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed.inventory && parsed.recipes) {
+                        barInventory = parsed.inventory;
+                        cocktailRecipes = parsed.recipes;
+                        shoppingList = parsed.shopping || [];
+                        saveInventory();
+                        saveRecipes();
+                        saveShopping();
+                        renderPlanner();
+                        renderInventory();
+                        renderRecipesList();
+                        showToast("Data imported successfully!", "success");
+                    } else {
+                        alert("Invalid backup file format.");
+                    }
+                } catch(err) {
+                    alert("Error parsing JSON backup file.");
+                }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        /* ==========================================================================
+           UTILITY FUNCTIONS: TOASTS & HTML ESCAPING
+           ========================================================================== */
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            let bg = 'bg-slate-800 text-slate-100 border-slate-700';
+            let icon = 'fa-circle-info text-brand-400';
+
+            if (type === 'success') {
+                bg = 'bg-slate-900 text-emerald-300 border-emerald-500/30';
+                icon = 'fa-circle-check text-emerald-400';
+            } else if (type === 'error') {
+                bg = 'bg-slate-900 text-rose-300 border-rose-500/30';
+                icon = 'fa-circle-xmark text-rose-400';
+            }
+
+            toast.className = `${bg} border px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold flex items-center gap-2 pointer-events-auto transition-all duration-300 transform translate-y-2 opacity-0`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${escapeHtml(message)}</span>`;
+
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

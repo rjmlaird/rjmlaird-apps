@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Upcoming Rocket Launches</title>
+<style>
+  :root {
+    --bg: #0a0f1e; --panel: #131b30; --panel-2: #1a2440; --line: #34446a;
+    --text: #f1f4ff; --muted: #b4c0dc; --accent: #7cc4ff; --focus: #ffd166;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; color: var(--text); font: 1rem/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(1200px 600px at 80% -10%, #1c2a5a 0%, transparent 60%), var(--bg);
+    min-height: 100vh;
+  }
+  .wrap { max-width: 64rem; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+  h1 { font-size: clamp(1.6rem, 5vw, 2.4rem); margin: 0 0 .25rem; line-height: 1.2; }
+  h2 { font-size: 1.25rem; margin: 0 0 .75rem; }
+  h3 { font-size: 1.1rem; margin: 0 0 .25rem; line-height: 1.3; }
+  .muted { color: var(--muted); }
+  .small { font-size: .875rem; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  a, button, summary { border-radius: 8px; }
+  a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  a { color: var(--accent); }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: center; margin: 1rem 0 1.5rem; }
+  button.refresh {
+    font: inherit; font-weight: 600; color: #04122b; background: var(--accent);
+    border: 0; padding: .7rem 1.1rem; min-height: 44px; cursor: pointer;
+  }
+  button.refresh[disabled] { opacity: .6; cursor: not-allowed; }
+
+  .banner { padding: .75rem 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); margin: 0 0 1rem; }
+  .banner.error { border-color: #ff8f8f; }
+  .banner[hidden] { display: none; }
+
+  .next { background: linear-gradient(160deg, var(--panel-2), var(--panel)); border: 1px solid var(--line);
+          border-radius: var(--radius); padding: 1.1rem; margin-bottom: 1.75rem; }
+  .countdown { font-variant-numeric: tabular-nums; font-size: clamp(1.6rem, 7vw, 2.6rem); font-weight: 700; margin: .25rem 0; }
+  .countdown.text { font-size: 1.15rem; font-weight: 600; }
+
+  ul.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: 1fr; }
+  @media (min-width: 48rem) { ul.list { grid-template-columns: 1fr 1fr; } }
+  .card { height: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; }
+  dl { margin: .75rem 0 0; display: grid; grid-template-columns: max-content 1fr; gap: .25rem .75rem; }
+  dt { color: var(--muted); }
+  dd { margin: 0; overflow-wrap: anywhere; }
+  .status { display: inline-flex; gap: .4rem; align-items: center; font-weight: 600; padding: .15rem .6rem;
+            border: 2px solid var(--muted); border-radius: 999px; font-size: .875rem; }
+  .status.ok { border-color: #6ee7a8; border-style: solid; }
+  .status.tbc { border-color: #ffd166; border-style: dashed; }
+  .status.bad { border-color: #ff8f8f; border-style: double; border-width: 4px; }
+  .live { margin-left: .5rem; font-weight: 600; font-size: .875rem; }
+  .links { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin-top: .75rem; }
+  details { margin-top: .75rem; }
+  summary { cursor: pointer; padding: .25rem 0; }
+  .desc { white-space: pre-line; margin: .5rem 0 0; }
+  footer { margin-top: 2rem; }
+
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Upcoming rocket launches</h1>
+    <p class="muted">The next 10 scheduled launches worldwide. Times are shown in your local timezone: <strong id="tz"></strong>.</p>
+    <p class="muted small">Launch schedules change often. Always check the provider for the latest.</p>
+  </header>
+
+  <div class="toolbar">
+    <button class="refresh" id="refreshBtn" type="button">Refresh launches</button>
+    <span class="muted small" id="updated">Not updated yet</span>
+  </div>
+
+  <div class="banner" id="banner" hidden></div>
+  <p class="sr-only" id="live" role="status" aria-live="polite"></p>
+
+  <main>
+    <section class="next" aria-labelledby="nextH">
+      <h2 id="nextH">Next launch</h2>
+      <p class="muted" id="nextName">Loading…</p>
+      <p class="countdown text" id="countdown" role="timer" aria-live="off">—</p>
+      <p class="muted small" id="nextNote"></p>
+    </section>
+
+    <section aria-labelledby="listH">
+      <h2 id="listH">Launch schedule</h2>
+      <p id="listMsg" class="muted">Loading launches…</p>
+      <ul class="list" id="list"></ul>
+    </section>
+  </main>
+
+  <footer class="muted small">
+    Data from <a href="https://thespacedevs.com/llapi" rel="noopener noreferrer">The Space Devs Launch Library 2</a>.
+    Free anonymous access is rate limited, so this page refreshes sparingly.
+  </footer>
+</div>
+
+<script>
+"use strict";
+
+/* ===== Configuration ===== */
+const CONFIG = {
+  // Launch Library 2 upcoming-launch endpoint. Fetch a few extra so finished launches can be dropped.
+  API_URL: "https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=20",
+  DISPLAY_COUNT: 10,
+  // Anonymous access is limited (documented by third parties as ~15 requests/hour).
+  AUTO_REFRESH_MS: 20 * 60 * 1000,    // 3 requests/hour
+  MANUAL_COOLDOWN_MS: 5 * 60 * 1000,  // minimum gap between any two fetches
+  REQUEST_TIMEOUT_MS: 15000,
+  PRECISE_ABBREVS: ["SEC", "MIN", "HR"], // net_precision.abbrev values treated as an exact time
+};
+
+/* ===== State & elements ===== */
+const $ = id => document.getElementById(id);
+const els = {
+  tz: $("tz"), btn: $("refreshBtn"), updated: $("updated"), banner: $("banner"), live: $("live"),
+  nextName: $("nextName"), countdown: $("countdown"), nextNote: $("nextNote"),
+  list: $("list"), listMsg: $("listMsg"),
+};
+const state = { launches: [], lastFetch: 0, loading: false, hasData: false };
+
+const userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || "local time";
+els.tz.textContent = userTZ;
+const dateFmt = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short", timeZoneName: "short" });
+const dateFmt = new Intl.DateTimeFormat(undefined, {
+  year: "numeric", month: "short", day: "numeric",
+  hour: "numeric", minute: "2-digit", timeZoneName: "short"
+});
+
+/* ===== Helpers ===== */
+const text = v => (typeof v === "string" && v.trim()) ? v.trim() : null;
+
+function safeUrl(v) {
+  try {
+    const u = new URL(v);
+    return (u.protocol === "https:" || u.protocol === "http:") ? u.href : null;
+  } catch { return null; }
+}
+function firstUrl(arr) {
+  if (!Array.isArray(arr)) return null;
+  for (const item of arr) { const u = safeUrl(item && item.url); if (u) return u; }
+  return null;
+}
+function el(tag, props = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === "class") n.className = v; else n.setAttribute(k, v);
+  }
+  for (const k of kids) n.append(k);   // strings become text nodes, never HTML
+  return n;
+}
+function announce(msg) { els.live.textContent = ""; setTimeout(() => { els.live.textContent = msg; }, 50); }
+function showBanner(msg, isError) {
+  els.banner.hidden = !msg;
+  els.banner.textContent = msg || "";
+  els.banner.className = "banner" + (isError ? " error" : "");
+}
+
+/* ===== Data ===== */
+function normalize(raw) {
+  const netMs = raw && raw.net ? Date.parse(raw.net) : NaN;
+  return {
+    id: raw && raw.id,
+    name: text(raw && raw.name) || "Unnamed mission",
+    provider: text(raw?.launch_service_provider?.name),
+    rocket: text(raw?.rocket?.configuration?.full_name) || text(raw?.rocket?.configuration?.name),
+    pad: text(raw?.pad?.name),
+    site: text(raw?.pad?.location?.name),
+    net: Number.isFinite(netMs) ? netMs : null,
+    precision: text(raw?.net_precision?.name),
+    precisionAbbrev: text(raw?.net_precision?.abbrev),
+    status: text(raw?.status?.name),
+    statusAbbrev: text(raw?.status?.abbrev),
+    webcastLive: raw?.webcast_live === true,
+    description: text(raw?.mission?.description),
+    video: firstUrl(raw?.vid_urls),
+    info: firstUrl(raw?.info_urls),
+  };
+}
+const isFinished = l => /success|failure/i.test(l.status || "");
+const isPrecise = l => !l.precisionAbbrev || CONFIG.PRECISE_ABBREVS.includes(l.precisionAbbrev);
+
+function selectLaunches(results) {
+  return results.map(normalize).filter(l => !isFinished(l))
+    .sort((a, b) => (a.net ?? Infinity) - (b.net ?? Infinity))
+    .slice(0, CONFIG.DISPLAY_COUNT);
+}
+
+async function fetchLaunches(reason) {
+  if (state.loading) return;
+  const wait = CONFIG.MANUAL_COOLDOWN_MS - (Date.now() - state.lastFetch);
+  if (reason === "manual" && state.lastFetch && wait > 0) {
+    const mins = Math.ceil(wait / 60000);
+    announce(`Please wait about ${mins} minute${mins > 1 ? "s" : ""} before refreshing again, to respect the API's rate limit.`);
+    showBanner(`To respect the API's rate limit, you can refresh again in about ${mins} minute${mins > 1 ? "s" : ""}.`, false);
+    return;
+  }
+  state.loading = true; els.btn.disabled = true;
+  if (!state.hasData) els.listMsg.textContent = "Loading launches…";
+  announce("Loading launches…");
+
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), CONFIG.REQUEST_TIMEOUT_MS);
+  try {
+    const res = await fetch(CONFIG.API_URL, { headers: { Accept: "application/json" }, signal: ctl.signal });
+    if (res.status === 429) throw new Error("rate-limited");
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    if (!data || !Array.isArray(data.results)) throw new Error("unexpected response shape");
+    state.launches = selectLaunches(data.results);
+    state.hasData = true;
+    state.lastFetch = Date.now();
+    showBanner("", false);
+    render();
+    els.updated.textContent = "Last updated " + new Date().toLocaleTimeString([], { timeStyle: "short" });
+    announce(state.launches.length ? `Launches updated. Showing ${state.launches.length}.` : "Launches updated. No upcoming launches found.");
+  } catch (err) {
+    console.error("Launch fetch failed:", err);
+    state.lastFetch = Date.now(); // count failed attempts toward the cooldown too
+    const limited = err.message === "rate-limited";
+    const msg = limited
+      ? "The launch data service is rate limiting requests right now. Please try again in a while."
+      : "Could not load launch data. Check your connection and try again later.";
+    showBanner(state.hasData ? msg + " Showing the last data that loaded." : msg, true);
+    if (!state.hasData) { els.listMsg.textContent = "No launch data available."; els.nextName.textContent = "Unavailable"; }
+    announce(msg);
+  } finally {
+    clearTimeout(timer);
+    state.loading = false; els.btn.disabled = false;
+  }
+}
+
+/* ===== Rendering ===== */
+function statusIcon(abbrev) {
+  const map = { Go: "✓", Success: "✓", TBC: "?", TBD: "?", Hold: "⏸", "In Flight": "➜", Failure: "✕", "Partial Failure": "✕" };
+  return map[abbrev] || "•";
+}
+function statusClass(abbrev) {
+  if (["Go", "Success", "In Flight"].includes(abbrev)) return "ok";
+  if (["TBC", "TBD", "Hold"].includes(abbrev)) return "tbc";
+  if (/failure/i.test(abbrev || "")) return "bad";
+  return "";
+}
+function formatWhen(l) {
+  if (l.net === null) return "Time not announced";
+  if (!isPrecise(l)) return `${dayFmt.format(l.net)} (approximate, ${l.precision || "imprecise"})`;
+  return dateFmt.format(l.net);
+}
+
+function renderCard(l) {
+  const statusText = l.status || "Status unknown";
+  const row = (label, value) => [el("dt", {}, label), el("dd", {}, value || "Not available")];
+  const card = el("article", { class: "card" },
+    el("h3", {}, l.name),
+    el("p", {},
+      el("span", { class: "status " + statusClass(l.statusAbbrev) },
+        el("span", { "aria-hidden": "true" }, statusIcon(l.statusAbbrev)), statusText),
+      l.webcastLive ? el("span", { class: "live" }, "● Webcast live") : ""),
+    el("dl", {},
+      ...row("Provider", l.provider), ...row("Rocket", l.rocket),
+      ...row("Site", [l.pad, l.site].filter(Boolean).join(", ")),
+      ...row("When", formatWhen(l))));
+  if (l.description) {
+    card.append(el("details", {}, el("summary", {}, "Mission details"), el("p", { class: "desc" }, l.description)));
+  }
+  if (l.video || l.info) {
+    const links = el("div", { class: "links" });
+    if (l.video) links.append(el("a", { href: l.video, target: "_blank", rel: "noopener noreferrer" }, "Watch livestream / video", el("span", { class: "sr-only" }, ` for ${l.name} (opens in new tab)`)));
+    if (l.info) links.append(el("a", { href: l.info, target: "_blank", rel: "noopener noreferrer" }, "More mission info", el("span", { class: "sr-only" }, ` for ${l.name} (opens in new tab)`)));
+    card.append(links);
+  }
+  return el("li", {}, card);
+}
+
+function render() {
+  els.list.replaceChildren(...state.launches.map(renderCard));
+  els.listMsg.textContent = state.launches.length ? "" : "No upcoming launches found right now. Try again later.";
+  tick();
+}
+
+/* ===== Countdown (updates every second) ===== */
+function nextTarget() {
+  return state.launches.find(l => l.net !== null && l.net > Date.now()) || state.launches[0] || null;
+}
+function tick() {
+  const l = nextTarget();
+  if (!l) { els.nextName.textContent = state.hasData ? "No upcoming launches." : els.nextName.textContent; els.countdown.className = "countdown text"; els.countdown.textContent = state.hasData ? "—" : "—"; els.nextNote.textContent = ""; return; }
+  els.nextName.textContent = `${l.name}${l.provider ? " · " + l.provider : ""}`;
+  if (l.net === null) {
+    els.countdown.className = "countdown text"; els.countdown.textContent = "Launch time not yet announced";
+    els.nextNote.textContent = ""; return;
+  }
+  const diff = l.net - Date.now();
+  if (diff <= 0) {
+    els.countdown.className = "countdown text"; els.countdown.textContent = "Scheduled time has passed. Check the status below or refresh.";
+    els.nextNote.textContent = ""; return;
+  }
+  const s = Math.floor(diff / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600),
+        m = Math.floor(s % 3600 / 60), sec = s % 60, p = n => String(n).padStart(2, "0");
+  els.countdown.className = "countdown";
+  els.countdown.textContent = `${d}d ${p(h)}h ${p(m)}m ${p(sec)}s`;
+  els.nextNote.textContent = isPrecise(l)
+    ? `Target: ${formatWhen(l)}`
+    : `Approximate target: ${formatWhen(l)}. The exact time is not yet confirmed.`;
+}
+
+/* ===== Start ===== */
+els.btn.addEventListener("click", () => fetchLaunches("manual"));
+setInterval(tick, 1000);
+setInterval(() => fetchLaunches("auto"), CONFIG.AUTO_REFRESH_MS);
+fetchLaunches("auto");
+</script>
+</body>
+</html>
