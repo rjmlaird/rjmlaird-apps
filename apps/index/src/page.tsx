@@ -3,6 +3,8 @@ import { css } from "./styles";
 import { script } from "./script";
 import { GROUPS, REPO, STATUS, APPS } from "./apps";
 import type { Apps } from "./apps";
+import { Callout } from "./Callout";
+import { calloutCss } from "./callout-styles"; 
 
 const byUpdatedDesc = (a: Apps, b: Apps) =>
   b.updated.localeCompare(a.updated) || a.title.localeCompare(b.title);
@@ -157,6 +159,7 @@ export const IndexPage: FC = () => (
         <p class="no-results" id="no-results" hidden role="status">
           No apps match those filters. Try changing a selection or clear the filters.
         </p>
+      <Callout />
       </main>
 
       <footer class="wrap footer">
