@@ -130,7 +130,7 @@ const state = { launches: [], lastFetch: 0, loading: false, hasData: false };
 
 const userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone || "local time";
 els.tz.textContent = userTZ;
-const dateFmt = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short", timeZoneName: "short" });
+const dayFmt = new Intl.DateTimeFormat(undefined, { year: "numeric", month: "short", day: "numeric" });
 const dateFmt = new Intl.DateTimeFormat(undefined, {
   year: "numeric", month: "short", day: "numeric",
   hour: "numeric", minute: "2-digit", timeZoneName: "short"

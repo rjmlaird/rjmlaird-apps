@@ -91,4 +91,17 @@ export const APPS: App[] = [
     path: "https://mini-bar.apps.rjmlaird.co.uk",
     source: "apps/mini-bar",
   },
+  {
+    id: "kinship-notes",
+    title: "Kinship Notes",
+    description:
+      "Import a GEDCOM family tree, explore it as a whole tree, hourglass, pedigree, descendants or fan chart, and keep private research notes, questions and tasks against each person. Everything stays in your browser.",
+    group: "home",
+    tech: WEB,
+    // Flip to "in-progress" and add `path: "https://kinship-notes.apps.rjmlaird.co.uk"` once deployed.
+    status: "in-progress",
+    updated: "2026-10-22",
+    path: "https://kinship-notes.apps.rjmlaird.co.uk",
+    source: "apps/kinship-notes",
+  },
 ];
