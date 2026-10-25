@@ -16,7 +16,7 @@ const pageCss = `
 .filter-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem;align-items:end}
 .filter-field{display:grid;gap:.4rem}
 .filter-field label{font-size:.82rem;font-weight:500;color:var(--text-lo)}
-select{width:100%;min-height:44px;padding:.55rem .75rem;border:1px solid var(--border);border-radius:10px;background:var(--navy);color:var(--text-hi)}
+select{width:100%;min-height:44px;padding:.55rem .75rem;border:1px solid var(--color-border-strong);border-radius:10px;background:var(--navy);color:var(--text-hi)}
 select:hover{border-color:rgba(0,194,168,.35)}
 .clear-filter{min-height:44px;padding:.55rem 1rem;border-radius:10px;cursor:pointer}
 .clear-filter[hidden]{display:none}

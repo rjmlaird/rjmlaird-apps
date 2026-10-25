@@ -1,21 +1,23 @@
+import { fontImportCss, tokensCss } from "@rjmlaird/brand-tokens";
+
 export const globalCss = `
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap");
+${fontImportCss}
 
+${tokensCss()}
+
+/* Legacy names used by this app's own CSS. They alias the canonical tokens so
+   the values come from @rjmlaird/brand-tokens, not from this file. */
 :root {
-  --navy: #0b0f1a;
-  --navy-raised: #121826;
-  --teal: #00c2a8;
-  --teal-hover: #30d6bf;
-  --amber: #f5a623;
-  --text-hi: #eef2f6;
-  --text-lo: #9aa5b1;
-  --border: rgba(238, 242, 246, 0.08);
-
-  --font-display: "Space Grotesk", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
-
+  --navy: var(--color-bg);
+  --navy-raised: var(--color-surface);
+  --teal: var(--color-primary);
+  --teal-hover: var(--color-primary-hover);
+  --amber: var(--color-highlight);
+  --text-hi: var(--color-text);
+  --text-lo: var(--color-text-muted);
+  --border: var(--color-border);
+  /* Product-level choice: the index is narrower than the 1320px site maximum. */
   --content-width: 1080px;
-  --page-gutter: 1.5rem;
 }
 
 *,
@@ -68,7 +70,7 @@ textarea {
 }
 
 button {
-  border: 1px solid var(--border);
+  border: 1px solid var(--color-border-strong);
   background: linear-gradient(
     180deg,
     rgba(18, 24, 38, 0.95),
@@ -82,7 +84,7 @@ button:hover {
 }
 
 :focus-visible {
-  outline: 3px solid var(--amber);
+  outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
 
@@ -106,9 +108,4 @@ button:hover {
   }
 }
 
-@media (max-width: 560px) {
-  :root {
-    --page-gutter: 1rem;
-  }
-}
 `;

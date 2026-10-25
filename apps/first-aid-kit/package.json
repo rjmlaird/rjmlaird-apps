@@ -1,0 +1,17 @@
+{
+  "name": "first-aid-kit",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "cf:dev": "wrangler dev",
+    "deploy": "pnpm run build && wrangler deploy"
+  },
+  "devDependencies": {
+    "vite": "^5.4.21",
+    "wrangler": "^4.149.0"
+  }
+}

@@ -1,10 +1,18 @@
 import type { FC } from "hono/jsx";
+import { raw } from "hono/html";
+import { headTags } from "@rjmlaird/brand-tokens";
+import type { AppMeta } from "@rjmlaird/brand-tokens";
 import { css } from "./styles";
 import { script } from "./script";
 import { GROUPS, REPO, STATUS, APPS } from "./apps";
 import type { Apps } from "./apps";
 import { Callout } from "./Callout";
-import { calloutCss } from "./callout-styles"; 
+
+export const META: AppMeta = {
+  name: "Apps",
+  description:
+    "Stable, bookmarkable calculators, converters and data utilities for space, physics, places and the web.",
+};
 
 const byUpdatedDesc = (a: Apps, b: Apps) =>
   b.updated.localeCompare(a.updated) || a.title.localeCompare(b.title);
@@ -56,16 +64,7 @@ const AppsCard: FC<{ app: Apps }> = ({ app }) => (
 export const IndexPage: FC = () => (
   <html lang="en-GB">
     <head>
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>Appss · apps.rjmlaird.co.uk</title>
-      <meta
-        name="description"
-        content="Stable, bookmarkable calculators, converters and data utilities for space, physics, places and the web."
-      />
-      <meta name="theme-color" content="#0b0f1a" />
-      <meta name="color-scheme" content="dark" />
-      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      {raw(headTags(META))}
       <style dangerouslySetInnerHTML={{ __html: css }} />
     </head>
     <body>
@@ -83,7 +82,7 @@ export const IndexPage: FC = () => (
         <section class="filters" aria-labelledby="filter-heading">
           <div class="filter-intro">
             <p class="section-kicker">Browse apps</p>
-            <h2 id="filter-heading">Find a app</h2>
+            <h2 id="filter-heading">Find an app</h2>
             <p>Narrow the collection by subject area, technology and status, then choose how the results are ordered.</p>
           </div>
           <div class="filter-controls">
