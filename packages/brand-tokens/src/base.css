@@ -1,0 +1,89 @@
+/* ==========================================================================
+   Brand base — neutral primitives. Contains NO page layout, no element
+   resets and nothing that targets nav, header, footer or main, so it is safe
+   to load in any app. Opt-in components use the .rj- prefix.
+   ========================================================================== */
+
+/* Accessibility ---------------------------------------------------------- */
+:focus-visible {
+  outline: 3px solid var(--rj-focus);
+  outline-offset: 3px;
+}
+
+.rj-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+.rj-skip-link {
+  position: absolute; top: -100%; left: 1rem; z-index: 1000;
+  background: var(--rj-primary); color: var(--rj-on-primary);
+  font-family: var(--font-display); font-weight: 700; font-size: .875rem;
+  padding: .6rem 1.1rem; border-radius: var(--radius); text-decoration: none;
+}
+.rj-skip-link:focus { top: 1rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Type roles ------------------------------------------------------------- */
+.rj-display { font-family: var(--font-display); }
+.rj-mono, .rj-num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* Parent-brand attribution (every app footer) ---------------------------- */
+.rj-parent {
+  display: flex; flex-wrap: wrap; gap: .25rem 1rem; align-items: center;
+  font-family: var(--font-body); font-size: .8125rem; line-height: 1.5;
+  color: var(--rj-text-subtle);
+}
+.rj-parent a { color: var(--rj-text-muted); text-underline-offset: 3px; }
+.rj-parent a:hover { color: var(--rj-primary); }
+
+/* Components (opt-in) ---------------------------------------------------- */
+.rj-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  min-height: 44px; padding: .55rem 1.1rem;
+  font-family: var(--font-display); font-weight: 600; font-size: .9rem; line-height: 1.2;
+  color: var(--rj-text); background: var(--rj-surface-raised);
+  border: 1px solid var(--rj-border-strong); border-radius: var(--radius);
+  text-decoration: none; cursor: pointer;
+}
+.rj-btn:hover { border-color: var(--rj-primary); }
+.rj-btn--primary { background: var(--rj-primary); color: var(--rj-on-primary); border-color: transparent; }
+.rj-btn--primary:hover { filter: brightness(1.08); border-color: transparent; }
+.rj-btn--ghost { background: transparent; }
+.rj-btn--danger { color: var(--rj-danger); border-color: var(--rj-danger-border); background: var(--rj-danger-dim); }
+.rj-btn[disabled], .rj-btn[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
+
+.rj-card {
+  background: var(--rj-surface); border: 1px solid var(--rj-border);
+  border-radius: var(--radius); padding: 1.25rem; min-width: 0;
+}
+
+.rj-field {
+  width: 100%; min-height: 44px; padding: .5rem .75rem;
+  font-family: var(--font-body); font-size: 1rem; color: var(--rj-text);
+  background: var(--rj-field); border: 1px solid var(--rj-border-strong); border-radius: var(--radius);
+}
+.rj-field:hover { border-color: var(--rj-primary-border); }
+.rj-field[aria-invalid="true"] { border-color: var(--rj-danger); }
+
+/* Status badges always pair colour with a text label (never colour alone). */
+.rj-badge {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .15rem .6rem; border-radius: 999px;
+  font-size: .75rem; font-weight: 600; line-height: 1.4; white-space: nowrap;
+  color: var(--rj-text-muted); border: 1px solid var(--rj-border-strong);
+}
+.rj-badge[data-tone="primary"]  { color: var(--rj-primary);   background: var(--rj-primary-dim);   border-color: var(--rj-primary-border); }
+.rj-badge[data-tone="warning"]  { color: var(--rj-secondary); background: var(--rj-secondary-dim); border-color: var(--rj-secondary-border); }
+.rj-badge[data-tone="info"]     { color: var(--rj-info);      background: var(--rj-info-dim);      border-color: var(--rj-info-border); }
+.rj-badge[data-tone="success"]  { color: var(--rj-success);   background: var(--rj-success-dim);   border-color: var(--rj-success-border); }
+.rj-badge[data-tone="danger"]   { color: var(--rj-danger);    background: var(--rj-danger-dim);    border-color: var(--rj-danger-border); }
+.rj-badge[data-tone="category"] { color: var(--rj-category);  background: var(--rj-category-dim);  border-color: var(--rj-category-border); }

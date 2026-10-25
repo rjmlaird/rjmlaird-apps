@@ -1,8 +1,4 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
 
-// Deployed independently as exp-example.labs.rjmlaird.co.uk
-export default defineConfig({
-  plugins: [react()],
-  base: "/"
-});
+// Plain static build: index.html is the app. Deployed as launches.apps.rjmlaird.co.uk by the Worker in wrangler.jsonc.
+export default defineConfig({ base: "/" });

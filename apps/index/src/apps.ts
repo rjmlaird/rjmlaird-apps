@@ -47,7 +47,7 @@ export const APPS: App[] = [
     id: "astrodash",
     title: "Astro Mission Control",
     description:
-      "An astronomy dashboard for observing, combining sky positions with weather, space weather, aurora alerts and satellite data.",
+      "An observing dashboard: what is up tonight, the Moon and darkness, weather, planets, meteor showers, aurora and solar activity.",
     group: "space",
     tech: ["JavaScript", "Leaflet", "Open-Meteo", "NOAA SWPC", "NASA DONKI"],
     status: "in-progress",
@@ -59,7 +59,7 @@ export const APPS: App[] = [
     id: "launches",
     title: "Upcoming Rocket Launches",
     description:
-      "A readable schedule of the next 20 rocket launches, with times, vehicles and status.",
+      "A live countdown to the next rocket launch and a list of the following ten, with status.",
     group: "space",
     tech: ["JavaScript", "Launch Library 2"],
     status: "in-progress",
@@ -73,7 +73,7 @@ export const APPS: App[] = [
     id: "weatherdash",
     title: "Weather Dashboard",
     description:
-      "A weather dashboard showing current conditions and forecasts for a chosen location.",
+      "Weather for any place: current conditions, the next 24 hours, radar, a 7-day forecast, air quality and pollen.",
     group: "places",
     tech: ["JavaScript", "Open-Meteo", "RainViewer"],
     status: "in-progress",

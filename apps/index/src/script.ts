@@ -47,10 +47,10 @@ export const script = `
     if (g !== "all") parts.push(label(group));
     if (t !== "all") parts.push(label(tech));
     if (s !== "all") parts.push(label(status));
-    var noun = shown === 1 ? "tool" : "tools";
+    var noun = shown === 1 ? "app" : "apps";
     summary.textContent = active
       ? "Showing " + shown + " " + noun + " matching " + parts.join(" · ") + ", " + phrases[mode] + "."
-      : "Showing all " + cards.length + " tools, " + phrases[mode] + ".";
+      : "Showing all " + cards.length + " apps, " + phrases[mode] + ".";
   }
 
   [group, tech, status, sort].forEach(function (el) { el.addEventListener("change", apply); });

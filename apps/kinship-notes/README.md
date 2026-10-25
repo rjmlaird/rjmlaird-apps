@@ -1,6 +1,6 @@
 # Kinship Notes
 
-A local-first genealogy research workspace for **kinship-notes.apps.rjmlaird.co.uk**. Import a GEDCOM, explore the family as a tree, and attach private research notes, questions, tasks and hypotheses to each person. The GEDCOM is never rewritten or uploaded: everything stays in the browser's `localStorage`, and the Worker only serves static assets.
+Part of [rjmlaird.co.uk apps](https://apps.rjmlaird.co.uk). A local-first genealogy research workspace for **kinship-notes.apps.rjmlaird.co.uk**. Import a GEDCOM, explore the family as a tree, and attach private research notes, questions, tasks and hypotheses to each person. The GEDCOM is never rewritten or uploaded: everything stays in the browser's `localStorage`, and the Worker only serves static assets.
 
 ## Views
 
@@ -33,3 +33,7 @@ pnpm --filter kinship-notes deploy     # build + wrangler deploy
 - A few thousand people are fine; tens of thousands need viewport culling.
 - `localStorage` is about 5 MB per origin; very large files cannot be persisted (the app warns and offers a notes export).
 - Notes are device-local. There is no sync.
+
+## Branding
+
+Kinship Notes is the one light-only app. It uses the brand light theme (`<html data-theme="light">`, tokens from `/brand.css`), Space Grotesk and Inter. Female/male colouring uses the violet (category) and teal (primary) roles. See [docs/branding.md](../../docs/branding.md).

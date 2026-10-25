@@ -634,7 +634,9 @@ export default function App() {
           </>
         )}
         <footer>
-          <span>kinshipnotes · a quieter way to research family</span>
+          <span>
+            Part of <a href="https://apps.rjmlaird.co.uk">rjmlaird.co.uk apps</a>
+          </span>
           <button className="text-button" onClick={() => setAbout(true)}>
             About this prototype
           </button>

@@ -1,24 +1,11 @@
-import { fontImportCss, tokensCss } from "@rjmlaird/brand-tokens";
+import { brandCss } from "./brand-css";
 
+// Brand tokens, focus, reduced motion and .rj-* components are generated into ./brand-css.ts
+// (run `pnpm brand:sync` from the repo root). Only index-page layout lives here.
 export const globalCss = `
-${fontImportCss}
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
 
-${tokensCss()}
-
-/* Legacy names used by this app's own CSS. They alias the canonical tokens so
-   the values come from @rjmlaird/brand-tokens, not from this file. */
-:root {
-  --navy: var(--color-bg);
-  --navy-raised: var(--color-surface);
-  --teal: var(--color-primary);
-  --teal-hover: var(--color-primary-hover);
-  --amber: var(--color-highlight);
-  --text-hi: var(--color-text);
-  --text-lo: var(--color-text-muted);
-  --border: var(--color-border);
-  /* Product-level choice: the index is narrower than the 1320px site maximum. */
-  --content-width: 1080px;
-}
+${brandCss}
 
 *,
 *::before,
@@ -26,9 +13,14 @@ ${tokensCss()}
   box-sizing: border-box;
 }
 
+:root {
+  --content-width: 1080px;
+  --page-gutter: 1.5rem;
+}
+
 html {
-  background: var(--navy);
-  color: var(--text-hi);
+  background: var(--rj-bg);
+  color: var(--rj-text);
   font-family: var(--font-body);
   scroll-behavior: smooth;
 }
@@ -38,10 +30,7 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(0, 194, 168, 0.06), transparent 40%),
-    radial-gradient(circle at 85% 75%, rgba(245, 166, 35, 0.05), transparent 45%),
-    var(--navy);
+  background: var(--rj-bg);
 }
 
 h1,
@@ -70,27 +59,19 @@ textarea {
 }
 
 button {
-  border: 1px solid var(--color-border-strong);
-  background: linear-gradient(
-    180deg,
-    rgba(18, 24, 38, 0.95),
-    rgba(11, 15, 26, 0.95)
-  );
-  color: var(--text-hi);
+  border: 1px solid var(--rj-border-strong);
+  background: var(--rj-surface-raised);
+  color: var(--rj-text);
+  border-radius: var(--radius);
 }
 
 button:hover {
-  border-color: rgba(0, 194, 168, 0.35);
-}
-
-:focus-visible {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 3px;
+  border-color: var(--rj-primary-border);
 }
 
 ::selection {
-  background: rgba(0, 194, 168, 0.25);
-  color: var(--text-hi);
+  background: var(--rj-primary-border);
+  color: var(--rj-text);
 }
 
 .wrap {
@@ -98,14 +79,9 @@ button:hover {
   margin-inline: auto;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    scroll-behavior: auto !important;
-    transition: none !important;
+@media (max-width: 560px) {
+  :root {
+    --page-gutter: 1rem;
   }
 }
-
 `;

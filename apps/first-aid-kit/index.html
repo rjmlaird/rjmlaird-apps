@@ -1,42 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>First Aid Kit Inventory</title>
+    <meta name="color-scheme" content="dark">
+    <title>First Aid Kit · apps.rjmlaird.co.uk</title>
+    <meta name="description" content="Keep track of what is in your first aid kit and when each item expires or needs restocking.">
+    <meta name="theme-color" content="#0B0F1A">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="/brand.css">
     <style>
+        /* Colours, type and focus come from /brand.css; these aliases keep this app's local names. */
         :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-card: #1e293b;
-            --bg-card-hover: #334155;
-            --border-color: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent-blue: #38bdf8;
-            --accent-blue-hover: #0ea5e9;
-            --badge-expired-bg: #7f1d1d;
-            --badge-expired-text: #fca5a5;
-            --badge-warning-bg: #78350f;
-            --badge-warning-text: #fcd34d;
-            --badge-ok-bg: #064e3b;
-            --badge-ok-text: #6ee7b7;
-            --danger: #ef4444;
-            --danger-hover: #dc2626;
-            --success: #10b981;
-            --success-hover: #059669;
-            --focus-ring: #38bdf8;
+            --bg-primary: var(--rj-bg);
+            --bg-secondary: var(--rj-surface);
+            --bg-card: var(--rj-surface);
+            --bg-card-hover: var(--rj-surface-raised);
+            --border-color: var(--rj-border-strong);
+            --text-primary: var(--rj-text);
+            --text-secondary: var(--rj-text-muted);
+            --accent: var(--rj-primary);
+            --accent-hover: color-mix(in srgb, var(--rj-primary) 85%, #fff);
+            --on-accent: var(--rj-on-primary);
+            --badge-expired-bg: var(--rj-danger-dim);
+            --badge-expired-text: var(--rj-danger);
+            --badge-warning-bg: var(--rj-secondary-dim);
+            --badge-warning-text: var(--rj-secondary);
+            --badge-ok-bg: var(--rj-success-dim);
+            --badge-ok-text: var(--rj-success);
+            --danger: var(--rj-danger);
+            --danger-hover: color-mix(in srgb, var(--rj-danger) 85%, #fff);
+            --success: var(--rj-success);
+            --success-hover: color-mix(in srgb, var(--rj-success) 85%, #fff);
+            --focus-ring: var(--rj-focus);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
         body {
+            font-family: var(--font-body);
             background-color: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
@@ -45,6 +53,8 @@
             line-height: 1.5;
             -webkit-tap-highlight-color: transparent;
         }
+
+        h1, h2, h3 { font-family: var(--font-display); }
 
         header {
             background-color: var(--bg-secondary);
@@ -102,9 +112,9 @@
         }
 
         .nav-tab.active {
-            background-color: var(--accent-blue);
+            background-color: var(--accent);
             color: var(--bg-primary);
-            border-color: var(--accent-blue);
+            border-color: var(--accent);
         }
 
         main {
@@ -153,19 +163,19 @@
         }
 
         .btn-primary {
-            background-color: var(--accent-blue);
+            background-color: var(--accent);
             color: var(--bg-primary);
-            border-color: var(--accent-blue);
+            border-color: var(--accent);
         }
 
         .btn-primary:hover {
-            background-color: var(--accent-blue-hover);
+            background-color: var(--accent-hover);
         }
 
         .btn-danger {
             background-color: var(--badge-expired-bg);
             color: var(--badge-expired-text);
-            border-color: #991b1b;
+            border-color: var(--rj-danger-border);
         }
 
         .btn-danger:hover {
@@ -175,7 +185,7 @@
 
         .btn-success {
             background-color: var(--success);
-            color: #0f172a;
+            color: var(--on-accent);
             border-color: var(--success);
         }
 
@@ -641,6 +651,10 @@
 
     <!-- Toast Notifications Container -->
     <div id="toast-container"></div>
+
+    <footer style="padding: 1rem;">
+        <div class="rj-parent" style="max-width: 800px; margin: 0 auto;"><span>Part of <a href="https://apps.rjmlaird.co.uk">rjmlaird.co.uk apps</a></span><a href="https://rjmlaird.co.uk">rjmlaird.co.uk</a></div>
+    </footer>
 
     <script>
         // Storage Key

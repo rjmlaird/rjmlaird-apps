@@ -6,12 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "cf:dev": "wrangler dev",
-    "deploy": "pnpm run build && wrangler deploy"
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^5.4.21",
-    "wrangler": "^4.149.0"
+    "@rjmlaird/brand-tokens": "workspace:*",
+    "vite": "^5.4.21"
   }
 }

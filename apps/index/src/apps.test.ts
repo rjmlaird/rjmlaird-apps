@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { APPS, GROUPS, STATUS } from "./apps";
 
 // Folders under apps/ that are not apps themselves.
-const NOT_APPS = new Set(["index", "rjmlaird-apps-development-plans"]);
+const NOT_APPS = new Set(["index"]);
 
 // Walk up from this file to the nearest directory called "apps".
 function findAppsDir(start: string): string {

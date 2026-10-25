@@ -1,24 +1,31 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
-<title>Upcoming Rocket Launches</title>
+<title>Launches · apps.rjmlaird.co.uk</title>
+<meta name="description" content="The next ten scheduled rocket launches worldwide, with countdowns in your local time.">
+<meta name="theme-color" content="#0B0F1A">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/brand.css">
 <style>
+  /* Colours, type, radius and focus come from /brand.css; these aliases keep the local names. */
   :root {
-    --bg: #0a0f1e; --panel: #131b30; --panel-2: #1a2440; --line: #34446a;
-    --text: #f1f4ff; --muted: #b4c0dc; --accent: #7cc4ff; --focus: #ffd166;
-    --radius: 14px;
+    --bg: var(--rj-bg); --panel: var(--rj-surface); --panel-2: var(--rj-surface-raised); --line: var(--rj-border-strong);
+    --text: var(--rj-text); --muted: var(--rj-text-muted); --accent: var(--rj-primary); --focus: var(--rj-focus);
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   body {
-    margin: 0; color: var(--text); font: 1rem/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    background: radial-gradient(1200px 600px at 80% -10%, #1c2a5a 0%, transparent 60%), var(--bg);
+    margin: 0; color: var(--text); font: 1rem/1.55 var(--font-body);
+    background: var(--bg);
     min-height: 100vh;
   }
   .wrap { max-width: 64rem; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+  h1, h2, h3 { font-family: var(--font-display); }
   h1 { font-size: clamp(1.6rem, 5vw, 2.4rem); margin: 0 0 .25rem; line-height: 1.2; }
   h2 { font-size: 1.25rem; margin: 0 0 .75rem; }
   h3 { font-size: 1.1rem; margin: 0 0 .25rem; line-height: 1.3; }
@@ -26,22 +33,22 @@
   .small { font-size: .875rem; }
   .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-  a, button, summary { border-radius: 8px; }
+  a, button, summary { border-radius: var(--radius); }
   a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
   a { color: var(--accent); }
 
   .toolbar { display: flex; flex-wrap: wrap; gap: .75rem 1rem; align-items: center; margin: 1rem 0 1.5rem; }
   button.refresh {
-    font: inherit; font-weight: 600; color: #04122b; background: var(--accent);
+    font: inherit; font-weight: 600; color: var(--rj-on-primary); background: var(--accent);
     border: 0; padding: .7rem 1.1rem; min-height: 44px; cursor: pointer;
   }
   button.refresh[disabled] { opacity: .6; cursor: not-allowed; }
 
   .banner { padding: .75rem 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); margin: 0 0 1rem; }
-  .banner.error { border-color: #ff8f8f; }
+  .banner.error { border-color: var(--rj-danger); }
   .banner[hidden] { display: none; }
 
-  .next { background: linear-gradient(160deg, var(--panel-2), var(--panel)); border: 1px solid var(--line);
+  .next { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent);
           border-radius: var(--radius); padding: 1.1rem; margin-bottom: 1.75rem; }
   .countdown { font-variant-numeric: tabular-nums; font-size: clamp(1.6rem, 7vw, 2.6rem); font-weight: 700; margin: .25rem 0; }
   .countdown.text { font-size: 1.15rem; font-weight: 600; }
@@ -54,17 +61,16 @@
   dd { margin: 0; overflow-wrap: anywhere; }
   .status { display: inline-flex; gap: .4rem; align-items: center; font-weight: 600; padding: .15rem .6rem;
             border: 2px solid var(--muted); border-radius: 999px; font-size: .875rem; }
-  .status.ok { border-color: #6ee7a8; border-style: solid; }
-  .status.tbc { border-color: #ffd166; border-style: dashed; }
-  .status.bad { border-color: #ff8f8f; border-style: double; border-width: 4px; }
+  .status.ok { border-color: var(--rj-success); color: var(--rj-success); border-style: solid; }
+  .status.tbc { border-color: var(--rj-secondary); color: var(--rj-secondary); border-style: dashed; }
+  .status.bad { border-color: var(--rj-danger); color: var(--rj-danger); border-style: double; border-width: 4px; }
   .live { margin-left: .5rem; font-weight: 600; font-size: .875rem; }
   .links { display: flex; flex-wrap: wrap; gap: .5rem 1rem; margin-top: .75rem; }
   details { margin-top: .75rem; }
   summary { cursor: pointer; padding: .25rem 0; }
   .desc { white-space: pre-line; margin: .5rem 0 0; }
   footer { margin-top: 2rem; }
-
-  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+  footer .rj-parent { margin-top: .75rem; }
 </style>
 </head>
 <body>
@@ -101,6 +107,7 @@
   <footer class="muted small">
     Data from <a href="https://thespacedevs.com/llapi" rel="noopener noreferrer">The Space Devs Launch Library 2</a>.
     Free anonymous access is rate limited, so this page refreshes sparingly.
+    <div class="rj-parent"><span>Part of <a href="https://apps.rjmlaird.co.uk">rjmlaird.co.uk apps</a></span><a href="https://rjmlaird.co.uk">rjmlaird.co.uk</a></div>
   </footer>
 </div>
 

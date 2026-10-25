@@ -1,6 +1,4 @@
 import { defineConfig } from "vite";
 
-// Single-file vanilla app (index.html). Deployed as first-aid-kit.apps.rjmlaird.co.uk
-export default defineConfig({
-  base: "/",
-});
+// Plain static build: index.html is the app. Not deployed yet: copy wrangler.jsonc and worker/ from mini-bar when it is ready to publish.
+export default defineConfig({ base: "/" });

@@ -1,43 +1,30 @@
 # @rjmlaird/brand-tokens
 
-Canonical design tokens and shared helpers for every app on `apps.rjmlaird.co.uk`.
-Dark theme only. A light theme needs its own contrast-tested values.
+Canonical brand layer for every app.
 
-`src/tokens.ts` is the single source of truth. CSS, icons and the reference page are generated from it.
+- `src/tokens.css` core palette, type roles, layout (names match the site's `global.css`) and the semantic `--rj-*` roles.
+- `src/theme-light.css` light overrides of the semantic roles only. Apply with `<html data-theme="light">`, or `<html data-theme-auto>` to follow the OS.
+- `src/base.css` focus ring, skip link, reduced motion, `.rj-*` components. No page layout.
+- `tailwind-preset.cjs` maps Tailwind's palette onto the brand for utility-class apps.
+- `brand.css` generated bundle. `pnpm brand:sync` copies it to each app's `public/brand.css` and `apps/index/src/brand-css.ts`.
 
-## Use it
+## Colour roles
 
-Workers and other TypeScript apps:
+| Role | Token | Use |
+| --- | --- | --- |
+| Teal | `--rj-primary` | primary actions, active navigation |
+| Amber | `--rj-secondary` | highlights, warnings |
+| Sky | `--rj-info` | information, data series |
+| Green | `--rj-success` | success, complete |
+| Coral | `--rj-danger` | errors, destructive |
+| Violet | `--rj-category` | secondary categories |
 
-```ts
-import { headTags, productFavicon, tokensCss, fontImportCss } from "@rjmlaird/brand-tokens";
-```
+Never rely on colour alone: pair status colours with text or shape. Chart series and domain colours may differ from these roles, but must be documented in the app.
 
-Static or Vite apps can link the generated stylesheet instead: `@rjmlaird/brand-tokens/brand.css`
-(tokens plus `rj-` prefixed primitives, nothing that restyles bare elements).
+## Rules
 
-| Export | Purpose |
-|---|---|
-| `palette`, `semantic`, `resolve(role)` | Colour values and semantic roles (`--color-primary`, `--color-danger`, ...) |
-| `tokensCss()`, `fontImportCss`, `primitivesCss`, `brandCss()` | CSS strings for Workers |
-| `headTags(meta)`, `pageTitle(name)`, `validateMeta(meta)` | Title, description, theme colour, favicon and Open Graph convention |
-| `productFavicon(id)`, `hasProductIcon(id)` | Per-product icon on the shared tile convention |
-| `contrastRatio(a, b)`, `AA` | WCAG contrast helpers |
-| `referencePage()` | Self-contained reference page, served at `/brand` on the apps index |
-
-## Commands
-
-```sh
-pnpm --filter @rjmlaird/brand-tokens generate   # write css/brand.css and icons/*.svg
-pnpm --filter @rjmlaird/brand-tokens check      # fail if generated files are stale
-pnpm --filter @rjmlaird/brand-tokens test
-```
-
-## Adding an app
-
-Add a glyph for its folder name in `src/icons.ts`, run `generate`, and copy `icons/<id>.svg` to the app's `public/favicon.svg`.
-The apps index test fails until the glyph exists.
-
-## Proposed, not approved
-
-`--color-border-strong` (control boundaries at 3:1), the spacing scale, the semantic role assignments and the `tealHover` value (carried over from the old index) are not in the supplied `global.css`.
+- Headings `--font-display` (Space Grotesk), UI text `--font-body` (Inter), values and ids `--font-mono` (JetBrains Mono).
+- Standard radius `--radius` (6px). Focus ring `--rj-focus`; do not remove outlines.
+- Product icons are per app (`public/favicon.svg`); the parent brand appears in each footer.
+- Deliberate exceptions (e.g. AstroDash night-vision red, sky-chart backdrop) stay local and are commented in that app.
+- `pnpm brand:check` tests 82 token contrast pairs (4.5:1 text, 3:1 focus). Passing it does not prove WCAG compliance of whole pages.

@@ -1,0 +1,93 @@
+/* ==========================================================================
+   Brand tokens — canonical values for rjmlaird.co.uk and every app.
+   Core values are copied from the site's global.css (section 1) and must not
+   be edited here without changing the site first.
+
+   Layers
+   1. Core      palette, type, layout (names match global.css)
+   2. Semantic  --rj-* roles that apps consume. Light theme re-maps only these.
+   ========================================================================== */
+
+:root {
+  /* 1. CORE ------------------------------------------------------------- */
+  /* Surfaces */
+  --ink: #0B0F1A;
+  --ink2: #0F1520;
+  --card: #141B29;
+  --lift: #1A2236;
+
+  /* Text */
+  --w: #EDEAE3;
+  --mb: #9AA4B8;   /* body-secondary: >= 4.5:1 on --ink, --card and --lift */
+  --m: #8A98B2;    /* muted: >= 4.5:1 on --ink, --card and --lift (5.4:1) */
+
+  /* Accents with dim fill / border variants */
+  --teal: #00C2A8;   --td: rgba(0,194,168,.13);   --tb: rgba(0,194,168,.26);
+  --amber: #F5A623;  --ad: rgba(245,166,35,.11);  --ab: rgba(245,166,35,.26);
+  --violet: #A78BFA; --vd: rgba(167,139,250,.11); --vb: rgba(167,139,250,.26);
+  --coral: #FF8080;  --cd: rgba(255,128,128,.11); --cb: rgba(255,128,128,.3);
+  --green: #4ADE80;  --gd: rgba(74,222,128,.11);  --gb: rgba(74,222,128,.26);
+  --sky: #38BDF8;    --sd: rgba(56,189,248,.11);  --sb: rgba(56,189,248,.26);
+
+  /* Lines and focus */
+  --bd: rgba(255,255,255,.11);
+  --bm: rgba(255,255,255,.2);
+  --focus: #7FE6D4;
+
+  /* Layout */
+  --content-max: 1320px;
+  --gutter-min: clamp(1.25rem, 5vw, 2.5rem);
+  --section-y: clamp(3rem, 6vw, 5rem);
+  --radius: 6px;
+
+  /* Type roles: display = headings, body = interface text, mono = values/ids/code */
+  --font-display: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* 2. SEMANTIC (dark is the default theme) ----------------------------- */
+  color-scheme: dark;
+
+  --rj-bg: var(--ink);
+  --rj-bg-alt: var(--ink2);
+  --rj-surface: var(--card);
+  --rj-surface-raised: var(--lift);
+  --rj-field: var(--ink2);
+
+  --rj-text: var(--w);
+  --rj-text-muted: var(--mb);
+  --rj-text-subtle: var(--m);
+
+  --rj-border: var(--bd);
+  --rj-border-strong: var(--bm);
+  --rj-focus: var(--focus);
+
+  /* Teal: primary actions, active navigation, brand emphasis */
+  --rj-primary: var(--teal);
+  --rj-primary-dim: var(--td);
+  --rj-primary-border: var(--tb);
+  --rj-on-primary: var(--ink);
+  /* Amber: secondary emphasis, highlights, warnings */
+  --rj-secondary: var(--amber);
+  --rj-secondary-dim: var(--ad);
+  --rj-secondary-border: var(--ab);
+  /* Sky: information and data series */
+  --rj-info: var(--sky);
+  --rj-info-dim: var(--sd);
+  --rj-info-border: var(--sb);
+  /* Green: success and completed */
+  --rj-success: var(--green);
+  --rj-success-dim: var(--gd);
+  --rj-success-border: var(--gb);
+  /* Coral: errors and destructive actions */
+  --rj-danger: var(--coral);
+  --rj-danger-dim: var(--cd);
+  --rj-danger-border: var(--cb);
+  /* Violet: secondary categories and specialised content */
+  --rj-category: var(--violet);
+  --rj-category-dim: var(--vd);
+  --rj-category-border: var(--vb);
+
+  /* Same name the site uses for text on filled accent surfaces (8.46:1 on teal) */
+  --on-accent: var(--rj-on-primary);
+}
