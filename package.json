@@ -6,13 +6,9 @@
   "scripts": {
     "dev": "pnpm -r --parallel dev",
     "build": "pnpm -r build",
-    "typecheck": "pnpm -r --if-present typecheck",
-    "test": "pnpm -r --if-present test",
+    "typecheck": "pnpm -r typecheck",
     "lint": "eslint .",
-    "format": "prettier --write .",
-    "brand:sync": "node scripts/brand.mjs sync",
-    "brand:check": "node scripts/brand.mjs check",
-    "verify": "pnpm brand:check && pnpm typecheck && pnpm test && pnpm build"
+    "format": "prettier --write ."
   },
   "prettier": "@rjmlaird/prettier-config",
   "devDependencies": {

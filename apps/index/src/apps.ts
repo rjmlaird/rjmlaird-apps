@@ -24,9 +24,21 @@ export type Apps = App;
 export const REPO = "https://github.com/rjmlaird/rjmlaird-apps";
 
 export const GROUPS: { id: GroupId; name: string; blurb: string }[] = [
-  { id: "space", name: "Space & Astronomy", blurb: "Dashboards and planners for observing and space data." },
-  { id: "places", name: "Places & Infrastructure", blurb: "Weather and local data dashboards." },
-  { id: "home", name: "Home & Everyday", blurb: "Personal inventory and planning apps for around the house." },
+  {
+    id: "space",
+    name: "Space & Astronomy",
+    blurb: "Dashboards and planners for observing and space data.",
+  },
+  {
+    id: "places",
+    name: "Places & Infrastructure",
+    blurb: "Weather and local data dashboards.",
+  },
+  {
+    id: "home",
+    name: "Home & Everyday",
+    blurb: "Personal inventory and planning apps for around the house.",
+  },
 ];
 
 export const STATUS: Record<Status, { label: string; order: number }> = {
@@ -67,6 +79,66 @@ export const APPS: App[] = [
     path: "https://launches.apps.rjmlaird.co.uk",
     source: "apps/launches",
   },
+  {
+    id: "earth-explorer",
+    title: "Earth Explorer",
+    description:
+      "Explore satellite imagery, global environmental indicators, and Earth observation datasets.",
+    group: "space",
+    tech: ["JavaScript", "Tailwind CSS"],
+    status: "in-progress",
+    updated: "2026-10-22",
+    path: "https://earth-explorer.apps.rjmlaird.co.uk",
+    source: "apps/earth-explorer",
+  },
+  {
+    id: "atmosphere-explorer",
+    title: "Atmosphere Explorer",
+    description:
+      "Monitor atmospheric conditions, air quality indices, and meteorological telemetry.",
+    group: "space",
+    tech: ["JavaScript", "Tailwind CSS"],
+    status: "in-progress",
+    updated: "2026-10-22",
+    path: "https://atmosphere-explorer.apps.rjmlaird.co.uk",
+    source: "apps/atmosphere-explorer",
+  },
+  {
+    id: "sun-explorer",
+    title: "Sun Explorer",
+    description:
+      "Real-time solar monitoring, sunspot tracking, and solar flare telemetry.",
+    group: "space",
+    tech: ["JavaScript", "Tailwind CSS", "NOAA SWPC"],
+    status: "in-progress",
+    updated: "2026-10-22",
+    path: "https://sun-explorer.apps.rjmlaird.co.uk",
+    source: "apps/sun-explorer",
+  },
+  {
+    id: "solar-system-explorer",
+    title: "Solar System Explorer",
+    description:
+      "Interactive Orrery and planetary position tracker across the solar system.",
+    group: "space",
+    tech: ["JavaScript", "Tailwind CSS"],
+    status: "in-progress",
+    updated: "2026-10-22",
+    path: "https://solar-system-explorer.apps.rjmlaird.co.uk",
+    source: "apps/solar-system-explorer",
+  },
+  {
+    id: "space-trend-keeper",
+    title: "Space Trend Keeper",
+    description:
+      "Track macroeconomic, technological, and policy trends across the global space economy.",
+    group: "space",
+    tech: ["JavaScript", "Tailwind CSS"],
+    status: "in-progress",
+    updated: "2026-10-22",
+    path: "https://space-trend-keeper.apps.rjmlaird.co.uk",
+    source: "apps/space-trend-keeper",
+  },
 
   // Places & Infrastructure
   {
@@ -80,6 +152,18 @@ export const APPS: App[] = [
     updated: "2026-10-11",
     path: "https://weatherdash.apps.rjmlaird.co.uk",
     source: "apps/weatherdash",
+  },
+  {
+    id: "council-watch",
+    title: "Council Watch",
+    description:
+      "Monitor local government agendas, committee minutes, and municipal planning applications.",
+    group: "places",
+    tech: ["JavaScript", "Tailwind CSS"],
+    status: "in-progress",
+    updated: "2026-10-22",
+    path: "https://council-watch.apps.rjmlaird.co.uk",
+    source: "apps/council-watch",
   },
 
   // Home & Everyday

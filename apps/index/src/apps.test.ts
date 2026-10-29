@@ -2,10 +2,12 @@ import { readdirSync } from "node:fs";
 import { basename, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { hasProductIcon, validateMeta } from "@rjmlaird/brand-tokens";
 import { APPS, GROUPS, STATUS } from "./apps";
+import { META } from "./page";
 
 // Folders under apps/ that are not apps themselves.
-const NOT_APPS = new Set(["index"]);
+const NOT_APPS = new Set(["index", "rjmlaird-apps-development-plans"]);
 
 // Walk up from this file to the nearest directory called "apps".
 function findAppsDir(start: string): string {
@@ -45,7 +47,8 @@ describe("apps registry", () => {
   it("follows the path and source conventions", () => {
     for (const a of APPS) {
       if (a.source) expect(a.source, `${a.id}: source`).toBe(`apps/${a.id}`);
-      if (a.path) expect(a.path, `${a.id}: path`).toBe(`https://${a.id}.apps.rjmlaird.co.uk`);
+      if (a.path)
+        expect(a.path, `${a.id}: path`).toBe(`https://${a.id}.apps.rjmlaird.co.uk`);
     }
   });
 
@@ -61,5 +64,17 @@ describe("apps registry", () => {
       expect(a.updated, `${a.id}: updated`).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(Number.isNaN(Date.parse(a.updated)), `${a.id}: updated`).toBe(false);
     }
+  });
+
+  it("has a product icon in @rjmlaird/brand-tokens for every app", () => {
+    for (const a of APPS)
+      expect(
+        hasProductIcon(a.id),
+        `${a.id}: add a glyph to packages/brand-tokens/src/icons.ts`,
+      ).toBe(true);
+  });
+
+  it("follows the shared metadata convention", () => {
+    expect(validateMeta(META)).toEqual([]);
   });
 });

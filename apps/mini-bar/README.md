@@ -1,30 +1,40 @@
 # Mini Bar
 
-A home bar inventory and cocktail manager: record what you have and see which drinks you can make now, with batch scaling and a shopping list.
+Home bar inventory and cocktail planner for **mini-bar.apps.rjmlaird.co.uk**. Record what you have and see what you can make.
 
-**Live:** https://mini-bar.apps.rjmlaird.co.uk · **Part of** [rjmlaird.co.uk apps](https://apps.rjmlaird.co.uk)
+## Tabs
 
-## Views
+**Planner.** "What can I make?" Every recipe is matched against your stock. Filter by readiness (ready, missing 1, missing 2 or more), base spirit (gin, vodka, rum, whisky, tequila, brandy, liqueur / other) and strength (low, medium, strong, alcohol-free).
 
-Can Make (planner), Bar Stock (inventory), Cocktails (recipes) and Shopping.
+**Inventory.** Bottles, mixers, produce and garnishes, in these categories: base spirits, liqueurs and fortified wines, mixers, juices and fresh produce, syrups and sweeteners, bitters and seasonings, garnishes, other. Toggle stock, add, edit or delete items. Items can record a container size and amount remaining, and the **Low stock** filter shows in-stock items at or below 20% of their container.
 
-## Data
+**Recipes.** A starter set that you can extend. Add recipes with required and optional ingredients, favourite them, duplicate them, delete them, or restore the defaults. Open a recipe to scale it from 1 to 12 servings (quantities round to practical bar measures) and copy it as text.
 
-Stored in the browser: `minibar_inventory_v1`, `minibar_recipes_v1`, `minibar_shopping_v1`. No server, no account.
+**Shopping.** A list of auto-detected missing ingredients, plus your own items. Tick items off, clear completed ones and copy the list.
 
-## Build
+## How matching works
 
-Same as Spice Cupboard: `pnpm build` builds local Tailwind and Font Awesome first (`build:assets`).
+A recipe is ready when every **required** ingredient has an in-stock inventory item with the same name, ignoring case and surrounding spaces. Optional ingredients are listed as missing but do not block a recipe. Name your inventory items to match recipe ingredients exactly.
 
-## Commands
+## Data and privacy
+
+Everything is stored in `localStorage` on the device, under `minibar_inventory_v1`, `minibar_recipes_v1` and `minibar_shopping_v1`. **Export** downloads a JSON backup (`version`, `timestamp`, inventory, recipes, shopping). **Import** asks for confirmation and overwrites your current inventory and custom recipes.
+
+## Stack
+
+Single `index.html` of vanilla JavaScript. Tailwind Play CDN, Font Awesome and Google Fonts load at runtime. The React files in `src/` are an unused scaffold.
+
+## Development
 
 ```sh
-pnpm --filter mini-bar dev       # builds assets, then vite dev server
-pnpm --filter mini-bar build     # production build into dist/
-pnpm --filter mini-bar cf:dev    # wrangler dev against dist/ (build first)
-pnpm --filter mini-bar deploy    # build + wrangler deploy
+pnpm --filter ./apps/mini-bar dev
+pnpm --filter ./apps/mini-bar build
+pnpm --filter ./apps/mini-bar run cf:dev
+pnpm --filter ./apps/mini-bar run deploy
 ```
 
-## Branding
+## Known issues
 
-Uses `/brand.css` (generated; run `pnpm brand:sync` from the repo root). See [docs/branding.md](../../docs/branding.md).
+- `package.json` is named `spice-cupboard`, which collides with `apps/spice-cupboard`. Rename it to `mini-bar`.
+- A stray `package-lock.json` is ignored by pnpm. Delete it.
+- Tailwind Play CDN is not intended for production. Replace it with locally built CSS.

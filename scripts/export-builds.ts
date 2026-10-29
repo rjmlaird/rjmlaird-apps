@@ -2,12 +2,7 @@ import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import {
-  APPS,
-  GROUPS,
-  REPO,
-  STATUS,
-} from "../apps/index/src/apps.ts";
+import { APPS, GROUPS, REPO, STATUS } from "../apps/index/src/apps.ts";
 
 const ROOT = fileURLToPath(new URL("../", import.meta.url));
 
@@ -50,10 +45,7 @@ function isCalendarDate(value: string): boolean {
 
   const date = new Date(`${value}T00:00:00.000Z`);
 
-  return (
-    !Number.isNaN(date.getTime()) &&
-    date.toISOString().slice(0, 10) === value
-  );
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
 for (const app of APPS) {
@@ -80,9 +72,7 @@ for (const app of APPS) {
   }
 
   if (!isCalendarDate(app.updated)) {
-    throw new Error(
-      `${app.id}: updated must be a valid YYYY-MM-DD date.`,
-    );
+    throw new Error(`${app.id}: updated must be a valid YYYY-MM-DD date.`);
   }
 
   const expectedDomain = `${app.id}.apps.rjmlaird.co.uk`;
@@ -92,27 +82,18 @@ for (const app of APPS) {
     app.path !== expectedDomain &&
     app.path !== `https://${expectedDomain}`
   ) {
-    throw new Error(
-      `${app.id}: path must equal "/${app.id}" or "${expectedDomain}".`,
-    );
+    throw new Error(`${app.id}: path must equal "/${app.id}" or "${expectedDomain}".`);
   }
 
   if (app.source !== undefined && app.source !== `apps/${app.id}`) {
-    throw new Error(
-      `${app.id}: source must equal "apps/${app.id}".`,
-    );
+    throw new Error(`${app.id}: source must equal "apps/${app.id}".`);
   }
 
   if (app.status === "active" && !app.path) {
-    throw new Error(
-      `${app.id}: an active app must have a deployment path.`,
-    );
+    throw new Error(`${app.id}: an active app must have a deployment path.`);
   }
 
-  if (
-    app.tech.length === 0 ||
-    app.tech.some((technology) => !technology.trim())
-  ) {
+  if (app.tech.length === 0 || app.tech.some((technology) => !technology.trim())) {
     throw new Error(`${app.id}: tech must contain non-empty names.`);
   }
 }
@@ -171,9 +152,7 @@ async function main() {
     const existing = await readFile(outputFile, "utf8").catch(
       (error: NodeJS.ErrnoException) => {
         if (error.code === "ENOENT") {
-          throw new Error(
-            `Missing export: ${outputFile}. Run the export command first.`,
-          );
+          throw new Error(`Missing export: ${outputFile}. Run the export command first.`);
         }
 
         throw error;
@@ -181,9 +160,7 @@ async function main() {
     );
 
     if (existing !== output) {
-      throw new Error(
-        "The JSON export is stale. Regenerate it from apps.ts.",
-      );
+      throw new Error("The JSON export is stale. Regenerate it from apps.ts.");
     }
 
     console.log(`Export is current: ${outputFile}`);
@@ -197,15 +174,11 @@ async function main() {
   await writeFile(temporaryFile, output, "utf8");
   await rename(temporaryFile, outputFile);
 
-  console.log(
-    `Exported ${catalogue.builds.length} apps to ${outputFile}`,
-  );
+  console.log(`Exported ${catalogue.builds.length} apps to ${outputFile}`);
 }
 
 main().catch((error: unknown) => {
-  console.error(
-    error instanceof Error ? error.message : String(error),
-  );
+  console.error(error instanceof Error ? error.message : String(error));
 
   process.exitCode = 1;
 });

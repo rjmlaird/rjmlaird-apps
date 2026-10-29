@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Earth Interior Explorer — Layers, Heat and the Magnetic Field</title>
+    <style>
+      :root {
+        --ink: #0b0f1a;
+        --ink2: #0f1520;
+        --card: #141b29;
+        --lift: #1a2236;
+        --w: #edeae3;
+        --mb: #9aa4b8;
+        --m: #8a98b2;
+        --teal: #00c2a8;
+        --amber: #f5a623;
+        --violet: #a78bfa;
+        --coral: #ff8080;
+        --green: #4ade80;
+        --sky: #38bdf8;
+        --td: rgba(0, 194, 168, 0.13);
+        --tb: rgba(0, 194, 168, 0.26);
+        --bd: rgba(255, 255, 255, 0.11);
+        --bm: rgba(255, 255, 255, 0.2);
+        --focus: #7fe6d4;
+        --font-display: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --radius: 6px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--ink);
+        color: var(--w);
+        font-family: var(--font-body);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 78rem;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 4rem;
+      }
+      .kicker {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        margin-bottom: 1rem;
+        font-family: var(--font-display);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--teal);
+      }
+      .kicker::before {
+        content: "";
+        width: 26px;
+        height: 1px;
+        background: var(--teal);
+      }
+      h1 {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 4.6vw, 3.2rem);
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+        margin-bottom: 1rem;
+      }
+      .lead {
+        max-width: 48rem;
+        color: var(--mb);
+        font-size: 1.05rem;
+        line-height: 1.75;
+        margin-bottom: 2rem;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+        gap: 1.5rem;
+        align-items: start;
+      }
+      @media (max-width: 960px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--bd);
+        border-left: 3px solid var(--teal);
+        border-radius: var(--radius);
+        padding: 1.25rem;
+      }
+      .panel h2 {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        margin-bottom: 0.9rem;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .chip {
+        font: inherit;
+        font-size: 0.85rem;
+        padding: 0.45rem 0.85rem;
+        border: 1px solid var(--bm);
+        border-radius: 999px;
+        background: transparent;
+        color: var(--mb);
+        cursor: pointer;
+        min-height: 44px;
+      }
+      .chip[aria-pressed="true"] {
+        background: var(--td);
+        border-color: var(--teal);
+        color: var(--w);
+      }
+      .chip:hover,
+      .chip:focus-visible {
+        border-color: var(--teal);
+      }
+      .stage {
+        border: 1px solid var(--bd);
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: radial-gradient(circle at 50% 42%, #101a2c 0%, #0b0f1a 72%);
+      }
+      .stage svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .layer-hit {
+        cursor: pointer;
+      }
+      .layer-hit:hover .layer-shape,
+      .layer-hit:focus-visible .layer-shape {
+        stroke: var(--w);
+        stroke-width: 2.5;
+      }
+      .layer-shape {
+        transition:
+          stroke 0.15s,
+          stroke-width 0.15s;
+      }
+      .layer-label {
+        font-family: var(--font-display);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        fill: var(--w);
+      }
+      .layer-sub {
+        font-family: var(--font-body);
+        fill: rgba(237, 234, 227, 0.82);
+      }
+      .depth-label {
+        font-family: var(--font-body);
+        font-size: 11px;
+        fill: var(--mb);
+      }
+      .wave {
+        fill: none;
+        stroke-width: 3;
+        stroke-linecap: round;
+      }
+      .wave-label {
+        font-family: var(--font-body);
+        font-size: 11px;
+        fill: var(--w);
+      }
+      .wave-pill {
+        fill: rgba(11, 15, 26, 0.86);
+        stroke: var(--bm);
+      }
+      .info h3 {
+        font-family: var(--font-display);
+        font-size: 1.35rem;
+        color: var(--teal);
+        margin-bottom: 0.5rem;
+      }
+      .info p {
+        color: var(--mb);
+        margin-bottom: 1rem;
+      }
+      .facts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+        margin-bottom: 1.25rem;
+      }
+      @media (max-width: 520px) {
+        .facts {
+          grid-template-columns: 1fr;
+        }
+      }
+      .fact {
+        background: var(--lift);
+        border: 1px solid var(--bd);
+        border-radius: var(--radius);
+        padding: 0.75rem;
+      }
+      .fact b {
+        display: block;
+        font-family: var(--font-display);
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--mb);
+        margin-bottom: 0.2rem;
+      }
+      .plain-list {
+        list-style: none;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .plain-list li {
+        position: relative;
+        padding-left: 1.25rem;
+        color: var(--mb);
+        line-height: 1.65;
+      }
+      .plain-list li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.72em;
+        width: 0.5rem;
+        height: 1px;
+        background: var(--teal);
+      }
+      .plain-list strong {
+        color: var(--w);
+        font-weight: 600;
+      }
+      .subhead {
+        font-family: var(--font-display);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--mb);
+        margin: 1.25rem 0 0.6rem;
+      }
+      .note {
+        margin-top: 1.5rem;
+        padding: 1rem 1.25rem;
+        background: var(--ink2);
+        border: 1px solid var(--bd);
+        border-radius: var(--radius);
+        color: var(--mb);
+        font-size: 0.92rem;
+      }
+      .note strong {
+        color: var(--w);
+      }
+      :focus-visible {
+        outline: 3px solid var(--focus);
+        outline-offset: 3px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <p class="kicker">Earth Interior Explorer</p>
+      <h1>Inside Earth: crust, mantle and core</h1>
+      <p class="lead">
+        Explore Earth’s major internal layers, their composition, temperature, pressure
+        and state. Switch views to see seismic waves, plate tectonics, heat flow and the
+        geodynamo that generates Earth’s magnetic field.
+      </p>
+
+      <div class="layout">
+        <section class="panel">
+          <div class="controls" role="group" aria-label="Diagram view">
+            <button class="chip" data-view="structure" aria-pressed="true">
+              Layered Earth
+            </button>
+            <button class="chip" data-view="seismic" aria-pressed="false">
+              Seismic waves
+            </button>
+            <button class="chip" data-view="tectonics" aria-pressed="false">
+              Plates & heat
+            </button>
+            <button class="chip" data-view="magnetic" aria-pressed="false">
+              Magnetic field
+            </button>
+          </div>
+          <div id="stage" class="stage" aria-live="polite"></div>
+          <p class="note">
+            <strong>Reading the diagrams:</strong> the cutaway is not to a single linear
+            depth scale—the crust is vastly thinner than the mantle, so it is exaggerated
+            to remain visible. Depths, temperatures and pressures are approximate global
+            averages; they vary substantially by location.
+          </p>
+        </section>
+        <aside class="panel info" id="info" aria-live="polite"></aside>
+      </div>
+    </main>
+
+    <script>
+      const layers = [
+        {
+          name: "Continental & oceanic crust",
+          bottom: 0,
+          top: 70,
+          color: "#4ADE80",
+          fill: "rgba(74,222,128,.18)",
+          stroke: "#4ADE80",
+          depth: "0–70 km",
+          temp: "About 0–400 °C",
+          pressure: "1 atm to roughly 1–2 GPa",
+          state: "Solid rock",
+          summary:
+            "Earth’s thin, rocky outer shell. Continental crust forms land and averages about 30–50 km thick; oceanic crust is denser, younger and typically about 6–10 km thick.",
+          science: [
+            "The crust is made mainly of silicate rocks: granite-like rocks dominate continents, while basalt dominates ocean floors.",
+            "Oceanic crust is denser than continental crust, which is why it sinks into the mantle at subduction zones.",
+            "The Mohorovičić discontinuity, or Moho, marks the seismic boundary between crust and mantle.",
+            "Despite its importance to life and landscapes, the crust represents well under 1% of Earth’s volume.",
+          ],
+          context: [
+            "Tectonic plates include crust plus the rigid uppermost mantle, together forming the lithosphere.",
+            "Earthquakes mostly occur in the brittle upper lithosphere.",
+            "Mountains, volcanoes, ocean basins and continents are surface expressions of processes involving the crust and mantle.",
+          ],
+        },
+        {
+          name: "Mantle",
+          bottom: 70,
+          top: 2890,
+          color: "#F5A623",
+          fill: "rgba(245,166,35,.15)",
+          stroke: "#F5A623",
+          depth: "70–2,890 km",
+          temp: "About 500–3,700 °C",
+          pressure: "Up to about 140 GPa",
+          state: "Solid rock that flows very slowly",
+          summary:
+            "Earth’s thickest layer: hot silicate rock between the crust and core. Over geological timescales it flows like an extremely viscous solid, driving plate motion.",
+          science: [
+            "The mantle is solid over short timescales but deforms and convects over millions of years.",
+            "Heat from Earth’s formation and radioactive decay drives slow convection in the mantle.",
+            "The upper mantle includes the rigid lithosphere and the weaker asthenosphere beneath it.",
+            "The mantle–core boundary at about 2,890 km is called the core–mantle boundary, or Gutenberg discontinuity.",
+          ],
+          context: [
+            "Plate tectonics, mountain building, volcanism and many earthquakes are driven by mantle convection and plate interactions.",
+            "Magma commonly forms in the upper mantle and crust; not all magma comes from a global molten layer.",
+            "Seismic tomography uses earthquake waves to map hot and cold anomalies in the mantle.",
+          ],
+        },
+        {
+          name: "Outer core",
+          bottom: 2890,
+          top: 5150,
+          color: "#FF8080",
+          fill: "rgba(255,128,128,.16)",
+          stroke: "#FF8080",
+          depth: "2,890–5,150 km",
+          temp: "About 4,000–5,000 °C",
+          pressure: "About 140–330 GPa",
+          state: "Liquid iron-nickel alloy",
+          summary:
+            "A liquid metallic shell surrounding the inner core. Its moving electrically conducting liquid generates Earth’s main magnetic field through the geodynamo.",
+          science: [
+            "The outer core is composed mainly of iron and nickel, with lighter elements such as sulphur, oxygen or silicon likely present.",
+            "It is liquid because the temperature remains above the melting point of its alloy at that depth.",
+            "Convection, Earth’s rotation and electrical conductivity combine to sustain the geodynamo.",
+            "Seismic shear waves cannot pass through liquid, which is how scientists identified the outer core as liquid.",
+          ],
+          context: [
+            "The geodynamo produces the magnetic field that helps shield the atmosphere from charged solar particles.",
+            "Magnetic-field reversals are recorded in ancient rocks and ocean-floor magnetic stripes.",
+            "The outer core’s motion changes slowly over time, contributing to changes in the magnetic field.",
+          ],
+        },
+        {
+          name: "Inner core",
+          bottom: 5150,
+          top: 6371,
+          color: "#A78BFA",
+          fill: "rgba(167,139,250,.18)",
+          stroke: "#A78BFA",
+          depth: "5,150–6,371 km",
+          temp: "About 5,000–5,400 °C",
+          pressure: "About 330–360 GPa",
+          state: "Solid iron-nickel alloy",
+          summary:
+            "Earth’s central sphere: a solid iron-nickel alloy kept solid by immense pressure despite temperatures comparable to the Sun’s surface.",
+          science: [
+            "The inner core is solid because enormous pressure raises the melting point of its iron-nickel alloy.",
+            "It was discovered through seismic evidence: P-waves behave differently after passing through it.",
+            "Its radius is about 1,220 km, roughly 70% of the Moon’s radius.",
+            "The inner core grows very slowly as Earth cools, releasing heat that helps drive convection in the outer core.",
+          ],
+          context: [
+            "The inner core is central to the geodynamo system, although the liquid outer core generates most of the observed magnetic field.",
+            "Its rotation relative to the mantle is an active research question, inferred from subtle seismic signals.",
+            "The inner-core boundary at about 5,150 km separates solid and liquid iron alloy.",
+          ],
+        },
+      ];
+
+      const stage = document.getElementById("stage"),
+        info = document.getElementById("info");
+      let view = "structure",
+        selected = 1;
+      const W = 760,
+        H = 540,
+        cx = 380,
+        cy = 260,
+        R = 210;
+
+      function baseSVG() {
+        return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cutaway diagram of Earth's internal layers">`;
+      }
+      function pill(x, y, text) {
+        return `<rect class="wave-pill" x="${x}" y="${y - 13}" width="${text.length * 6.2 + 22}" height="24" rx="12"/><text class="wave-label" x="${x + 11}" y="${y + 3}">${text}</text>`;
+      }
+
+      function structureSVG() {
+        const radii = [
+          {
+            r: R,
+            fill: "#0f2d1c",
+            stroke: "#4ADE80",
+            label: "CRUST",
+            sub: "0–70 km",
+            layer: 0,
+          },
+          {
+            r: R - 8,
+            fill: "#7c3d0d",
+            stroke: "#F5A623",
+            label: "MANTLE",
+            sub: "70–2,890 km",
+            layer: 1,
+          },
+          {
+            r: R - 105,
+            fill: "#8c2f39",
+            stroke: "#FF8080",
+            label: "OUTER CORE",
+            sub: "2,890–5,150 km",
+            layer: 2,
+          },
+          {
+            r: R - 150,
+            fill: "#4c2f80",
+            stroke: "#A78BFA",
+            label: "INNER CORE",
+            sub: "5,150–6,371 km",
+            layer: 3,
+          },
+        ];
+        let s = baseSVG();
+        radii.forEach((r, i) => {
+          s += `<g class="layer-hit" tabindex="0" role="button" aria-label="${layers[r.layer].name}, ${layers[r.layer].depth}" data-layer="${r.layer}">
+   <circle class="layer-shape" cx="${cx}" cy="${cy}" r="${r.r}" fill="${r.fill}" stroke="${r.stroke}" stroke-width="1.5"/></g>`;
+        });
+        radii.forEach((r, i) => {
+          const yy = cy - r.r + 18;
+          s += `<text class="layer-label" x="${cx - r.r + 12}" y="${yy}">${r.label}</text>
+      <text class="layer-sub" x="${cx - r.r + 12}" y="${yy + 18}">${r.sub}</text>`;
+        });
+        // Cutaway wedge: dark overlay to imply interior view
+        s += `<path d="M${cx} ${cy} L${cx + R} ${cy - R * 0.42} A${R} ${R} 0 0 1 ${cx + R} ${cy + R * 0.42} Z" fill="rgba(11,15,26,.82)" stroke="rgba(255,255,255,.12)"/>`;
+        s += `<path d="M${cx} ${cy} L${cx + R - 105} ${cy - (R - 105) * 0.42} A${R - 105} ${R - 105} 0 0 1 ${cx + R - 105} ${cy + (R - 105) * 0.42} Z" fill="rgba(11,15,26,.35)"/>`;
+        s += `<path d="M${cx} ${cy} L${cx + R - 150} ${cy - (R - 150) * 0.42} A${R - 150} ${R - 150} 0 0 1 ${cx + R - 150} ${cy + (R - 150) * 0.42} Z" fill="rgba(11,15,26,.22)"/>`;
+        s += `<text class="layer-sub" x="${cx + 18}" y="${cy - 8}">Cutaway view</text>`;
+        s += `<text class="depth-label" x="20" y="24">Earth’s radius: 6,371 km. The crust is exaggerated for visibility.</text>`;
+        return s + "</svg>";
+      }
+
+      function seismicSVG() {
+        let s = baseSVG();
+        s += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="#7c3d0d" stroke="#F5A623" stroke-width="1.5"/>
+     <circle cx="${cx}" cy="${cy}" r="${R - 105}" fill="#8c2f39" stroke="#FF8080"/>
+     <circle cx="${cx}" cy="${cy}" r="${R - 150}" fill="#4c2f80" stroke="#A78BFA"/>`;
+        // P waves: pass through all layers
+        s += `<g><path class="wave" d="M${cx - R} ${cy - 60} Q${cx} ${cy - 130} ${cx + R} ${cy - 60}" stroke="#38BDF8"/>
+     ${pill(cx - 135, cy - 150, "P-waves: compressional; travel through solids and liquids")}</g>`;
+        // S waves: blocked by liquid outer core
+        s += `<g><path class="wave" d="M${cx - R} ${cy + 40} Q${cx - 40} ${cy + 110} ${cx - 105} ${cy + 95}" stroke="#F5A623"/>
+     ${pill(cx - R + 10, cy + 145, "S-waves: shear; cannot travel through liquid outer core")}</g>`;
+        // Shadow zone
+        s += `<path d="M${cx + R - 105} ${cy - 78} A${R - 105} ${R - 105} 0 0 1 ${cx + R - 105} ${cy + 78} L${cx + R} ${cy + 130} A${R} ${R} 0 0 0 ${cx + R} ${cy - 130} Z" fill="rgba(255,128,128,.13)" stroke="#FF8080" stroke-dasharray="5 5"/>`;
+        s += `<text class="layer-label" x="${cx + 72}" y="${cy - 95}" font-size="12">P-WAVE SHADOW ZONE</text>`;
+        s += `<text class="layer-sub" x="${cx + 72}" y="${cy - 77}">P-waves bend at the core boundary</text>`;
+        s += `<circle cx="${cx - R}" cy="${cy - 60}" r="7" fill="#38BDF8"/><text class="wave-label" x="${cx - R - 12}" y="${cy - 72}">Earthquake focus</text>`;
+        s += `<text class="depth-label" x="20" y="24">Seismic waves reveal Earth’s interior: S-wave blocking indicates a liquid outer core.</text>`;
+        return s + "</svg>";
+      }
+
+      function tectonicsSVG() {
+        let s = baseSVG();
+        s += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="#7c3d0d" stroke="#F5A623" stroke-width="1.5"/>
+     <circle cx="${cx}" cy="${cy}" r="${R - 105}" fill="#8c2f39" stroke="#FF8080"/>
+     <circle cx="${cx}" cy="${cy}" r="${R - 150}" fill="#4c2f80" stroke="#A78BFA"/>`;
+        // Lithosphere plates
+        s += `<path class="layer-shape" d="M${cx - R} ${cy - 90} q80 -35 160 -8 q80 26 150 -12 l0 22 q-70 38 -150 12 q-80 -26 -160 8 Z" fill="rgba(74,222,128,.22)" stroke="#4ADE80"/>`;
+        s += `<path class="layer-shape" d="M${cx - R} ${cy + 70} q90 -25 170 5 q80 28 150 -5 l0 24 q-70 33 -150 5 q-80 -28 -170 -5 Z" fill="rgba(74,222,128,.22)" stroke="#4ADE80"/>`;
+        s += pill(cx - R + 12, cy - 128, "Lithosphere: rigid crust + upper mantle");
+        s += pill(cx - R + 12, cy - 102, "Asthenosphere: slowly flowing mantle");
+        // Convection cells
+        s += `<path class="wave" d="M${cx - 90} ${cy + 35} q45 -75 95 -5 q45 65 90 -5" stroke="#F5A623" stroke-dasharray="8 6"/>`;
+        s += `<path class="wave" d="M${cx + 95} ${cy + 30} q-45 75 -95 5 q-45 -65 -90 5" stroke="#F5A623" stroke-dasharray="8 6" opacity=".8"/>`;
+        s += pill(cx + 45, cy + 140, "Mantle convection transfers heat");
+        // Divergent and convergent boundaries
+        s += `<line x1="${cx - 70}" y1="${cy - 98}" x2="${cx - 70}" y2="${cy - 58}" stroke="#00C2A8" stroke-width="4"/><text class="wave-label" x="${cx - 135}" y="${cy - 108}">Divergent boundary</text>`;
+        s += `<line x1="${cx + 85}" y1="${cy - 98}" x2="${cx + 85}" y2="${cy - 58}" stroke="#FF8080" stroke-width="4"/><text class="wave-label" x="${cx + 30}" y="${cy - 108}">Convergent boundary</text>`;
+        s += `<text class="depth-label" x="20" y="24">Plate motion is driven by mantle convection, slab pull and ridge push over millions of years.</text>`;
+        return s + "</svg>";
+      }
+
+      function magneticSVG() {
+        let s = baseSVG();
+        s += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="#0f2d1c" stroke="#4ADE80" stroke-width="1.5"/>
+     <circle cx="${cx}" cy="${cy}" r="${R - 105}" fill="#8c2f39" stroke="#FF8080"/>
+     <circle cx="${cx}" cy="${cy}" r="${R - 150}" fill="#4c2f80" stroke="#A78BFA"/>`;
+        // Dipole field lines
+        for (let i = -2; i <= 2; i++) {
+          const off = i * 46;
+          s += `<path class="wave" d="M${cx - off * 0.35} ${cy - 95} C${cx - off * 1.5} ${cy - 190} ${cx - off * 1.5} ${cy + 190} ${cx - off * 0.35} ${cy + 95}" stroke="#38BDF8" opacity="${0.85 - Math.abs(i) * 0.12}"/>`;
+        }
+        s += `<line x1="${cx}" y1="${cy - 165}" x2="${cx}" y2="${cy + 165}" stroke="#38BDF8" stroke-width="3"/>`;
+        s += `<path d="M${cx - 7} ${cy - 155} l7 -14 l7 14 Z" fill="#38BDF8"/>`;
+        s += pill(cx + 72, cy - 170, "Geographic north");
+        s += pill(cx + 72, cy + 150, "Magnetic field emerges near geographic south");
+        s += pill(cx - R + 12, cy - 190, "Liquid outer-core motion generates the field");
+        s += `<text class="depth-label" x="20" y="24">The geodynamo: convection and rotation of liquid metal in the outer core generate Earth’s magnetic field.</text>`;
+        return s + "</svg>";
+      }
+
+      function render() {
+        stage.innerHTML =
+          view === "structure"
+            ? structureSVG()
+            : view === "seismic"
+              ? seismicSVG()
+              : view === "tectonics"
+                ? tectonicsSVG()
+                : magneticSVG();
+        stage.querySelectorAll(".layer-hit").forEach((el) => {
+          const go = () => {
+            selected = +el.dataset.layer;
+            show();
+          };
+          el.addEventListener("click", (e) => {
+            e.stopPropagation();
+            go();
+          });
+          el.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              go();
+            }
+          });
+        });
+        show();
+      }
+
+      function show() {
+        const L = layers[selected];
+        info.innerHTML = `<h3>${L.name}</h3><p>${L.summary}</p>
+ <div class="facts">
+  <div class="fact"><b>Depth</b>${L.depth}</div>
+  <div class="fact"><b>Temperature</b>${L.temp}</div>
+  <div class="fact"><b>Pressure</b>${L.pressure}</div>
+  <div class="fact"><b>State</b>${L.state}</div>
+ </div>
+ <p class="subhead">Science</p>
+ <ul class="plain-list">${L.science.map((t) => `<li>${t}</li>`).join("")}</ul>
+ <p class="subhead">Surface and planetary context</p>
+ <ul class="plain-list">${L.context.map((t) => `<li>${t}</li>`).join("")}</ul>`;
+      }
+
+      document.querySelectorAll(".chip").forEach((btn) =>
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".chip")
+            .forEach((b) => b.setAttribute("aria-pressed", "false"));
+          btn.setAttribute("aria-pressed", "true");
+          view = btn.dataset.view;
+          render();
+        }),
+      );
+      render();
+    </script>
+  </body>
+</html>

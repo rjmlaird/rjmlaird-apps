@@ -10,14 +10,14 @@ Canonical brand layer for every app.
 
 ## Colour roles
 
-| Role | Token | Use |
-| --- | --- | --- |
-| Teal | `--rj-primary` | primary actions, active navigation |
-| Amber | `--rj-secondary` | highlights, warnings |
-| Sky | `--rj-info` | information, data series |
-| Green | `--rj-success` | success, complete |
-| Coral | `--rj-danger` | errors, destructive |
-| Violet | `--rj-category` | secondary categories |
+| Role   | Token            | Use                                |
+| ------ | ---------------- | ---------------------------------- |
+| Teal   | `--rj-primary`   | primary actions, active navigation |
+| Amber  | `--rj-secondary` | highlights, warnings               |
+| Sky    | `--rj-info`      | information, data series           |
+| Green  | `--rj-success`   | success, complete                  |
+| Coral  | `--rj-danger`    | errors, destructive                |
+| Violet | `--rj-category`  | secondary categories               |
 
 Never rely on colour alone: pair status colours with text or shape. Chart series and domain colours may differ from these roles, but must be documented in the app.
 

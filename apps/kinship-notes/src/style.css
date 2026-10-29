@@ -211,7 +211,7 @@ main {
   background: var(--rj-surface);
   border: 1px solid var(--rj-border);
   border-radius: var(--radius);
-  box-shadow: 0 5px 22px rgba(18,26,38,.04);
+  box-shadow: 0 5px 22px rgba(18, 26, 38, 0.04);
 }
 .welcome {
   max-width: 570px;
@@ -713,7 +713,7 @@ footer {
 .shade {
   position: fixed;
   inset: 0;
-  background: rgba(11,15,26,.5);
+  background: rgba(11, 15, 26, 0.5);
   display: grid;
   place-items: center;
   padding: 20px;
@@ -921,7 +921,7 @@ footer {
 .seg button.on {
   background: var(--rj-surface);
   color: var(--rj-primary);
-  box-shadow: 0 1px 3px rgba(18,26,38,.14);
+  box-shadow: 0 1px 3px rgba(18, 26, 38, 0.14);
 }
 .tree-opts {
   display: flex;

@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@rjmlaird/brand-tokens": "workspace:*",
     "hono": "^4.6.0"
   },
   "devDependencies": {
@@ -18,7 +19,6 @@
     "@rjmlaird/tsconfig": "workspace:*",
     "typescript": "^5.6.3",
     "vitest": "^3.2.0",
-    "wrangler": "^4.0.0",
-    "@rjmlaird/brand-tokens": "workspace:*"
+    "wrangler": "^4.0.0"
   }
 }

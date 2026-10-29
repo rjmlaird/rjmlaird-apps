@@ -1,17 +1,28 @@
 import type { FC } from "hono/jsx";
+import { raw } from "hono/html";
+import { headTags } from "@rjmlaird/brand-tokens";
+import type { AppMeta } from "@rjmlaird/brand-tokens";
 import { css } from "./styles";
 import { script } from "./script";
 import { GROUPS, REPO, STATUS, APPS } from "./apps";
-import type { App } from "./apps";
+import type { Apps } from "./apps";
 import { Callout } from "./Callout";
 
-const byUpdatedDesc = (a: App, b: App) =>
+export const META: AppMeta = {
+  name: "Apps",
+  description:
+    "Stable, bookmarkable calculators, converters and data utilities for space, physics, places and the web.",
+};
+
+const byUpdatedDesc = (a: Apps, b: Apps) =>
   b.updated.localeCompare(a.updated) || a.title.localeCompare(b.title);
 
-const techOptions = [...new Set(APPS.flatMap((t) => t.tech))].sort((a, b) => a.localeCompare(b));
+const techOptions = [...new Set(APPS.flatMap((t) => t.tech))].sort((a, b) =>
+  a.localeCompare(b),
+);
 const groups = GROUPS.filter((g) => APPS.some((t) => t.group === g.id));
 
-const AppCard: FC<{ app: App }> = ({ app }) => (
+const AppsCard: FC<{ app: Apps }> = ({ app }) => (
   <article
     class="card"
     data-card
@@ -41,7 +52,12 @@ const AppCard: FC<{ app: App }> = ({ app }) => (
         <span class="btn-disabled">Coming soon</span>
       )}
       {app.source && (
-        <a class="btn-secondary" href={`${REPO}/tree/main/${app.source}`} target="_blank" rel="noopener">
+        <a
+          class="btn-secondary"
+          href={`${REPO}/tree/main/${app.source}`}
+          target="_blank"
+          rel="noopener"
+        >
           Source
         </a>
       )}
@@ -55,16 +71,7 @@ const AppCard: FC<{ app: App }> = ({ app }) => (
 export const IndexPage: FC = () => (
   <html lang="en-GB">
     <head>
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <title>Apps · apps.rjmlaird.co.uk</title>
-      <meta
-        name="description"
-        content="Small, bookmarkable apps for space, weather, home and family history. Each app runs on its own page."
-      />
-      <meta name="theme-color" content="#0B0F1A" />
-      <meta name="color-scheme" content="dark" />
-      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      {raw(headTags(META))}
       <style dangerouslySetInnerHTML={{ __html: css }} />
     </head>
     <body>
@@ -73,7 +80,7 @@ export const IndexPage: FC = () => (
         <p class="eyebrow">rjmlaird.co.uk / apps</p>
         <h1>Small apps that do one job well.</h1>
         <p class="sub">
-          Stable, bookmarkable apps for space, weather, home and family history. Each app runs
+          Stable, bookmarkable calculators, converters and data utilities. Each app runs
           separately; this is the shared index for finding them.
         </p>
       </header>
@@ -83,7 +90,10 @@ export const IndexPage: FC = () => (
           <div class="filter-intro">
             <p class="section-kicker">Browse apps</p>
             <h2 id="filter-heading">Find an app</h2>
-            <p>Narrow the collection by subject area, technology and status, then choose how the results are ordered.</p>
+            <p>
+              Narrow the collection by subject area, technology and status, then choose
+              how the results are ordered.
+            </p>
           </div>
           <div class="filter-controls">
             <div class="filter-field">
@@ -148,7 +158,7 @@ export const IndexPage: FC = () => (
                 {APPS.filter((t) => t.group === g.id)
                   .sort(byUpdatedDesc)
                   .map((t) => (
-                    <AppCard app={t} />
+                    <AppsCard app={t} />
                   ))}
               </div>
             </section>
@@ -158,7 +168,7 @@ export const IndexPage: FC = () => (
         <p class="no-results" id="no-results" hidden role="status">
           No apps match those filters. Try changing a selection or clear the filters.
         </p>
-      <Callout />
+        <Callout />
       </main>
 
       <footer class="wrap footer">

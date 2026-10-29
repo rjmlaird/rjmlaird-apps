@@ -41,8 +41,8 @@ export const Callout: FC<CalloutProps> = ({
         <p class="labs-tools__eyebrow">Digital projects</p>
         <h2 id="labs-tools-title">Labs and tools</h2>
         <p>
-          Explore working experiments and prototypes alongside focused utilities
-          for useful tasks, clearer information and better decisions.
+          Explore working experiments and prototypes alongside focused utilities for
+          useful tasks, clearer information and better decisions.
         </p>
       </div>
 

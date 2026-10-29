@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sun Explorer — Structure, Activity and Live Space Weather</title>
+    <style>
+      :root {
+        --ink: #0b0f1a;
+        --ink2: #0f1520;
+        --card: #141b29;
+        --lift: #1a2236;
+        --w: #edeae3;
+        --mb: #9aa4b8;
+        --m: #8a98b2;
+        --teal: #00c2a8;
+        --amber: #f5a623;
+        --violet: #a78bfa;
+        --coral: #ff8080;
+        --green: #4ade80;
+        --sky: #38bdf8;
+        --td: rgba(0, 194, 168, 0.13);
+        --bd: rgba(255, 255, 255, 0.11);
+        --bm: rgba(255, 255, 255, 0.2);
+        --focus: #7fe6d4;
+        --font-display: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --radius: 6px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--ink);
+        color: var(--w);
+        font-family: var(--font-body);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 86rem;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 4rem;
+      }
+      .kicker {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        margin-bottom: 1rem;
+        font-family: var(--font-display);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--teal);
+      }
+      .kicker::before {
+        content: "";
+        width: 26px;
+        height: 1px;
+        background: var(--teal);
+      }
+      h1 {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 4.6vw, 3.2rem);
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+        margin-bottom: 1rem;
+      }
+      .lead {
+        max-width: 54rem;
+        color: var(--mb);
+        font-size: 1.05rem;
+        line-height: 1.75;
+        margin-bottom: 2rem;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(350px, 0.9fr);
+        gap: 1.5rem;
+        align-items: start;
+      }
+      @media (max-width: 1020px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--bd);
+        border-left: 3px solid var(--teal);
+        border-radius: var(--radius);
+        padding: 1.25rem;
+      }
+      .panel h2 {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        margin-bottom: 0.9rem;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .chip {
+        font: inherit;
+        font-size: 0.85rem;
+        padding: 0.45rem 0.85rem;
+        border: 1px solid var(--bm);
+        border-radius: 999px;
+        background: transparent;
+        color: var(--mb);
+        cursor: pointer;
+        min-height: 44px;
+      }
+      .chip[aria-pressed="true"] {
+        background: var(--td);
+        border-color: var(--teal);
+        color: var(--w);
+      }
+      .chip:hover,
+      .chip:focus-visible {
+        border-color: var(--teal);
+      }
+      .stage {
+        border: 1px solid var(--bd);
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: radial-gradient(circle at 50% 45%, #1a1206 0%, #0b0f1a 72%);
+      }
+      .stage svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .feature-hit {
+        cursor: pointer;
+      }
+      .feature-hit:hover .feature-shape,
+      .feature-hit:focus-visible .feature-shape {
+        stroke: var(--w);
+        stroke-width: 2.5;
+      }
+      .feature-shape {
+        transition:
+          stroke 0.15s,
+          stroke-width 0.15s;
+      }
+      .body-label {
+        font-family: var(--font-display);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        fill: var(--w);
+      }
+      .body-sub {
+        font-family: var(--font-body);
+        font-size: 11px;
+        fill: rgba(237, 234, 227, 0.82);
+      }
+      .small-label {
+        font-family: var(--font-body);
+        font-size: 10.5px;
+        fill: var(--mb);
+      }
+      .pill {
+        fill: rgba(11, 15, 26, 0.88);
+        stroke: var(--bm);
+      }
+      .pill-text {
+        font-family: var(--font-body);
+        font-size: 11px;
+        fill: var(--w);
+      }
+      .info h3 {
+        font-family: var(--font-display);
+        font-size: 1.4rem;
+        color: var(--amber);
+        margin-bottom: 0.5rem;
+      }
+      .info p {
+        color: var(--mb);
+        margin-bottom: 1rem;
+      }
+      .facts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+        margin-bottom: 1.25rem;
+      }
+      @media (max-width: 540px) {
+        .facts {
+          grid-template-columns: 1fr;
+        }
+      }
+      .fact,
+      .metric {
+        background: var(--lift);
+        border: 1px solid var(--bd);
+        border-radius: var(--radius);
+        padding: 0.75rem;
+      }
+      .fact b,
+      .metric b {
+        display: block;
+        font-family: var(--font-display);
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--mb);
+        margin-bottom: 0.2rem;
+      }
+      .plain-list {
+        list-style: none;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .plain-list li {
+        position: relative;
+        padding-left: 1.25rem;
+        color: var(--mb);
+        line-height: 1.65;
+      }
+      .plain-list li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.72em;
+        width: 0.5rem;
+        height: 1px;
+        background: var(--teal);
+      }
+      .plain-list strong {
+        color: var(--w);
+        font-weight: 600;
+      }
+      .subhead {
+        font-family: var(--font-display);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--mb);
+        margin: 1.25rem 0 0.6rem;
+      }
+      .alert-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+      @media (max-width: 700px) {
+        .alert-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .alert {
+        background: var(--lift);
+        border: 1px solid var(--bd);
+        border-left: 3px solid var(--green);
+        border-radius: var(--radius);
+        padding: 0.85rem;
+      }
+      .alert.amber {
+        border-left-color: var(--amber);
+      }
+      .alert h4 {
+        font-family: var(--font-display);
+        font-size: 0.95rem;
+        margin-bottom: 0.2rem;
+      }
+      .alert p {
+        font-size: 0.85rem;
+        color: var(--mb);
+        line-height: 1.55;
+      }
+      .alert .level {
+        font-family: var(--font-display);
+        font-weight: 700;
+        color: var(--green);
+      }
+      .alert.amber .level {
+        color: var(--amber);
+      }
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+        margin-bottom: 1.25rem;
+      }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.8rem;
+        color: var(--mb);
+        margin-bottom: 0.5rem;
+      }
+      .status-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--amber);
+        box-shadow: 0 0 8px var(--amber);
+      }
+      .status.ok .status-dot {
+        background: var(--green);
+        box-shadow: 0 0 8px var(--green);
+      }
+      .status.error .status-dot {
+        background: var(--coral);
+        box-shadow: 0 0 8px var(--coral);
+      }
+      .solar-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      @media (max-width: 900px) {
+        .solar-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .solar-card {
+        background: var(--lift);
+        border: 1px solid var(--bd);
+        border-radius: var(--radius);
+        padding: 1rem;
+      }
+      .solar-card h4 {
+        font-family: var(--font-display);
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+      .solar-card .sub {
+        font-size: 0.75rem;
+        color: var(--m);
+        margin-bottom: 0.7rem;
+      }
+      canvas {
+        width: 100%;
+        height: auto;
+        display: block;
+        border: 1px solid var(--bd);
+        border-radius: var(--radius);
+        background: #080c14;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+        margin-top: 0.6rem;
+      }
+      th,
+      td {
+        padding: 0.45rem 0.55rem;
+        border-bottom: 1px solid var(--bd);
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        font-family: var(--font-display);
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--mb);
+      }
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 0.65rem;
+        background: var(--ink2);
+        border: 1px solid var(--bd);
+        border-radius: 6px;
+        color: var(--w);
+        margin: 0.4rem 0 0.8rem;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--teal);
+      }
+      .img-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+        gap: 0.7rem;
+        margin-top: 0.6rem;
+      }
+      .img-grid img {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid var(--bd);
+        background: #000;
+      }
+      .note {
+        margin-top: 1.5rem;
+        padding: 1rem 1.25rem;
+        background: var(--ink2);
+        border: 1px solid var(--bd);
+        border-radius: var(--radius);
+        color: var(--mb);
+        font-size: 0.92rem;
+      }
+      .note strong {
+        color: var(--w);
+      }
+      .warning {
+        border-left: 3px solid var(--coral);
+      }
+      .warning strong {
+        color: var(--coral);
+      }
+      :focus-visible {
+        outline: 3px solid var(--focus);
+        outline-offset: 3px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <p class="kicker">Sun Explorer</p>
+      <h1>The Sun: structure, activity and live space weather</h1>
+      <p class="lead">
+        Explore the Sun’s interior and atmosphere, then open
+        <strong>Solar activity</strong> for a live NOAA SWPC dashboard, active regions,
+        solar-cycle data, GOES X-rays, NASA DONKI CMEs, solar wind at L1 and latest
+        SDO/SOHO imagery.
+      </p>
+      <div class="layout">
+        <section class="panel">
+          <div class="controls" role="group" aria-label="Diagram view">
+            <button class="chip" data-view="structure" aria-pressed="true">
+              Sun structure
+            </button>
+            <button class="chip" data-view="activity" aria-pressed="false">
+              Surface activity
+            </button>
+            <button class="chip" data-view="eruptions" aria-pressed="false">
+              Flares & CMEs
+            </button>
+            <button class="chip" data-view="spaceWeather" aria-pressed="false">
+              Solar activity
+            </button>
+          </div>
+          <div id="stage" class="stage" aria-live="polite"></div>
+          <p class="note warning">
+            <strong
+              >Never look at the Sun through binoculars, a telescope or a camera without a
+              certified solar filter securely fitted over the front of the
+              instrument.</strong
+            >
+            Eclipse glasses meeting ISO 12312-2 are for naked-eye use only.
+          </p>
+        </section>
+        <aside class="panel info" id="info" aria-live="polite"></aside>
+      </div>
+    </main>
+    <script>
+      const features = [
+        {
+          name: "Core",
+          color: "#FF8080",
+          temp: "About 15 million °C",
+          scale: "Inner 25% of the Sun’s radius",
+          summary:
+            "The Sun’s central engine, where nuclear fusion converts hydrogen into helium and releases the energy that makes the Sun shine.",
+          science: [
+            "Temperatures reach about 15 million °C and pressures are immense.",
+            "Hydrogen nuclei fuse into helium through the proton–proton chain.",
+            "Energy initially travels outward as high-energy gamma rays.",
+            "The core contains roughly one-third of the Sun’s mass.",
+          ],
+          context: [
+            "Fusion has powered the Sun for about 4.6 billion years.",
+            "The Sun converts roughly 4 million tonnes of mass into energy every second.",
+            "Energy generated here takes thousands to hundreds of thousands of years to reach the surface.",
+          ],
+        },
+        {
+          name: "Radiative zone",
+          color: "#F5A623",
+          temp: "About 7 million °C near the core to 2 million °C outward",
+          scale: "About 25–70% of the Sun’s radius",
+          summary:
+            "A dense interior region where energy travels outward mainly by radiation.",
+          science: [
+            "Photons random-walk outward through extremely dense plasma.",
+            "The journey from core to the top of this zone can take thousands to hundreds of thousands of years.",
+            "Temperature and pressure fall with distance from the core.",
+            "Energy is transported primarily by radiation rather than bulk motion.",
+          ],
+          context: [
+            "This region lies between the core and convective zone.",
+            "Its properties are inferred from solar models and helioseismology.",
+            "It determines how efficiently energy escapes the solar interior.",
+          ],
+        },
+        {
+          name: "Convective zone",
+          color: "#F5A623",
+          temp: "About 2 million °C to 5,500 °C",
+          scale: "Outer 30% of the Sun’s radius",
+          summary:
+            "The Sun’s outer interior, where hot plasma rises, cools and sinks in enormous circulating cells.",
+          science: [
+            "Rising plasma carries heat toward the photosphere; cooled plasma sinks again.",
+            "This motion generates and reshapes the Sun’s magnetic field.",
+            "The boundary with the radiative zone is called the tachocline.",
+            "Granulation on the photosphere is the visible top of convection cells.",
+          ],
+          context: [
+            "Convection helps drive the solar dynamo and 11-year activity cycle.",
+            "Magnetic fields become buoyant and emerge as sunspots and active regions.",
+            "It is central to the processes that produce flares and CMEs.",
+          ],
+        },
+        {
+          name: "Photosphere",
+          color: "#FDE68A",
+          temp: "About 5,500 °C",
+          scale: "Visible surface; about 400 km thick",
+          summary:
+            "The apparent surface of the Sun, from which most visible light escapes into space.",
+          science: [
+            "It is not solid; it is the depth at which the Sun becomes transparent to visible light.",
+            "Granules are convection cells roughly 1,000 km across.",
+            "Sunspots are cooler, strongly magnetised regions that appear dark by contrast.",
+            "Visible sunlight reaches Earth after about 8 minutes 20 seconds.",
+          ],
+          context: [
+            "Sunspots often occur in pairs or groups with opposite magnetic polarity.",
+            "Active regions around sunspots are the main sources of flares.",
+            "Sunspot number and area rise and fall over the 11-year solar cycle.",
+          ],
+        },
+        {
+          name: "Chromosphere",
+          color: "#FF8080",
+          temp: "About 4,500 °C to 20,000 °C, rising higher up",
+          scale: "About 2,000 km thick",
+          summary:
+            "A reddish atmospheric layer above the photosphere, visible during eclipses or through hydrogen-alpha filters.",
+          science: [
+            "Its name means ‘sphere of colour’ because of its red hydrogen-alpha glow.",
+            "Spicules are short-lived plasma jets rising into the corona.",
+            "Magnetic fields channel plasma and heat through the layer.",
+            "Temperature rises with altitude, unlike the layers below.",
+          ],
+          context: [
+            "Prominences are large cooler plasma structures supported by magnetic fields.",
+            "Chromospheric observations help identify active regions before flares.",
+            "It is usually invisible against the much brighter photosphere.",
+          ],
+        },
+        {
+          name: "Corona",
+          color: "#F5A623",
+          temp: "1–3 million °C and above",
+          scale: "Extends millions of kilometres into space",
+          summary:
+            "The Sun’s extremely hot, tenuous outer atmosphere, visible during total eclipses and by coronagraphs.",
+          science: [
+            "The corona is much hotter than the photosphere, a major unsolved problem in solar physics.",
+            "Magnetic fields shape bright loops, streamers and coronal holes.",
+            "Coronal holes are open-field regions that emit fast solar wind.",
+            "The solar wind carries plasma and magnetic field outward through the Solar System.",
+          ],
+          context: [
+            "CMEs launch billions of tonnes of plasma and magnetic field into space.",
+            "Earth-directed CMEs can disturb the magnetosphere and cause geomagnetic storms.",
+            "The corona is best studied with coronagraphs, which block the bright solar disc.",
+          ],
+        },
+      ];
+      const stage = document.getElementById("stage"),
+        info = document.getElementById("info");
+      let view = "structure",
+        selected = 3;
+      const W = 780,
+        H = 560,
+        cx = W / 2,
+        cy = 290;
+      function starfield(n = 110) {
+        let s = "";
+        for (let i = 0; i < n; i++) {
+          const x = Math.random() * W,
+            y = Math.random() * H,
+            r = Math.random() * 1.3 + 0.25,
+            o = (Math.random() * 0.55 + 0.3).toFixed(2);
+          s += `<circle class="star" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(2)}" opacity="${o}"/>`;
+        }
+        return s;
+      }
+      function pill(x, y, text) {
+        return `<rect class="pill" x="${x}" y="${y - 13}" width="${text.length * 6.1 + 22}" height="24" rx="12"/><text class="pill-text" x="${x + 11}" y="${y + 3}">${text}</text>`;
+      }
+      function planetSVG(p, x, y, r) {
+        const gid = "g" + p.name.replace(/\W/g, "");
+        return `<defs><radialGradient id="${gid}" cx="35%" cy="30%"><stop offset="0" stop-color="${p.color}"/><stop offset="1" stop-color="${p.color}" stop-opacity=".4"/></radialGradient></defs><circle cx="${x}" cy="${y}" r="${r}" fill="url(#${gid})" stroke="${p.color}"/>`;
+      }
+      function structureSVG() {
+        const R = 170;
+        let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cutaway illustration of the Sun">${starfield()}`;
+        s += `<defs><radialGradient id="sunGlow" cx="50%" cy="50%"><stop offset="0" stop-color="#FDE68A" stop-opacity=".95"/><stop offset=".65" stop-color="#F5A623" stop-opacity=".55"/><stop offset="1" stop-color="#F5A623" stop-opacity="0"/></radialGradient></defs><circle cx="${cx}" cy="${cy}" r="${R + 72}" fill="url(#sunGlow)"/>`;
+        const shells = [
+          { r: R + 65, c: "rgba(245,166,35,.10)", l: "Corona", f: 5 },
+          { r: R + 22, c: "rgba(255,128,128,.16)", l: "Chromosphere", f: 4 },
+          { r: R, c: "#FDE68A", l: "Photosphere", f: 3 },
+          { r: R - 45, c: "#F5A623", l: "Convective zone", f: 2 },
+          { r: R - 115, c: "#C77D02", l: "Radiative zone", f: 1 },
+          { r: R - 150, c: "#FF8080", l: "Core", f: 0 },
+        ];
+        shells.forEach(
+          (x) =>
+            (s += `<circle cx="${cx}" cy="${cy}" r="${x.r}" fill="${x.c}" stroke="rgba(255,255,255,.18)"/>`),
+        );
+        s += `<path d="M${cx} ${cy} L${cx + R + 65} ${cy - (R + 65) * 0.42} A${R + 65} ${R + 65} 0 0 1 ${cx + R + 65} ${cy + (R + 65) * 0.42} Z" fill="rgba(11,15,26,.86)" stroke="rgba(255,255,255,.12)"/>`;
+        shells.forEach(
+          (sh, i) =>
+            (s += `<g class="feature-hit" tabindex="0" role="button" aria-label="${sh.l}" data-feature="${sh.f}"><circle class="feature-shape" cx="${cx}" cy="${cy}" r="${Math.max(4, sh.r)}" fill="transparent" stroke="${i < 3 ? "#F5A623" : "#FF8080"}" stroke-opacity=".55"/></g>`),
+        );
+        [
+          [-58, -42],
+          [-22, -68],
+          [35, -28],
+          [12, 38],
+          [-45, 25],
+        ].forEach(
+          ([dx, dy], i) =>
+            (s += `<circle cx="${cx + dx}" cy="${cy + dy}" r="${5 + (i % 3)}" fill="#7c2d12" opacity=".85"/>`),
+        );
+        s +=
+          `<g class="feature-hit" tabindex="0" role="button" aria-label="Sunspots and active regions" data-feature="3"><circle class="feature-shape" cx="${cx - 40}" cy="${cy - 55}" r="14" fill="transparent" stroke="#FF8080"/></g>` +
+          pill(cx + R - 38, cy - 160, "Sunspots and active regions") +
+          pill(cx + R - 58, cy + 165, "Coronal loops and solar wind");
+        s += `<path d="M${cx + 90} ${cy - 115} q45 -35 105 -25" stroke="#F5A623" stroke-width="2.5" fill="none" opacity=".8"/><path d="M${cx + 70} ${cy + 95} q55 40 120 28" stroke="#F5A623" stroke-width="2.5" fill="none" opacity=".8"/><text class="body-label" x="30" y="34">THE SUN — CUTAWAY VIEW</text><text class="small-label" x="30" y="${H - 16}">Not to scale. The core, radiative zone and convective zone form the interior; the photosphere, chromosphere and corona form the atmosphere.</text></svg>`;
+        return s;
+      }
+      function activitySVG() {
+        let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Illustration of sunspots, granulation and magnetic loops">${starfield()}`;
+        s += `<defs><radialGradient id="disc" cx="38%" cy="32%"><stop offset="0" stop-color="#FDE68A"/><stop offset=".65" stop-color="#F5A623"/><stop offset="1" stop-color="#B45309"/></radialGradient></defs><circle cx="${cx}" cy="${cy}" r="195" fill="url(#disc)"/>`;
+        for (let i = 0; i < 160; i++) {
+          const a = Math.random() * 6.283,
+            r = Math.sqrt(Math.random()) * 180;
+          s += `<circle cx="${(cx + r * Math.cos(a)).toFixed(1)}" cy="${(cy + r * Math.sin(a)).toFixed(1)}" r="${(Math.random() * 2 + 1).toFixed(1)}" fill="#FDE68A" opacity="${(Math.random() * 0.35 + 0.15).toFixed(2)}"/>`;
+        }
+        [
+          [cx - 72, cy - 48, 13],
+          [cx - 35, cy - 72, 8],
+          [cx + 42, cy - 25, 10],
+          [cx + 16, cy + 48, 12],
+          [cx - 48, cy + 35, 7],
+        ].forEach(
+          ([x, y, r]) =>
+            (s += `<g class="feature-hit" tabindex="0" role="button" aria-label="Sunspot group" data-feature="3"><circle class="feature-shape" cx="${x}" cy="${y}" r="${r}" fill="#7c2d12" stroke="#431407" stroke-width="2"/><circle cx="${x}" cy="${y}" r="${r * 0.45}" fill="#1c0a04"/></g>`),
+        );
+        s +=
+          `<path d="M${cx - 72} ${cy - 48} q45 -70 120 -28" stroke="#FF8080" stroke-width="3" fill="none" opacity=".85"/><path d="M${cx + 42} ${cy - 25} q60 65 125 22" stroke="#FF8080" stroke-width="3" fill="none" opacity=".75"/>` +
+          pill(40, 52, "Granulation: convection cells") +
+          pill(40, 88, "Sunspots: cooler, magnetised regions") +
+          pill(40, 124, "Magnetic loops connect opposite polarities") +
+          `<text class="small-label" x="30" y="${H - 18}">Illustrative solar disc. Sunspot number, area and magnetic complexity vary through the 11-year solar cycle.</text></svg>`;
+        return s;
+      }
+      function eruptionsSVG() {
+        let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Illustration of a solar flare and coronal mass ejection">${starfield()}`;
+        s +=
+          `<defs><radialGradient id="sunE" cx="50%" cy="50%"><stop offset="0" stop-color="#FDE68A"/><stop offset=".7" stop-color="#F5A623"/><stop offset="1" stop-color="#B45309"/></radialGradient></defs><circle cx="${cx - 165}" cy="${cy}" r="125" fill="url(#sunE)"/><path d="M${cx - 70} ${cy - 45} q95 -70 185 -20" stroke="#FF8080" stroke-width="5" fill="none"/><path d="M${cx - 70} ${cy + 45} q95 45 185 20" stroke="#FF8080" stroke-width="5" fill="none"/><path d="M${cx - 45} ${cy - 25} q135 -55 255 -5 q-115 65 -255 5 Z" fill="rgba(255,128,128,.35)" stroke="#FF8080" stroke-width="3"/>` +
+          pill(430, 105, "Coronal mass ejection (CME)") +
+          pill(430, 145, "Plasma and embedded magnetic field") +
+          pill(430, 185, "May reach Earth in roughly 1–4 days") +
+          pill(430, 245, "Solar flare: sudden magnetic-energy release") +
+          pill(430, 285, "X-rays reach Earth in about 8 minutes") +
+          pill(430, 325, "Can cause dayside radio blackouts") +
+          `<circle cx="${cx + 390}" cy="${cy}" r="24" fill="#38BDF8"/><text class="body-label" x="${cx + 372}" y="${cy + 45}">EARTH</text><text class="small-label" x="30" y="${H - 18}">A flare is a radiation burst; a CME is a massive plasma-and-field eruption. They do not always occur together.</text></svg>`;
+        return s;
+      }
+      function spaceWeatherSVG() {
+        return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Live solar activity dashboard illustration">${starfield()}<circle cx="${cx}" cy="${cy}" r="150" fill="#F5A623"/><circle cx="${cx}" cy="${cy}" r="165" fill="#F5A623" opacity=".18"/>${pill(cx - 140, cy - 190, "Live NOAA SWPC indicators")}${pill(cx - 120, cy + 180, "NASA DONKI CME data")}<text class="body-label" x="${cx - 38}" y="${cy + 8}">THE SUN</text><text class="small-label" x="30" y="${H - 18}">Open the Solar activity tab for the live dashboard, charts, active regions and CME transit calculator.</text></svg>`;
+      }
+      async function fetchJSON(url) {
+        const r = await fetch(url);
+        if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+        return r.json();
+      }
+      function levelFromKp(kp) {
+        return kp >= 8
+          ? ["G4+ severe", "coral"]
+          : kp >= 7
+            ? ["G3 strong", "coral"]
+            : kp >= 6
+              ? ["G2 moderate", "amber"]
+              : kp >= 5
+                ? ["G1 minor", "amber"]
+                : ["G0 none", "green"];
+      }
+      function levelFromFlux(f) {
+        return f >= 1e-2
+          ? ["R3 strong", "coral"]
+          : f >= 1e-3
+            ? ["R2 moderate", "coral"]
+            : f >= 1e-4
+              ? ["R1 minor", "amber"]
+              : ["R0 none", "green"];
+      }
+      function levelFromProtons(p) {
+        return p >= 100
+          ? ["S3 strong", "coral"]
+          : p >= 10
+            ? ["S1 minor", "amber"]
+            : ["S0 none", "green"];
+      }
+      function drawLineChart(canvas, series, labels) {
+        const c = canvas.getContext("2d"),
+          dpr = devicePixelRatio || 1,
+          W = canvas.clientWidth || 600,
+          H = canvas.clientHeight || 220;
+        canvas.width = W * dpr;
+        canvas.height = H * dpr;
+        c.scale(dpr, dpr);
+        c.clearRect(0, 0, W, H);
+        const pad = { l: 46, r: 14, t: 16, b: 28 },
+          x0 = pad.l,
+          x1 = W - pad.r,
+          y0 = pad.t,
+          y1 = H - pad.b;
+        c.strokeStyle = "rgba(255,255,255,.12)";
+        c.fillStyle = "#9AA4B8";
+        c.font = "10px Inter";
+        for (let i = 0; i <= 4; i++) {
+          const y = y0 + ((y1 - y0) * i) / 4;
+          c.beginPath();
+          c.moveTo(x0, y);
+          c.lineTo(x1, y);
+          c.stroke();
+          c.fillText(labels.max ? labels.max(i) : "", 4, y + 3);
+        }
+        series.forEach((s, i) => {
+          if (!s.data.length) return;
+          const vals = s.data.map((d) => d[1]),
+            min = Math.min(...vals, s.min ?? Infinity),
+            max = Math.max(...vals, s.max ?? -Infinity);
+          const xv = (j) => x0 + (j / (s.data.length - 1 || 1)) * (x1 - x0),
+            yv = (v) => y1 - ((v - min) / (max - min || 1)) * (y1 - y0);
+          c.beginPath();
+          s.data.forEach((d, j) =>
+            j ? c.lineTo(xv(j), yv(d[1])) : c.moveTo(xv(j), yv(d[1])),
+          );
+          c.strokeStyle = s.color;
+          c.lineWidth = 2;
+          c.stroke();
+        });
+      }
+      async function loadSolarActivity() {
+        const status = document.getElementById("solStatus");
+        status.textContent = "Loading live NOAA SWPC and NASA DONKI data…";
+        let ok = 0,
+          fail = 0;
+        const done = () =>
+          (status.textContent = fail
+            ? `${ok} feeds loaded · ${fail} unavailable`
+            : "All available feeds loaded");
+        try {
+          const kp = await fetchJSON(
+            "https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json",
+          );
+          const rows = kp
+            .slice(1)
+            .map((r) => [r[0], +r[1]])
+            .filter((r) => Number.isFinite(r[1]));
+          const now = rows.at(-1)[1],
+            max = Math.max(...rows.slice(-24).map((r) => r[1]));
+          const [label] = levelFromKp(max);
+          document.getElementById("solScales").innerHTML =
+            `<div class="metric"><b>Radio blackouts</b><span id="radioLevel">Loading</span></div><div class="metric"><b>Radiation storm</b><span id="stormLevel">Loading</span></div><div class="metric"><b>Geomagnetic storm</b>${label} · Kp ${now.toFixed(1)} · 24 h max ${max.toFixed(1)}</div>`;
+          drawLineChart(
+            document.getElementById("solOutlook"),
+            [{ data: rows.slice(-72), color: "#38BDF8" }],
+            {},
+          );
+          ok++;
+        } catch (e) {
+          document.getElementById("solScales").innerHTML =
+            '<div class="metric"><b>NOAA Kp</b>Unavailable</div>';
+          fail++;
+        }
+        try {
+          const xr = await fetchJSON(
+            "https://services.swpc.noaa.gov/json/goes/primary/xrays-1-day.json",
+          );
+          const long = xr.filter((r) => r.flux).map((r) => [r.time_tag, +r.flux]);
+          const now = long.at(-1)[1],
+            max = Math.max(...long.map((r) => r[1]));
+          const [label] = levelFromFlux(max);
+          document.getElementById("radioLevel").textContent = label;
+          drawLineChart(
+            document.getElementById("solXray"),
+            [{ data: long, color: "#F5A623" }],
+            {},
+          );
+          document.getElementById("solFlareFacts").innerHTML =
+            `<div class="metric"><b>X-ray now</b>${now.toExponential(1)}</div><div class="metric"><b>24-hour peak</b>${max.toExponential(1)}</div>`;
+          ok++;
+        } catch (e) {
+          document.getElementById("radioLevel").textContent = "Unavailable";
+          document.getElementById("solFlareFacts").innerHTML =
+            '<div class="metric"><b>GOES X-ray</b>Unavailable</div>';
+          fail++;
+        }
+        try {
+          const pr = await fetchJSON(
+            "https://services.swpc.noaa.gov/json/goes/primary/integral-protons-1-day.json",
+          );
+          const p10 = pr
+            .filter((r) => r.energy === ">=10 MeV")
+            .map((r) => +r.flux)
+            .filter(Number.isFinite);
+          const now = p10.at(-1) || 0,
+            max = Math.max(...p10, 0);
+          const [label] = levelFromProtons(max);
+          document.getElementById("stormLevel").textContent = label;
+          ok++;
+        } catch (e) {
+          document.getElementById("stormLevel").textContent = "Unavailable";
+          fail++;
+        }
+        try {
+          const p = await fetchJSON(
+            "https://services.swpc.noaa.gov/json/solar-probabilities.json",
+          );
+          const d = Array.isArray(p) ? p.at(-1) : p;
+          const get = (k) => (d && d[k] != null ? Math.round(d[k] * 100) + "%" : "—");
+          document.getElementById("solDays").innerHTML =
+            `<div class="metric-grid"><div class="metric"><b>M-class flare</b>${get("m_probability")}</div><div class="metric"><b>C-class flare</b>${get("c_probability")}</div><div class="metric"><b>X-class flare</b>${get("x_probability")}</div><div class="metric"><b>S1 proton</b>${get("s1_probability")}</div></div>`;
+          ok++;
+        } catch (e) {
+          document.getElementById("solDays").innerHTML =
+            '<div class="metric"><b>Flare outlook</b>Unavailable</div>';
+          fail++;
+        }
+        try {
+          const cyc = await fetchJSON(
+            "https://services.swpc.noaa.gov/json/solar-cycle/solar-cycle.json",
+          );
+          const rows = cyc.map((r) => [r["time-tag"], +r["ssn"] || 0]);
+          drawLineChart(
+            document.getElementById("solCycle"),
+            [{ data: rows, color: "#00C2A8" }],
+            {},
+          );
+          const latest = rows.filter((r) => r[1]).at(-1);
+          document.getElementById("solCycleFacts").innerHTML =
+            `<div class="metric"><b>Latest monthly SSN</b>${latest ? latest[1] : "—"}</div><div class="metric"><b>Data points</b>${rows.length}</div>`;
+          ok++;
+        } catch (e) {
+          document.getElementById("solCycleFacts").innerHTML =
+            '<div class="metric"><b>Solar cycle</b>Unavailable</div>';
+          fail++;
+        }
+        try {
+          const regions = await fetchJSON(
+            "https://services.swpc.noaa.gov/json/solar_regions.json",
+          );
+          const rows = regions
+            .map(
+              (r) =>
+                `<tr><td>${r.region_id || "—"}</td><td>${r.latitude ?? ""}${r.latitude >= 0 ? "N" : "S"}${Math.abs(r.longitude ?? 0)}${r.longitude >= 0 ? "E" : "W"}</td><td>${r.spots ?? ""}</td><td>${r.area ?? ""}</td><td>${r.magnetic_class || "—"}</td></tr>`,
+            )
+            .join("");
+          document.getElementById("solRegions").innerHTML =
+            `<thead><tr><th>Region</th><th>Location</th><th>Spots</th><th>Area</th><th>Magnetic</th></tr></thead><tbody>${rows}</tbody>`;
+          document.getElementById("solSpotFacts").innerHTML =
+            `<div class="metric"><b>Numbered regions</b>${regions.length}</div>`;
+          ok++;
+        } catch (e) {
+          document.getElementById("solRegions").innerHTML =
+            "<tbody><tr><td>NOAA active-region data unavailable.</td></tr></tbody>";
+          fail++;
+        }
+        try {
+          const wind = await fetchJSON(
+            "https://services.swpc.noaa.gov/products/solar-wind/plasma-2-hour.json",
+          );
+          const rows = wind
+            .slice(1)
+            .map((r) => [r[0], +r[2]])
+            .filter((r) => Number.isFinite(r[1]));
+          const density = wind
+            .slice(1)
+            .map((r) => [r[0], +r[3]])
+            .filter((r) => Number.isFinite(r[1]));
+          drawLineChart(
+            document.getElementById("solWind"),
+            [
+              { data: rows, color: "#F5A623" },
+              { data: density, color: "#38BDF8" },
+            ],
+            {},
+          );
+          const speed = rows.at(-1)[1],
+            dens = density.at(-1)[1];
+          document.getElementById("solWindFacts").innerHTML =
+            `<div class="metric"><b>Speed</b>${Math.round(speed)} km/s</div><div class="metric"><b>Density</b>${dens.toFixed(1)} p/cm³</div>`;
+          ok++;
+        } catch (e) {
+          document.getElementById("solWindFacts").innerHTML =
+            '<div class="metric"><b>Solar wind</b>Unavailable</div>';
+          fail++;
+        }
+        const key = (document.getElementById("nasaKey").value || "DEMO_KEY").trim(),
+          start = new Date(Date.now() - 3 * 864e5).toISOString().slice(0, 10),
+          end = new Date().toISOString().slice(0, 10);
+        try {
+          const cme = await fetchJSON(
+            `https://api.nasa.gov/DONKI/CME?startDate=${start}&endDate=${end}&api_key=${encodeURIComponent(key)}`,
+          );
+          document.getElementById("solCme").innerHTML =
+            `<thead><tr><th>Event</th><th>Start</th><th>Estimated speed</th></tr></thead><tbody>${
+              cme.length
+                ? cme
+                    .slice(-8)
+                    .reverse()
+                    .map(
+                      (c) =>
+                        `<tr><td>${c.activityID || "—"}</td><td>${c.startTime ? new Date(c.startTime).toUTCString() : "—"}</td><td>${c.cmeAnalyses?.[0]?.speed ? Math.round(c.cmeAnalyses[0].speed) + " km/s" : "—"}</td></tr>`,
+                    )
+                    .join("")
+                : "<tr><td colspan=3>No CMEs listed in the selected three-day window.</td></tr>"
+            }</tbody>`;
+          ok++;
+        } catch (e) {
+          document.getElementById("solCme").innerHTML =
+            "<tbody><tr><td>NASA DONKI is unavailable or rate-limited. Add a free api.nasa.gov key for greater reliability.</td></tr></tbody>";
+          fail++;
+        }
+        done();
+      }
+      function render() {
+        const views = {
+          structure: structureSVG,
+          activity: activitySVG,
+          eruptions: eruptionsSVG,
+          spaceWeather: spaceWeatherSVG,
+        };
+        stage.innerHTML = views[view]();
+        stage.querySelectorAll(".feature-hit").forEach((el) => {
+          const go = () => {
+            selected = +el.dataset.feature;
+            show();
+          };
+          el.addEventListener("click", (e) => {
+            e.stopPropagation();
+            go();
+          });
+          el.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              go();
+            }
+          });
+        });
+        show();
+      }
+      function show() {
+        if (view === "spaceWeather") {
+          info.innerHTML = `<h3>Solar activity</h3><p class="status" id="solStatus">Loading live NOAA SWPC and NASA DONKI data…</p><div id="solScales" class="metric-grid"></div><div id="solDays"></div><div class="solar-grid">
+ <div class="solar-card"><h4>GOES X-rays, last 24 hours</h4><p class="sub">X-ray flux and 24-hour peak</p><canvas id="solXray" width="600" height="220"></canvas><div id="solFlareFacts" class="metric-grid" style="margin-top:.6rem"></div></div>
+ <div class="solar-card"><h4>Solar cycle</h4><p class="sub">Monthly sunspot number</p><canvas id="solCycle" width="600" height="220"></canvas><div id="solCycleFacts" class="metric-grid" style="margin-top:.6rem"></div></div>
+ <div class="solar-card"><h4>Planetary K-index</h4><p class="sub">Recent geomagnetic activity</p><canvas id="solOutlook" width="600" height="220"></canvas></div>
+ <div class="solar-card"><h4>Solar wind at L1</h4><p class="sub">Recent speed and density</p><canvas id="solWind" width="600" height="220"></canvas><div id="solWindFacts" class="metric-grid" style="margin-top:.6rem"></div></div>
+ <div class="solar-card"><h4>Sunspots and active regions</h4><p class="sub">NOAA numbered regions</p><div id="solSpotFacts" class="metric-grid"></div><div style="overflow-x:auto"><table id="solRegions"></table></div></div>
+ <div class="solar-card"><h4>Coronal mass ejections</h4><p class="sub">NASA DONKI, past three days</p><div style="overflow-x:auto"><table id="solCme"></table></div><label class="body-sub" for="nasaKey">NASA API key (optional; free at api.nasa.gov)</label><input id="nasaKey" type="text" placeholder="DEMO_KEY" autocomplete="off" spellcheck="false"><label class="body-sub" for="cmeSpeed">Transit calculator: CME speed <output id="cmeSpeedO">1,000 km/s</output></label><input id="cmeSpeed" type="range" min="300" max="3000" step="50" value="1000"><p class="body-sub">Sun to Earth: <strong id="cmeCalc">about 53 hours (2.2 days) with drag; 42 hours at constant speed.</strong> Actual arrival can vary by roughly ±10 hours.</p></div>
+ <div class="solar-card"><h4>Images of the Sun</h4><p class="sub">Latest from SDO and SOHO</p><div class="img-grid"><a href="https://sdo.gsfc.nasa.gov/data/" target="_blank" rel="noopener"><img src="https://sdo.gsfc.nasa.gov/assets/img/latest/latest_256_0193.jpg" alt="Latest SDO image of the Sun at 193 ångströms"></a><a href="https://soho.nascom.nasa.gov/data/realtime-images.html" target="_blank" rel="noopener"><img src="https://soho.nascom.nasa.gov/data/realtime/c2/512/latest.jpg" alt="Latest SOHO LASCO C2 coronagraph image"></a></div></div>
+ <div class="solar-card"><h4>Live sources</h4><ul class="plain-list"><li><a href="https://www.swpc.noaa.gov/communities/space-weather-enthusiasts-dashboard" target="_blank" rel="noopener" style="color:var(--teal)">NOAA SWPC space-weather dashboard</a></li><li><a href="https://kauai.ccmc.gsfc.nasa.gov/DONKI/" target="_blank" rel="noopener" style="color:var(--teal)">NASA DONKI CME analysis</a></li><li><a href="https://sdo.gsfc.nasa.gov/data/" target="_blank" rel="noopener" style="color:var(--teal)">SDO live solar images</a></li></ul></div></div>`;
+          const slider = document.getElementById("cmeSpeed"),
+            out = document.getElementById("cmeSpeedO"),
+            calc = document.getElementById("cmeCalc");
+          const update = () => {
+            const v = +slider.value;
+            out.textContent = `${v.toLocaleString()} km/s`;
+            const constant = 1.496e8 / v,
+              hours = constant * 1.18;
+            calc.textContent = `about ${Math.round(hours)} hours (${(hours / 24).toFixed(1)} days) with drag; ${Math.round(constant)} hours at constant speed.`;
+          };
+          slider.addEventListener("input", update);
+          update();
+          loadSolarActivity();
+          return;
+        }
+        const F = features[selected];
+        info.innerHTML = `<h3>${F.name}</h3><p>${F.summary}</p><div class="facts"><div class="fact"><b>Temperature</b>${F.temp}</div><div class="fact"><b>Location / scale</b>${F.scale}</div></div><p class="subhead">Science</p><ul class="plain-list">${F.science.map((t) => `<li>${t}</li>`).join("")}</ul><p class="subhead">Why it matters</p><ul class="plain-list">${F.context.map((t) => `<li>${t}</li>`).join("")}</ul>`;
+      }
+      document.querySelectorAll(".controls .chip").forEach((btn) =>
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".controls .chip")
+            .forEach((b) => b.setAttribute("aria-pressed", "false"));
+          btn.setAttribute("aria-pressed", "true");
+          view = btn.dataset.view;
+          render();
+        }),
+      );
+      render();
+    </script>
+  </body>
+</html>

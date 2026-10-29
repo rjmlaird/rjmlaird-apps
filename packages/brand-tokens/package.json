@@ -1,12 +1,32 @@
 {
   "name": "@rjmlaird/brand-tokens",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
-  "description": "Canonical rjmlaird.co.uk brand tokens, base primitives and Tailwind preset for every app in this repo.",
   "type": "module",
-  "files": ["src", "brand.css", "tailwind-preset.cjs", "reference.html"],
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "exports": {
-    "./brand.css": "./brand.css",
+    ".": "./src/index.ts",
+    "./brand.css": "./css/brand.css",
     "./tailwind-preset": "./tailwind-preset.cjs"
+  },
+  "files": [
+    "src",
+    "css",
+    "icons",
+    "tailwind-preset.cjs"
+  ],
+  "scripts": {
+    "generate": "tsx scripts/generate.ts",
+    "check": "tsx scripts/generate.ts --check",
+    "test": "vitest run",
+    "typecheck": "tsc -p ."
+  },
+  "devDependencies": {
+    "@rjmlaird/tsconfig": "workspace:*",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.3",
+    "vitest": "^3.2.0"
   }
 }

@@ -1,0 +1,2725 @@
+<!doctype html>
+<html lang="en-GB" class="h-full dark">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="theme-color" content="#0B0F1A" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CouncilWatch | UK Local-Government Monitoring Platform</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      /* rjmlaird brand tokens (source: global.css). Palettes are re-mapped, so every
+           existing Tailwind utility (slate/gray/cyan/indigo/emerald/amber/rose...) now
+           resolves to a brand colour. */
+      const ramp = (o) => o;
+      const teal = {
+        50: "#E6FBF8",
+        100: "#C2F5EC",
+        200: "#8FEBDD",
+        300: "#7FE6D4",
+        400: "#33D1BA",
+        500: "#00C2A8",
+        600: "#00C2A8",
+        700: "#00A68F",
+        800: "#007F6D",
+        900: "#005348",
+        950: "#00302A",
+      };
+      const sky = {
+        50: "#E8F7FE",
+        100: "#C8ECFC",
+        200: "#9ADBF9",
+        300: "#7DD3FC",
+        400: "#38BDF8",
+        500: "#1FA5E3",
+        600: "#1589BF",
+        700: "#106B97",
+        800: "#0C506F",
+        900: "#083A52",
+        950: "#04222F",
+      };
+      const violet = {
+        50: "#F3EFFF",
+        100: "#E6DEFF",
+        200: "#D3C6FE",
+        300: "#C4B5FD",
+        400: "#A78BFA",
+        500: "#8B6FF0",
+        600: "#6F52D6",
+        700: "#5740AB",
+        800: "#3F2F7C",
+        900: "#2A2058",
+        950: "#191236",
+      };
+      const green = {
+        50: "#EBFCF1",
+        100: "#CFF8DD",
+        200: "#A6F0C0",
+        300: "#86EFAC",
+        400: "#4ADE80",
+        500: "#3BC470",
+        600: "#2C9E58",
+        700: "#217944",
+        800: "#185A33",
+        900: "#103D23",
+        950: "#082316",
+      };
+      const amber = {
+        50: "#FEF6E6",
+        100: "#FDEBC8",
+        200: "#FBD895",
+        300: "#F9C566",
+        400: "#F5A623",
+        500: "#E0950F",
+        600: "#B87A0C",
+        700: "#8F5F0B",
+        800: "#6B470A",
+        900: "#4A3107",
+        950: "#2B1C04",
+      };
+      const coral = {
+        50: "#FFF1F1",
+        100: "#FFE0E0",
+        200: "#FFC7C7",
+        300: "#FFB3B3",
+        400: "#FF8080",
+        500: "#F26363",
+        600: "#D14B4B",
+        700: "#A93A3A",
+        800: "#7F2C2C",
+        900: "#561F1F",
+        950: "#331212",
+      };
+      const slate = {
+        50: "#F6F4EF",
+        100: "#EDEAE3",
+        200: "#D8DBE2",
+        300: "#BAC2D1",
+        400: "#9AA4B8",
+        500: "#8A98B2",
+        600: "#2F3B57",
+        700: "#1F2940",
+        800: "#141B29",
+        900: "#0F1520",
+        950: "#0B0F1A",
+      };
+      const gray = {
+        50: "#F6F4EF",
+        100: "#EDEAE3",
+        200: "#D8DBE2",
+        300: "#BAC2D1",
+        400: "#9AA4B8",
+        500: "#8A98B2",
+        600: "#34405C",
+        700: "#252F48",
+        800: "#1E2740",
+        900: "#141B29",
+        950: "#0B0F1A",
+      };
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+              display: [
+                "Space Grotesk",
+                "system-ui",
+                "-apple-system",
+                "Segoe UI",
+                "sans-serif",
+              ],
+              mono: [
+                "JetBrains Mono",
+                "ui-monospace",
+                "SFMono-Regular",
+                "Menlo",
+                "Consolas",
+                "monospace",
+              ],
+            },
+            borderRadius: {
+              none: "0",
+              sm: "2px",
+              DEFAULT: "3px",
+              md: "3px",
+              lg: "6px",
+              xl: "6px",
+              "2xl": "6px",
+              full: "9999px",
+            },
+            colors: {
+              white: "#EDEAE3",
+              slate,
+              gray,
+              zinc: slate,
+              neutral: slate,
+              teal,
+              cyan: teal,
+              brand: teal,
+              sky,
+              blue: sky,
+              violet,
+              purple: violet,
+              indigo: violet,
+              green,
+              emerald: green,
+              amber,
+              yellow: amber,
+              orange: amber,
+              coral,
+              rose: coral,
+              red: coral,
+              space: {
+                900: "#0B0F1A",
+                800: "#141B29",
+                700: "#1A2236",
+                600: "#2A3450",
+                accent: "#00C2A8",
+                purple: "#A78BFA",
+                emerald: "#4ADE80",
+              },
+              positive: "#4ADE80",
+              negative: "#FF8080",
+              warning: "#F5A623",
+              official: "#4ADE80",
+              derived: "#F5A623",
+            },
+          },
+        },
+      };
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      /* Custom scrollbars and WCAG focus states */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+      }
+      .dark ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      /* ===== rjmlaird brand layer (tokens from global.css) ===== */
+      :root {
+        --ink: #0b0f1a;
+        --ink2: #0f1520;
+        --card: #141b29;
+        --lift: #1a2236;
+        --w: #edeae3;
+        --mb: #9aa4b8;
+        --m: #8a98b2;
+        --teal: #00c2a8;
+        --amber: #f5a623;
+        --violet: #a78bfa;
+        --coral: #ff8080;
+        --green: #4ade80;
+        --sky: #38bdf8;
+        --bd: rgba(255, 255, 255, 0.11);
+        --bm: rgba(255, 255, 255, 0.2);
+        --focus: #7fe6d4;
+        --on-accent: var(--ink);
+        --font-display: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-mono:
+          "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+        color-scheme: dark;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        scroll-behavior: smooth;
+      }
+      html,
+      body {
+        background: var(--ink);
+      }
+      body {
+        font-family: var(--font-body);
+        color: var(--w);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: var(--font-display);
+        text-wrap: balance;
+      }
+      p {
+        text-wrap: pretty;
+      }
+      code,
+      kbd,
+      pre {
+        font-family: var(--font-mono);
+      }
+      ::selection {
+        background: var(--teal);
+        color: var(--ink);
+      }
+      main:focus {
+        outline: none;
+      }
+
+      /* Accessibility: brand focus ring + skip link + motion/forced-colours */
+      :focus-visible {
+        outline: 3px solid var(--focus) !important;
+        outline-offset: 4px !important;
+        border-radius: 2px;
+      }
+      .skip-link {
+        position: absolute;
+        top: -100%;
+        left: 1rem;
+        z-index: 1000;
+        background: var(--teal);
+        color: var(--ink);
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 0.875rem;
+        padding: 0.6rem 1.1rem;
+        border-radius: 3px;
+        text-decoration: none;
+        transition: top 0.2s;
+      }
+      .skip-link:focus {
+        top: 1rem;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          transition-duration: 0.001ms !important;
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+        }
+      }
+      @media (forced-colors: active) {
+        :focus-visible {
+          outline-color: Highlight !important;
+        }
+      }
+
+      /* Flat surfaces: brand uses borders and tone, not glow, glass or drop shadows */
+      [class*="shadow-"],
+      .glow-effect,
+      .glow-effect-purple {
+        box-shadow: none !important;
+      }
+      .glass-panel {
+        background: var(--card);
+        border: 1px solid var(--bd);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+      }
+      header.glass-panel {
+        background: rgba(11, 15, 26, 0.96);
+        -webkit-backdrop-filter: blur(18px);
+        backdrop-filter: blur(18px);
+        border-width: 0 0 1px 0;
+      }
+      footer.glass-panel {
+        background: var(--ink2);
+        border-width: 1px 0 0 0;
+      }
+
+      /* Text on filled teal surfaces is ink (8.46:1), never white */
+      html [class*="bg-brand-"].text-white,
+      html [class*="bg-cyan-500"].text-white {
+        color: var(--on-accent);
+      }
+
+      /* Scrollbars */
+      :root ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      :root ::-webkit-scrollbar-track {
+        background: var(--ink);
+      }
+      :root ::-webkit-scrollbar-thumb {
+        background: var(--lift);
+        border-radius: 3px;
+      }
+      :root ::-webkit-scrollbar-thumb:hover {
+        background: #2a3450;
+      }
+
+      /* Brand wordmark helpers */
+      .brand-link {
+        color: var(--teal);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .brand-link:hover {
+        opacity: 0.88;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans h-full flex flex-col antialiased transition-colors duration-200"
+  >
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <!-- Top Navigation Header -->
+    <header
+      class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-sm"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-brand-600 text-white rounded-lg">
+            <i data-lucide="building-2" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-xl font-bold tracking-tight text-slate-900 dark:text-white"
+                >Council<span class="text-brand-600 dark:text-brand-500"
+                  >Watch</span
+                ></span
+              >
+              <span
+                class="px-2 py-0.5 text-xs font-semibold bg-brand-100 text-brand-800 dark:bg-brand-900/60 dark:text-brand-300 rounded-sm border border-brand-200 dark:border-brand-700"
+                >UK MVP</span
+              >
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
+              Cross-Council Decision & Intelligence Platform
+            </p>
+          </div>
+        </div>
+
+        <!-- Global Action Bar -->
+        <div class="flex items-center gap-3">
+          <!-- Quick Alert Trigger -->
+          <button
+            onclick="openCreateAlertModal()"
+            class="flex items-center gap-2 px-3 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors focus:ring-2 focus:ring-brand-500"
+          >
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span class="hidden md:inline">Create Alert</span>
+          </button>
+
+          <!-- Pilot Council Counter Badge -->
+          <div
+            class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium border border-slate-200 dark:border-slate-700"
+          >
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Monitoring 25 Councils</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-100 dark:border-slate-800/80 overflow-x-auto"
+      >
+        <nav
+          class="flex space-x-1 sm:space-x-6 min-w-max py-2"
+          aria-label="Main Navigation"
+        >
+          <button
+            onclick="switchTab('search')"
+            id="tab-btn-search"
+            class="nav-tab active flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-950/50"
+          >
+            <i data-lucide="search" class="w-4 h-4"></i>
+            <span>Unified Search</span>
+          </button>
+          <button
+            onclick="switchTab('timelines')"
+            id="tab-btn-timelines"
+            class="nav-tab flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+          >
+            <i data-lucide="git-commit" class="w-4 h-4"></i>
+            <span>Topic Timelines</span>
+          </button>
+          <button
+            onclick="switchTab('profiles')"
+            id="tab-btn-profiles"
+            class="nav-tab flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+          >
+            <i data-lucide="users" class="w-4 h-4"></i>
+            <span>Councils & Councillors</span>
+          </button>
+          <button
+            onclick="switchTab('benchmarking')"
+            id="tab-btn-benchmarking"
+            class="nav-tab flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+          >
+            <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+            <span>Council Comparison</span>
+          </button>
+          <button
+            onclick="switchTab('alerts')"
+            id="tab-btn-alerts"
+            class="nav-tab flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+          >
+            <i data-lucide="bell-ring" class="w-4 h-4"></i>
+            <span>Alert Center</span>
+          </button>
+          <button
+            onclick="switchTab('api-docs')"
+            id="tab-btn-api-docs"
+            class="nav-tab flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+          >
+            <i data-lucide="code" class="w-4 h-4"></i>
+            <span>API & Architecture</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main
+      id="main"
+      tabindex="-1"
+      class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6"
+    >
+      <!-- ================= TAB 1: UNIFIED SEARCH ================= -->
+      <section id="tab-search" class="tab-content space-y-6">
+        <!-- Search Control Center -->
+        <div
+          class="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-4"
+        >
+          <div class="flex flex-col lg:flex-row gap-3">
+            <div class="relative flex-grow">
+              <i
+                data-lucide="search"
+                class="w-5 h-5 absolute left-3.5 top-3.5 text-slate-400"
+              ></i>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Search across agendas, minutes, contracts, planning & FOIs (e.g. 'data centre Norfolk', 'housing SEN', 'waste contract')..."
+                class="w-full pl-11 pr-10 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-brand-500 focus:bg-white dark:focus:bg-slate-800 transition-all"
+              />
+              <button
+                onclick="clearSearch()"
+                class="absolute right-3 top-3.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              >
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <div class="flex gap-2">
+              <button
+                onclick="executeSearch()"
+                class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2"
+              >
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <span>Search</span>
+              </button>
+              <button
+                onclick="toggleFilterDrawer()"
+                class="px-4 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-medium rounded-lg border border-slate-200 dark:border-slate-700 flex items-center gap-2"
+              >
+                <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+                <span>Filters</span>
+                <span
+                  id="activeFilterBadge"
+                  class="hidden px-1.5 py-0.5 text-xs bg-brand-600 text-white rounded-sm"
+                  >0</span
+                >
+              </button>
+            </div>
+          </div>
+
+          <!-- Query Prompts / Natural Language Shortcuts -->
+          <div
+            class="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400 pt-1"
+          >
+            <span class="font-medium text-slate-700 dark:text-slate-300"
+              >Preset queries:</span
+            >
+            <button
+              onclick="applyPresetQuery('data centre planning Norfolk since 2025')"
+              class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-600 dark:hover:text-brand-300 rounded-md border border-slate-200 dark:border-slate-700 transition-colors"
+            >
+              "data centre planning Norfolk since 2025"
+            </button>
+            <button
+              onclick="applyPresetQuery('waste contracts cabinet decision')"
+              class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-600 dark:hover:text-brand-300 rounded-md border border-slate-200 dark:border-slate-700 transition-colors"
+            >
+              "waste contracts cabinet decision"
+            </button>
+            <button
+              onclick="applyPresetQuery('SEN deficit education')"
+              class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-600 dark:hover:text-brand-300 rounded-md border border-slate-200 dark:border-slate-700 transition-colors"
+            >
+              "SEN deficit education"
+            </button>
+            <button
+              onclick="applyPresetQuery('AI procurement technology')"
+              class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-600 dark:hover:text-brand-300 rounded-md border border-slate-200 dark:border-slate-700 transition-colors"
+            >
+              "AI procurement technology"
+            </button>
+          </div>
+
+          <!-- Extended Filter Options Box (Collapsible) -->
+          <div
+            id="filterDrawer"
+            class="hidden pt-4 border-t border-slate-200 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm"
+          >
+            <div>
+              <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                >Region / Jurisdiction</label
+              >
+              <select
+                id="filterRegion"
+                onchange="executeSearch()"
+                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2 text-slate-800 dark:text-slate-200"
+              >
+                <option value="ALL">All Regions (England, UK)</option>
+                <option value="East Anglia">East Anglia</option>
+                <option value="North West">North West</option>
+                <option value="London">London & Greater London</option>
+                <option value="South West">South West</option>
+                <option value="Yorkshire">Yorkshire & Humber</option>
+                <option value="Scotland">Scotland</option>
+                <option value="Wales">Wales</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                >Document Type</label
+              >
+              <select
+                id="filterDocType"
+                onchange="executeSearch()"
+                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2 text-slate-800 dark:text-slate-200"
+              >
+                <option value="ALL">All Document Types</option>
+                <option value="Agenda">Agendas & Summons</option>
+                <option value="Minutes">Committee Minutes</option>
+                <option value="Decision Notice">Key Decision Notices</option>
+                <option value="Planning Application">Planning Applications</option>
+                <option value="Contract Spend">Contract Spend / Tenders</option>
+                <option value="FOI Response">FOI Disclosure Logs</option>
+                <option value="Consultation">Public Consultations</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                >Record Provenance</label
+              >
+              <select
+                id="filterProvenance"
+                onchange="executeSearch()"
+                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2 text-slate-800 dark:text-slate-200"
+              >
+                <option value="ALL">All Record Types</option>
+                <option value="Official Record">Official Published Records Only</option>
+                <option value="Derived Insight">AI / Extracted Derived Insights</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+                >Timeframe</label
+              >
+              <select
+                id="filterDateRange"
+                onchange="executeSearch()"
+                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2 text-slate-800 dark:text-slate-200"
+              >
+                <option value="ALL">Any Time</option>
+                <option value="2026">2026 to Present</option>
+                <option value="2025">2025 - Present</option>
+                <option value="last90">Past 90 Days</option>
+                <option value="last30">Past 30 Days</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Results Summary Bar -->
+        <div
+          class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+        >
+          <div>
+            <h2
+              class="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2"
+            >
+              <span>Search Results</span>
+              <span
+                id="resultsCountBadge"
+                class="px-2.5 py-0.5 text-xs bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-sm font-bold"
+                >12 matching</span
+              >
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Showing official council records and derived entities across 25 ingested
+              portals
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2 self-end sm:self-auto">
+            <button
+              onclick="exportSearchData('csv')"
+              class="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            >
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Export CSV</span>
+            </button>
+            <button
+              onclick="exportSearchData('json')"
+              class="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            >
+              <i data-lucide="file-json" class="w-3.5 h-3.5"></i>
+              <span>Export JSON</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search Results Container -->
+        <div id="searchResultsList" class="space-y-4">
+          <!-- Dynamically Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- ================= TAB 2: TOPIC TIMELINES ================= -->
+      <section id="tab-timelines" class="tab-content hidden space-y-6">
+        <div
+          class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4"
+        >
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-bold text-slate-900 dark:text-white">
+                Topic Decision Timelines
+              </h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400">
+                Trace policy progression from initial consultation to officer reports,
+                cabinet decisions, and contract awards.
+              </p>
+            </div>
+
+            <!-- Topic Selector -->
+            <div class="flex items-center gap-2">
+              <label
+                for="topicSelect"
+                class="text-xs font-semibold uppercase tracking-wider text-slate-500"
+                >Theme:</label
+              >
+              <select
+                id="topicSelect"
+                onchange="renderTimelineTheme(this.value)"
+                class="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm font-semibold text-brand-700 dark:text-brand-300"
+              >
+                <option value="housing">Housing & Planning Performance</option>
+                <option value="climate">Climate Action & Net Zero</option>
+                <option value="procurement">AI & Tech Procurement</option>
+                <option value="waste">Waste Management Contracts</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Process Stage Legend -->
+          <div
+            class="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs text-center font-medium"
+          >
+            <div
+              class="p-2 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 rounded border border-blue-200 dark:border-blue-800"
+            >
+              1. Consultation
+            </div>
+            <div
+              class="p-2 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 rounded border border-amber-200 dark:border-amber-800"
+            >
+              2. Officer Report
+            </div>
+            <div
+              class="p-2 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 rounded border border-purple-200 dark:border-purple-800"
+            >
+              3. Cabinet Decision
+            </div>
+            <div
+              class="p-2 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 rounded border border-red-200 dark:border-red-800"
+            >
+              4. Scrutiny / Call-in
+            </div>
+            <div
+              class="p-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 rounded border border-emerald-200 dark:border-emerald-800"
+            >
+              5. Contract / Award
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Visual Container -->
+        <div
+          id="timelineContainer"
+          class="relative border-l-2 border-brand-500/30 ml-4 sm:ml-8 pl-6 space-y-8 py-2"
+        >
+          <!-- Dynamically Populated Timeline Cards -->
+        </div>
+      </section>
+
+      <!-- ================= TAB 3: COUNCILS & COUNCILLORS ================= -->
+      <section id="tab-profiles" class="tab-content hidden space-y-6">
+        <!-- Profile Sub-navigation Toggle -->
+        <div
+          class="flex border-b border-slate-200 dark:border-slate-800 text-sm font-semibold"
+        >
+          <button
+            onclick="switchProfileSubtab('councils')"
+            id="subtab-btn-councils"
+            class="px-4 py-2.5 border-b-2 border-brand-600 text-brand-600 dark:text-brand-400"
+          >
+            Council Profiles (25)
+          </button>
+          <button
+            onclick="switchProfileSubtab('councillors')"
+            id="subtab-btn-councillors"
+            class="px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+          >
+            Councillor Database & Voting
+          </button>
+          <button
+            onclick="switchProfileSubtab('revisions')"
+            id="subtab-btn-revisions"
+            class="px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-1.5"
+          >
+            <span>"What Changed?" Revision Tracker</span>
+            <span
+              class="px-1.5 py-0.2 bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 text-xs rounded"
+              >Diff Engine</span
+            >
+          </button>
+        </div>
+
+        <!-- SUB-TAB A: COUNCIL PROFILES -->
+        <div id="profile-section-councils" class="space-y-6">
+          <div
+            class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800"
+          >
+            <label
+              for="councilSelector"
+              class="font-medium text-slate-700 dark:text-slate-300 text-sm"
+              >Select Pilot Council:</label
+            >
+            <select
+              id="councilSelector"
+              onchange="renderCouncilProfile(this.value)"
+              class="w-full sm:w-auto bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm font-semibold"
+            >
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+
+          <div id="councilProfileDetail" class="space-y-6">
+            <!-- Dynamic Council Content -->
+          </div>
+        </div>
+
+        <!-- SUB-TAB B: COUNCILLORS -->
+        <div id="profile-section-councillors" class="hidden space-y-4">
+          <div
+            class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row gap-4 items-center justify-between"
+          >
+            <input
+              type="text"
+              id="councillorSearch"
+              oninput="filterCouncillors()"
+              placeholder="Search councillor name, ward, or party..."
+              class="w-full sm:w-80 px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-sm"
+            />
+            <div class="text-xs text-slate-500">
+              Showing declarations, attendance & recorded votes
+            </div>
+          </div>
+
+          <div
+            id="councillorGrid"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- SUB-TAB C: REVISION TRACKER ("WHAT CHANGED?") -->
+        <div id="profile-section-revisions" class="hidden space-y-4">
+          <div
+            class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-4 rounded-xl text-sm text-amber-900 dark:text-amber-200 flex items-start gap-3"
+          >
+            <i
+              data-lucide="git-compare"
+              class="w-5 h-5 text-amber-600 mt-0.5 shrink-0"
+            ></i>
+            <div>
+              <h4 class="font-bold">Document Revision & Amendment Detection</h4>
+              <p class="text-xs text-amber-800 dark:text-amber-300 mt-0.5">
+                CouncilWatch recalculates SHA-256 checksums nightly. Below are detected
+                changes between original officer draft reports and revised/amended
+                committee publications.
+              </p>
+            </div>
+          </div>
+
+          <div id="revisionList" class="space-y-4">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 4: COUNCIL COMPARISON ================= -->
+      <section id="tab-benchmarking" class="tab-content hidden space-y-6">
+        <div
+          class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4"
+        >
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-bold text-slate-900 dark:text-white">
+                Council Benchmarking & Performance Indicators
+              </h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400">
+                Compare pilot councils on key indicators combining official LG Inform/ONS
+                metrics with derived text insights.
+              </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <button
+                onclick="filterBenchmarkGroup('ALL')"
+                class="px-3 py-1.5 text-xs font-semibold bg-brand-600 text-white rounded-lg"
+              >
+                All 25 Councils
+              </button>
+              <button
+                onclick="filterBenchmarkGroup('Statistical Neighbours')"
+                class="px-3 py-1.5 text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-200"
+              >
+                East Anglia Cluster
+              </button>
+              <button
+                onclick="filterBenchmarkGroup('Metropolitan')"
+                class="px-3 py-1.5 text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-200"
+              >
+                Major Metropolitan
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="text-xs bg-slate-100 dark:bg-slate-800/60 p-3 rounded-lg flex items-center justify-between"
+          >
+            <span class="flex items-center gap-2">
+              <span class="w-3 h-3 bg-emerald-600 rounded-full inline-block"></span>
+              <strong class="text-slate-800 dark:text-slate-200"
+                >Official Record Data</strong
+              >
+              (ONS / DfE / MHCLG)
+            </span>
+            <span class="flex items-center gap-2">
+              <span class="w-3 h-3 bg-amber-500 rounded-full inline-block"></span>
+              <strong class="text-slate-800 dark:text-slate-200"
+                >Derived Text Insight</strong
+              >
+              (NLP Extracted from Minutes)
+            </span>
+          </div>
+        </div>
+
+        <!-- Benchmarking Table -->
+        <div
+          class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-x-auto"
+        >
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr
+                class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider"
+              >
+                <th class="p-4">Council Name</th>
+                <th class="p-4">Region</th>
+                <th class="p-4">
+                  Climate Target Year <br /><span
+                    class="text-[10px] text-amber-600 dark:text-amber-400 font-normal"
+                    >(Derived)</span
+                  >
+                </th>
+                <th class="p-4">
+                  Financial Reserves <br /><span
+                    class="text-[10px] text-emerald-600 dark:text-emerald-400 font-normal"
+                    >(Official £/Capita)</span
+                  >
+                </th>
+                <th class="p-4">
+                  Planning Approval % <br /><span
+                    class="text-[10px] text-emerald-600 dark:text-emerald-400 font-normal"
+                    >(Official)</span
+                  >
+                </th>
+                <th class="p-4">
+                  Recycling Rate % <br /><span
+                    class="text-[10px] text-emerald-600 dark:text-emerald-400 font-normal"
+                    >(Official)</span
+                  >
+                </th>
+                <th class="p-4">
+                  SEN Budget Deficit <br /><span
+                    class="text-[10px] text-amber-600 dark:text-amber-400 font-normal"
+                    >(Derived Est.)</span
+                  >
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              id="benchmarkTableBody"
+              class="divide-y divide-slate-200 dark:divide-slate-800"
+            >
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= TAB 5: ALERT CENTER ================= -->
+      <section id="tab-alerts" class="tab-content hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Left: Create Alert Form -->
+          <div
+            class="lg:col-span-1 bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4"
+          >
+            <h2
+              class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2"
+            >
+              <i data-lucide="bell-plus" class="w-5 h-5 text-brand-600"></i>
+              <span>Configure New Alert</span>
+            </h2>
+
+            <form
+              id="alertForm"
+              onsubmit="handleCreateAlert(event)"
+              class="space-y-4 text-sm"
+            >
+              <div>
+                <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1"
+                  >Alert Title</label
+                >
+                <input
+                  type="text"
+                  id="alertTitle"
+                  required
+                  placeholder="e.g. Norfolk Data Centre Applications"
+                  class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5"
+                />
+              </div>
+
+              <div>
+                <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1"
+                  >Keywords / Entities</label
+                >
+                <input
+                  type="text"
+                  id="alertKeywords"
+                  required
+                  placeholder="e.g. 'data centre', 'substation', 'hyperscale'"
+                  class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5"
+                />
+              </div>
+
+              <div>
+                <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1"
+                  >Councils to Target</label
+                >
+                <select
+                  id="alertCouncilScope"
+                  class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5"
+                >
+                  <option value="ALL">All 25 Pilot Councils</option>
+                  <option value="Norfolk County Council">Norfolk County Council</option>
+                  <option value="Manchester City Council">Manchester City Council</option>
+                  <option value="Bristol City Council">Bristol City Council</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block font-medium text-slate-700 dark:text-slate-300 mb-1"
+                  >Frequency Digest</label
+                >
+                <select
+                  id="alertFrequency"
+                  class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5"
+                >
+                  <option value="Immediate">Immediate (Real-time webhook/email)</option>
+                  <option value="Daily Digest">Daily Morning Digest (08:00 UTC)</option>
+                  <option value="Weekly Briefing">Weekly Digest (Mondays)</option>
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-lg shadow transition-colors flex items-center justify-center gap-2"
+              >
+                <i data-lucide="check" class="w-4 h-4"></i>
+                <span>Save & Activate Alert</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Right: Active Alerts & Sample Feeds -->
+          <div class="lg:col-span-2 space-y-6">
+            <!-- Active Alerts List -->
+            <div
+              class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4"
+            >
+              <div class="flex items-center justify-between">
+                <h3 class="font-bold text-slate-900 dark:text-white">
+                  Active Configured Alerts (3)
+                </h3>
+                <span
+                  class="text-xs text-emerald-600 font-semibold bg-emerald-50 dark:bg-emerald-950 px-2 py-1 rounded"
+                  >System Engine Active</span
+                >
+              </div>
+
+              <div id="activeAlertsList" class="space-y-3">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- RSS & Webhook Integration Box -->
+            <div
+              class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3"
+            >
+              <h3
+                class="font-bold text-slate-900 dark:text-white flex items-center gap-2"
+              >
+                <i data-lucide="rss" class="w-4 h-4 text-amber-500"></i>
+                <span>Developer Integrations (RSS & Webhooks)</span>
+              </h3>
+              <p class="text-xs text-slate-500">
+                Subscribe to custom alerts programmatically or consume normalized RSS
+                feeds for civic-tech automation.
+              </p>
+
+              <div
+                class="bg-slate-900 text-slate-200 p-3 rounded-lg text-xs font-mono space-y-2 overflow-x-auto"
+              >
+                <div>
+                  <span class="text-slate-500"># RSS Feed URL for 'Housing' Alert:</span>
+                </div>
+                <div class="text-brand-400 select-all">
+                  https://api.councilwatch.org.uk/v1/feeds/rss?alert_id=alt_99201&key=cw_live_8f3a
+                </div>
+                <div>
+                  <span class="text-slate-500"
+                    ># Webhook Endpoint Payload Simulation:</span
+                  >
+                </div>
+                <div class="text-emerald-400">
+                  POST https://your-domain.com/hooks/councilwatch { "event":
+                  "document.matched", "council_gss": "E10000021" }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 6: API & ARCHITECTURE ================= -->
+      <section id="tab-api-docs" class="tab-content hidden space-y-6">
+        <div
+          class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4"
+        >
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2
+                class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2"
+              >
+                <i data-lucide="terminal" class="w-6 h-6 text-brand-600"></i>
+                <span>Open API & Ingestion Architecture</span>
+              </h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400">
+                CouncilWatch provides a REST and vector search API for researchers,
+                journalists, and civic developers.
+              </p>
+            </div>
+            <div
+              class="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 text-xs font-mono rounded border border-slate-200 dark:border-slate-700"
+            >
+              Base URL:
+              <span class="text-brand-600 dark:text-brand-400"
+                >https://api.councilwatch.org.uk/v1</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- API Explorer Interactive Demo -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Endpoint Selector & Request Builder -->
+          <div
+            class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4"
+          >
+            <h3 class="font-bold text-slate-900 dark:text-white">
+              API Endpoint Explorer
+            </h3>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 uppercase mb-1"
+                >Select Endpoint</label
+              >
+              <select
+                id="apiEndpointSelect"
+                onchange="updateApiCodeSample()"
+                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg p-2.5 text-sm font-mono"
+              >
+                <option value="GET /v1/documents">
+                  GET /v1/documents - Full-text & Metadata Search
+                </option>
+                <option value="GET /v1/entities">
+                  GET /v1/entities - Canonical Council & Councillor Index
+                </option>
+                <option value="GET /v1/councils">
+                  GET /v1/councils - Pilot Authority Profiles & Indicators
+                </option>
+                <option value="POST /v1/alerts">
+                  POST /v1/alerts - Programmatic Alert Registration
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 uppercase mb-1"
+                >Code Sample Language</label
+              >
+              <div class="flex gap-2 text-xs">
+                <button
+                  onclick="setApiLang('curl')"
+                  id="lang-btn-curl"
+                  class="px-3 py-1.5 font-mono rounded bg-brand-600 text-white"
+                >
+                  cURL
+                </button>
+                <button
+                  onclick="setApiLang('python')"
+                  id="lang-btn-python"
+                  class="px-3 py-1.5 font-mono rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                >
+                  Python
+                </button>
+                <button
+                  onclick="setApiLang('node')"
+                  id="lang-btn-node"
+                  class="px-3 py-1.5 font-mono rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                >
+                  Node.js
+                </button>
+              </div>
+            </div>
+
+            <div class="relative">
+              <pre
+                id="apiCodeBlock"
+                class="bg-slate-950 text-slate-100 p-4 rounded-lg text-xs font-mono overflow-x-auto min-h-[160px]"
+              ></pre>
+              <button
+                onclick="copyCodeSnippet()"
+                class="absolute top-2 right-2 p-1.5 bg-slate-800 text-slate-300 hover:text-white rounded text-xs flex items-center gap-1"
+              >
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span>Copy</span>
+              </button>
+            </div>
+
+            <button
+              onclick="simulateApiCall()"
+              class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
+            >
+              <i data-lucide="play" class="w-4 h-4"></i>
+              <span>Execute Live Request Simulation</span>
+            </button>
+          </div>
+
+          <!-- Live Response Output -->
+          <div
+            class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4"
+          >
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-slate-900 dark:text-white">
+                API Response Preview
+              </h3>
+              <span
+                id="apiStatusBadge"
+                class="text-xs font-mono bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 px-2 py-0.5 rounded"
+                >200 OK (42ms)</span
+              >
+            </div>
+
+            <pre
+              id="apiResponseBlock"
+              class="bg-slate-950 text-emerald-400 p-4 rounded-lg text-xs font-mono overflow-x-auto h-[290px]"
+            ></pre>
+          </div>
+        </div>
+
+        <!-- Ingestion System Architecture Principles -->
+        <div
+          class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4"
+        >
+          <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <i data-lucide="layers" class="w-5 h-5 text-brand-600"></i>
+            <span>Ingestion Pipeline & Data Quality Principles</span>
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div
+              class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2"
+            >
+              <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">
+                1. Modular Connectors
+              </h4>
+              <p class="text-slate-600 dark:text-slate-400">
+                Custom ingestion modules per portal (Modern.gov, CMIS, Idox,
+                Consultations). Strict respect for robots.txt, rate limits (1 req/2s), and
+                conditional HTTP headers.
+              </p>
+            </div>
+
+            <div
+              class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2"
+            >
+              <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">
+                2. Hash & Provenance Tracking
+              </h4>
+              <p class="text-slate-600 dark:text-slate-400">
+                Every PDF and document raw stream is hashed using SHA-256. Any modified
+                published minutes trigger automated revision alerts in the "What Changed?"
+                engine.
+              </p>
+            </div>
+
+            <div
+              class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2"
+            >
+              <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">
+                3. pgvector & Confidence Scoring
+              </h4>
+              <p class="text-slate-600 dark:text-slate-400">
+                Text sections are embedded into 1536-dim vector spaces for hybrid semantic
+                search. Derived entity matches carry confidence scores (e.g. 98%) with
+                source citations.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer
+      class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 mt-12 text-xs text-slate-500 dark:text-slate-400"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4"
+      >
+        <div class="flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+          <span>CouncilWatch UK • Transparent Civic Technology Platform</span>
+        </div>
+        <div>
+          <span
+            >Built by
+            <a href="https://rjmlaird.co.uk" class="brand-link">Ryan Laird</a> • </span
+          ><span
+            >All documents link directly to authoritative UK Council portals • WCAG 2.2 AA
+            Compliant</span
+          >
+        </div>
+      </div>
+    </footer>
+
+    <!-- DOCUMENT DETAILS MODAL -->
+    <div
+      id="docModal"
+      class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden"
+      >
+        <div
+          class="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex items-start justify-between bg-slate-50 dark:bg-slate-800/50"
+        >
+          <div>
+            <span
+              id="modalDocTypeBadge"
+              class="px-2 py-0.5 text-xs font-semibold bg-brand-100 text-brand-800 rounded"
+            ></span>
+            <h3
+              id="modalDocTitle"
+              class="text-lg font-bold text-slate-900 dark:text-white mt-1"
+            ></h3>
+            <p id="modalCouncilMeta" class="text-xs text-slate-500 mt-0.5"></p>
+          </div>
+          <button
+            onclick="closeDocModal()"
+            class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div class="p-6 overflow-y-auto space-y-4 text-sm flex-grow">
+          <div>
+            <h4
+              class="font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-1"
+            >
+              Extracted Text Sample
+            </h4>
+            <p
+              id="modalFullContent"
+              class="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg text-slate-700 dark:text-slate-300 leading-relaxed font-mono text-xs"
+            ></p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 text-xs">
+            <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg">
+              <span class="font-bold text-slate-700 dark:text-slate-300 block mb-1"
+                >SHA-256 Checksum:</span
+              >
+              <code
+                id="modalChecksum"
+                class="text-brand-600 dark:text-brand-400 break-all"
+              ></code>
+            </div>
+            <div class="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg">
+              <span class="font-bold text-slate-700 dark:text-slate-300 block mb-1"
+                >Re-use License:</span
+              >
+              <span id="modalLicense" class="text-slate-600 dark:text-slate-400"
+                >Open Government Licence v3.0 (OGL)</span
+              >
+            </div>
+          </div>
+
+          <div>
+            <h4
+              class="font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-wider mb-2"
+            >
+              Extracted Entities & Confidence
+            </h4>
+            <div id="modalEntitiesList" class="flex flex-wrap gap-2"></div>
+          </div>
+        </div>
+
+        <div
+          class="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50"
+        >
+          <a
+            id="modalSourceLink"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5"
+          >
+            <span>Open Authoritative Source</span>
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          </a>
+          <button
+            onclick="closeDocModal()"
+            class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold rounded-lg"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION STACK -->
+    <div
+      id="toastContainer"
+      class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"
+    ></div>
+
+    <!-- APPLICATION LOGIC & MOCK DATA -->
+    <script>
+      // ==========================================
+      // 1. DATASETS (25 PILOT UK COUNCILS & RECORDS)
+      // ==========================================
+      const PILOT_COUNCILS = [
+        {
+          name: "Norfolk County Council",
+          gss: "E10000021",
+          region: "East Anglia",
+          type: "County Council",
+          reservesPerCap: "£142",
+          climateYear: "2030",
+          recyclingRate: "44.2%",
+          planningApproval: "88%",
+          senDeficit: "£14.2M",
+        },
+        {
+          name: "Manchester City Council",
+          gss: "E08000003",
+          region: "North West",
+          type: "Metropolitan Borough",
+          reservesPerCap: "£210",
+          climateYear: "2038",
+          recyclingRate: "39.8%",
+          planningApproval: "82%",
+          senDeficit: "£22.5M",
+        },
+        {
+          name: "Bristol City Council",
+          gss: "E06000023",
+          region: "South West",
+          type: "Unitary Authority",
+          reservesPerCap: "£185",
+          climateYear: "2030",
+          recyclingRate: "46.1%",
+          planningApproval: "79%",
+          senDeficit: "£18.1M",
+        },
+        {
+          name: "Birmingham City Council",
+          gss: "E08000025",
+          region: "West Midlands",
+          type: "Metropolitan Borough",
+          reservesPerCap: "£88",
+          climateYear: "2030",
+          recyclingRate: "22.5%",
+          planningApproval: "76%",
+          senDeficit: "£48.0M",
+        },
+        {
+          name: "Camden London Borough Council",
+          gss: "E09000007",
+          region: "London",
+          type: "London Borough",
+          reservesPerCap: "£310",
+          climateYear: "2030",
+          recyclingRate: "27.9%",
+          planningApproval: "74%",
+          senDeficit: "£9.4M",
+        },
+        {
+          name: "Leeds City Council",
+          gss: "E08000035",
+          region: "Yorkshire",
+          type: "Metropolitan Borough",
+          reservesPerCap: "£165",
+          climateYear: "2030",
+          recyclingRate: "38.2%",
+          planningApproval: "85%",
+          senDeficit: "£28.1M",
+        },
+        {
+          name: "Edinburgh City Council",
+          gss: "S12000036",
+          region: "Scotland",
+          type: "Unitary Authority",
+          reservesPerCap: "£220",
+          climateYear: "2030",
+          recyclingRate: "39.1%",
+          planningApproval: "81%",
+          senDeficit: "£11.2M",
+        },
+        {
+          name: "Cardiff Council",
+          gss: "W06000015",
+          region: "Wales",
+          type: "Unitary Authority",
+          reservesPerCap: "£178",
+          climateYear: "2030",
+          recyclingRate: "58.4%",
+          planningApproval: "84%",
+          senDeficit: "£15.0M",
+        },
+        {
+          name: "Cornwall Council",
+          gss: "E06000052",
+          region: "South West",
+          type: "Unitary Authority",
+          reservesPerCap: "£130",
+          climateYear: "2030",
+          recyclingRate: "36.8%",
+          planningApproval: "89%",
+          senDeficit: "£21.3M",
+        },
+        {
+          name: "Suffolk County Council",
+          gss: "E10000029",
+          region: "East Anglia",
+          type: "County Council",
+          reservesPerCap: "£155",
+          climateYear: "2030",
+          recyclingRate: "47.5%",
+          planningApproval: "91%",
+          senDeficit: "£16.8M",
+        },
+        {
+          name: "Cambridgeshire County Council",
+          gss: "E10000003",
+          region: "East Anglia",
+          type: "County Council",
+          reservesPerCap: "£168",
+          climateYear: "2030",
+          recyclingRate: "50.1%",
+          planningApproval: "87%",
+          senDeficit: "£19.2M",
+        },
+        {
+          name: "Norwich City Council",
+          gss: "E07000148",
+          region: "East Anglia",
+          type: "District Council",
+          reservesPerCap: "£190",
+          climateYear: "2030",
+          recyclingRate: "37.4%",
+          planningApproval: "83%",
+          senDeficit: "N/A",
+        },
+        {
+          name: "Liverpool City Council",
+          gss: "E08000012",
+          region: "North West",
+          type: "Metropolitan Borough",
+          reservesPerCap: "£125",
+          climateYear: "2030",
+          recyclingRate: "23.6%",
+          planningApproval: "80%",
+          senDeficit: "£31.0M",
+        },
+        {
+          name: "Sheffield City Council",
+          gss: "E08000019",
+          region: "Yorkshire",
+          type: "Metropolitan Borough",
+          reservesPerCap: "£145",
+          climateYear: "2030",
+          recyclingRate: "31.5%",
+          planningApproval: "84%",
+          senDeficit: "£24.1M",
+        },
+        {
+          name: "Newcastle City Council",
+          gss: "E08000021",
+          region: "North East",
+          type: "Metropolitan Borough",
+          reservesPerCap: "£170",
+          climateYear: "2030",
+          recyclingRate: "35.2%",
+          planningApproval: "86%",
+          senDeficit: "£17.5M",
+        },
+        {
+          name: "Hackney London Borough Council",
+          gss: "E09000012",
+          region: "London",
+          type: "London Borough",
+          reservesPerCap: "£280",
+          climateYear: "2040",
+          recyclingRate: "28.1%",
+          planningApproval: "72%",
+          senDeficit: "£12.0M",
+        },
+        {
+          name: "Glasgow City Council",
+          gss: "S12000049",
+          region: "Scotland",
+          type: "Unitary Authority",
+          reservesPerCap: "£195",
+          climateYear: "2030",
+          recyclingRate: "25.8%",
+          planningApproval: "78%",
+          senDeficit: "£19.8M",
+        },
+        {
+          name: "Swansea Council",
+          gss: "W06000011",
+          region: "Wales",
+          type: "Unitary Authority",
+          reservesPerCap: "£160",
+          climateYear: "2030",
+          recyclingRate: "61.2%",
+          planningApproval: "88%",
+          senDeficit: "£8.5M",
+        },
+        {
+          name: "Oxford City Council",
+          gss: "E07000178",
+          region: "South East",
+          type: "District Council",
+          reservesPerCap: "£240",
+          climateYear: "2030",
+          recyclingRate: "52.0%",
+          planningApproval: "81%",
+          senDeficit: "N/A",
+        },
+        {
+          name: "Oxfordshire County Council",
+          gss: "E10000025",
+          region: "South East",
+          type: "County Council",
+          reservesPerCap: "£175",
+          climateYear: "2030",
+          recyclingRate: "57.8%",
+          planningApproval: "89%",
+          senDeficit: "£20.1M",
+        },
+        {
+          name: "Surrey County Council",
+          gss: "E10000030",
+          region: "South East",
+          type: "County Council",
+          reservesPerCap: "£190",
+          climateYear: "2030",
+          recyclingRate: "54.3%",
+          planningApproval: "92%",
+          senDeficit: "£35.0M",
+        },
+        {
+          name: "Kent County Council",
+          gss: "E10000016",
+          region: "South East",
+          type: "County Council",
+          reservesPerCap: "£135",
+          climateYear: "2030",
+          recyclingRate: "48.9%",
+          planningApproval: "87%",
+          senDeficit: "£42.0M",
+        },
+        {
+          name: "Devon County Council",
+          gss: "E10000008",
+          region: "South West",
+          type: "County Council",
+          reservesPerCap: "£140",
+          climateYear: "2030",
+          recyclingRate: "54.0%",
+          planningApproval: "90%",
+          senDeficit: "£38.2M",
+        },
+        {
+          name: "Exeter City Council",
+          gss: "E07000041",
+          region: "South West",
+          type: "District Council",
+          reservesPerCap: "£165",
+          climateYear: "2030",
+          recyclingRate: "34.1%",
+          planningApproval: "85%",
+          senDeficit: "N/A",
+        },
+        {
+          name: "Nottingham City Council",
+          gss: "E06000018",
+          region: "East Midlands",
+          type: "Unitary Authority",
+          reservesPerCap: "£75",
+          climateYear: "2028",
+          recyclingRate: "23.9%",
+          planningApproval: "79%",
+          senDeficit: "£26.4M",
+        },
+      ];
+
+      const SEARCH_DOCUMENTS = [
+        {
+          id: "doc-101",
+          title: "Planning Application: Hyperscale AI Data Centre & Grid Substation",
+          council: "Norfolk County Council",
+          gss: "E10000021",
+          region: "East Anglia",
+          date: "14 Feb 2026",
+          docType: "Planning Application",
+          provenance: "Official Record",
+          confidence: 99,
+          snippet:
+            "Application ref PLA/2026/0891 for 45,000 sqm data centre campus at Norwich Outer Ring Road. Officers recommend conditional approval subject to Section 106 renewable energy contribution...",
+          content:
+            "Full planning report PLA/2026/0891 presented to Planning & Regulatory Committee. Key considerations include grid capacity of 120MW from National Grid, noise mitigation for local wards, and 100% net-zero powering commitment by developer Horizon Tech Ltd.",
+          entities: [
+            { name: "Norfolk County Council", type: "Council" },
+            { name: "Horizon Tech Ltd", type: "Company" },
+            { name: "Hellesdon Ward", type: "Ward" },
+            { name: "Cllr Marcus Vance", type: "Councillor" },
+          ],
+          checksum: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          url: "https://norfolk.gov.uk/planning/PLA-2026-0891",
+        },
+        {
+          id: "doc-102",
+          title:
+            "Cabinet Decision Notice: Strategic Waste & Recycling Contract Award 2026-2036",
+          council: "Manchester City Council",
+          gss: "E08000003",
+          region: "North West",
+          date: "02 Feb 2026",
+          docType: "Decision Notice",
+          provenance: "Official Record",
+          confidence: 98,
+          snippet:
+            "Cabinet resolved to approve tender award for municipal waste collection and food waste processing valued at £142M over 10 years to Biffa Waste Services Ltd...",
+          content:
+            "Item 7: Procurement of Waste Services. The Cabinet approved the award of contract to Biffa Waste Services Ltd following competitive dialogue. Key indicators include 100% electric bin lorry fleet by 2028.",
+          entities: [
+            { name: "Manchester City Council", type: "Council" },
+            { name: "Biffa Waste Services Ltd", type: "Company" },
+            { name: "Cllr Sarah Ahmed", type: "Councillor" },
+          ],
+          checksum: "8f4e21a30b91d89721ac6d05f231e786b510d9f4893121ef37d11e51b1f09802",
+          url: "https://manchester.gov.uk/decisions/waste-2026",
+        },
+        {
+          id: "doc-103",
+          title:
+            "Extracted Topic Synthesis: Special Educational Needs (SEN) Transport Budget Deficit",
+          council: "Bristol City Council",
+          gss: "E06000023",
+          region: "South West",
+          date: "28 Jan 2026",
+          docType: "Minutes",
+          provenance: "Derived Insight",
+          confidence: 91,
+          snippet:
+            "NLP Extraction: Scrutiny commission highlighted a projected £18.1M overspend in High Needs Block SEND transport costs. Motion proposed for regional joint commissioning.",
+          content:
+            "Extracted from Children & Young People Scrutiny Commission minutes. High Needs Budget deficit continues to grow due to rising EHCP applications. Recommendation to pool procurement across South West councils.",
+          entities: [
+            { name: "Bristol City Council", type: "Council" },
+            { name: "High Needs Block", type: "Policy Theme" },
+            { name: "Cllr David Miller", type: "Councillor" },
+          ],
+          checksum: "4d18712398bf1029c781109a1a89271bc910a91e018a10b91f0a1290a1901b09",
+          url: "https://bristol.gov.uk/scrutiny/cyps-jan2026",
+        },
+        {
+          id: "doc-104",
+          title:
+            "Procurement Notice: Generative AI Administrative Co-Pilot Pilot Contract",
+          council: "Camden London Borough Council",
+          gss: "E09000007",
+          region: "London",
+          date: "10 Jan 2026",
+          docType: "Contract Spend",
+          provenance: "Official Record",
+          confidence: 96,
+          snippet:
+            "Contract award notice ref CAM/AI/2026 to Faculty Science Ltd for £450,000 for trialling AI automated summary tools across planning and FOI departments...",
+          content:
+            "Details of awarded contract for internal local gov productivity trial. Software will parse public consultation feedback to draft officer summary reports with human-in-the-loop validation.",
+          entities: [
+            { name: "Camden London Borough Council", type: "Council" },
+            { name: "Faculty Science Ltd", type: "Company" },
+            { name: "Cllr Eleanor Vance", type: "Councillor" },
+          ],
+          checksum: "9910a1820b12901a871920ba1920bc91820ba9128019ab28109ba1920ab19201",
+          url: "https://camden.gov.uk/tenders/ai-copilot",
+        },
+        {
+          id: "doc-105",
+          title: "Consultation Launch: Local Plan Housing Allocation & Green Belt Review",
+          council: "Suffolk County Council",
+          gss: "E10000029",
+          region: "East Anglia",
+          date: "18 Feb 2026",
+          docType: "Consultation",
+          provenance: "Official Record",
+          confidence: 97,
+          snippet:
+            "Statutory 8-week consultation on proposed allocation of 12,500 new homes across Ipswich and East Suffolk transport corridors...",
+          content:
+            "Consultation paper detailing strategic housing growth sites, infrastructure levy estimates, and biodiversity net gain targets of 15% across all new developments.",
+          entities: [
+            { name: "Suffolk County Council", type: "Council" },
+            { name: "Ipswich Ward", type: "Ward" },
+            { name: "Persimmon Homes", type: "Company" },
+          ],
+          checksum: "22019ba01928019bc01928019ab01928bc10928019ab01928bc01928019ab019",
+          url: "https://suffolk.gov.uk/consultations/localplan2026",
+        },
+      ];
+
+      const COUNCILLORS_DATA = [
+        {
+          name: "Cllr Marcus Vance",
+          council: "Norfolk County Council",
+          party: "Conservative",
+          ward: "Hellesdon",
+          attendance: "96%",
+          votes:
+            "Supported Data Centre Planning Approval (Feb 2026); Voted FOR Net Zero Strategy 2030",
+          declaration: "Director, East Anglia Infrastructure Consultancy Ltd",
+        },
+        {
+          name: "Cllr Sarah Ahmed",
+          council: "Manchester City Council",
+          party: "Labour",
+          ward: "Ancoats & Beswick",
+          attendance: "98%",
+          votes:
+            "Supported Biffa Waste Contract (Feb 2026); Proposed Social Housing Quota Motion",
+          declaration: "Member, UNISON Trade Union",
+        },
+        {
+          name: "Cllr David Miller",
+          council: "Bristol City Council",
+          party: "Green",
+          ward: "Clifton",
+          attendance: "92%",
+          votes:
+            "Opposed Expansion of Airport Bus Corridor; Voted FOR SEN Budget Emergency Motion",
+          declaration: "Trustee, Avon Wildlife Trust",
+        },
+        {
+          name: "Cllr Eleanor Vance",
+          council: "Camden London Borough Council",
+          party: "Labour",
+          ward: "Holborn & St Pancras",
+          attendance: "95%",
+          votes:
+            "Approved AI Procurement Pilot (Jan 2026); Voted FOR Low Emission Zone Expansion",
+          declaration: "Non-Executive Director, GovTech UK",
+        },
+      ];
+
+      const REVISIONS_DATA = [
+        {
+          docTitle: "Officer Report: Norwich West Bus Rapid Transit & Grid Scheme",
+          council: "Norfolk County Council",
+          date: "12 Feb 2026",
+          originalHash: "a8f102...901",
+          revisedHash: "e3b0c4...855",
+          diffSummary:
+            "Section 4.2 amended: Estimated capital expenditure increased from £18.5M to £22.1M due to utility diversion costs. Section 8.1 added developer indemnification clause.",
+        },
+        {
+          docTitle: "Draft Minutes: Climate Emergency Advisory Committee",
+          council: "Bristol City Council",
+          date: "01 Feb 2026",
+          originalHash: "771b01...221",
+          revisedHash: "110a82...339",
+          diffSummary:
+            "Voting record corrected for Item 5: Cllr D. Miller recorded as 'Abstained' instead of 'Against' on retrofitting timetable delay.",
+        },
+      ];
+
+      // System State
+      let currentTab = "search";
+      let currentProfileSubtab = "councils";
+      let activeFilters = {
+        region: "ALL",
+        docType: "ALL",
+        provenance: "ALL",
+        dateRange: "ALL",
+      };
+      let activeAlerts = [
+        {
+          id: "alt_1",
+          title: "Norfolk Data Centres & Grid",
+          keywords: "data centre, substation, Norfolk",
+          council: "Norfolk County Council",
+          freq: "Immediate",
+        },
+        {
+          id: "alt_2",
+          title: "Waste Contracts over £10M",
+          keywords: "waste contract, Biffa, Veolia, tender",
+          council: "ALL",
+          freq: "Daily Digest",
+        },
+        {
+          id: "alt_3",
+          title: "SEN Budget Deficits",
+          keywords: "SEN deficit, high needs block, EHCP",
+          council: "ALL",
+          freq: "Weekly Briefing",
+        },
+      ];
+
+      // ==========================================
+      // 2. CORE NAVIGATION & TAB SWITCHING
+      // ==========================================
+      function switchTab(tabId) {
+        currentTab = tabId;
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((el) => el.classList.add("hidden"));
+        document.querySelectorAll(".nav-tab").forEach((el) => {
+          el.classList.remove(
+            "active",
+            "text-brand-600",
+            "dark:text-brand-400",
+            "bg-brand-50",
+            "dark:bg-brand-950/50",
+          );
+          el.classList.add("text-slate-600", "dark:text-slate-400");
+        });
+
+        document.getElementById(`tab-${tabId}`).classList.remove("hidden");
+        const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+        if (activeBtn) {
+          activeBtn.classList.add(
+            "active",
+            "text-brand-600",
+            "dark:text-brand-400",
+            "bg-brand-50",
+            "dark:bg-brand-950/50",
+          );
+          activeBtn.classList.remove("text-slate-600", "dark:text-slate-400");
+        }
+
+        // Lazy rendering triggers per tab
+        if (tabId === "timelines") renderTimelineTheme("housing");
+        if (tabId === "profiles") renderCouncilProfilesModule();
+        if (tabId === "benchmarking") renderBenchmarkingTable(PILOT_COUNCILS);
+        if (tabId === "alerts") renderActiveAlerts();
+        if (tabId === "api-docs") updateApiCodeSample();
+      }
+
+      function switchProfileSubtab(subtabId) {
+        currentProfileSubtab = subtabId;
+        ["councils", "councillors", "revisions"].forEach((id) => {
+          document.getElementById(`profile-section-${id}`).classList.add("hidden");
+          document
+            .getElementById(`subtab-btn-${id}`)
+            .classList.remove(
+              "border-brand-600",
+              "text-brand-600",
+              "dark:text-brand-400",
+            );
+          document
+            .getElementById(`subtab-btn-${id}`)
+            .classList.add("border-transparent", "text-slate-500");
+        });
+
+        document.getElementById(`profile-section-${subtabId}`).classList.remove("hidden");
+        const btn = document.getElementById(`subtab-btn-${subtabId}`);
+        btn.classList.add("border-brand-600", "text-brand-600", "dark:text-brand-400");
+        btn.classList.remove("border-transparent", "text-slate-500");
+
+        if (subtabId === "councillors") renderCouncillorsList();
+        if (subtabId === "revisions") renderRevisionsList();
+      }
+
+      function toggleFilterDrawer() {
+        const drawer = document.getElementById("filterDrawer");
+        drawer.classList.toggle("hidden");
+      }
+
+      // ==========================================
+      // 3. UNIFIED SEARCH MODULE
+      // ==========================================
+      function executeSearch() {
+        const query = document.getElementById("searchInput").value.toLowerCase().trim();
+        const region = document.getElementById("filterRegion").value;
+        const docType = document.getElementById("filterDocType").value;
+        const provenance = document.getElementById("filterProvenance").value;
+
+        const filtered = SEARCH_DOCUMENTS.filter((doc) => {
+          const matchesQuery =
+            !query ||
+            doc.title.toLowerCase().includes(query) ||
+            doc.snippet.toLowerCase().includes(query) ||
+            doc.council.toLowerCase().includes(query) ||
+            doc.entities.some((e) => e.name.toLowerCase().includes(query));
+
+          const matchesRegion = region === "ALL" || doc.region === region;
+          const matchesDocType = docType === "ALL" || doc.docType === docType;
+          const matchesProvenance = provenance === "ALL" || doc.provenance === provenance;
+
+          return matchesQuery && matchesRegion && matchesDocType && matchesProvenance;
+        });
+
+        renderSearchResults(filtered);
+      }
+
+      function renderSearchResults(docs) {
+        const container = document.getElementById("searchResultsList");
+        document.getElementById("resultsCountBadge").innerText =
+          `${docs.length} matching`;
+
+        if (docs.length === 0) {
+          container.innerHTML = `
+                    <div class="bg-white dark:bg-slate-900 p-8 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-3">
+                        <i data-lucide="search-x" class="w-10 h-10 text-slate-400 mx-auto"></i>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200">No matching council records found</h3>
+                        <p class="text-xs text-slate-500">Try broadening your search keywords or resetting filters.</p>
+                        <button onclick="clearSearch()" class="px-3 py-1.5 bg-brand-600 text-white rounded text-xs font-semibold">Reset Search</button>
+                    </div>`;
+          lucide.createIcons();
+          return;
+        }
+
+        container.innerHTML = docs
+          .map(
+            (doc) => `
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-brand-300 dark:hover:border-brand-700 transition-all space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 bg-brand-50 dark:bg-brand-950 text-brand-700 dark:text-brand-300 rounded-md font-semibold border border-brand-200 dark:border-brand-800 flex items-center gap-1">
+                                <i data-lucide="building" class="w-3 h-3"></i>
+                                ${doc.council} (${doc.gss})
+                            </span>
+                            <span class="px-2 py-0.5 rounded text-[11px] font-medium ${doc.provenance === "Official Record" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300" : "bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300"}">
+                                ${doc.provenance} (${doc.confidence}% match confidence)
+                            </span>
+                        </div>
+                        <span class="text-slate-400 font-mono flex items-center gap-1">
+                            <i data-lucide="calendar" class="w-3 h-3"></i>
+                            ${doc.date}
+                        </span>
+                    </div>
+
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white hover:text-brand-600 transition-colors cursor-pointer" onclick="openDocModal('${doc.id}')">
+                            ${doc.title}
+                        </h3>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 line-clamp-2 leading-relaxed">
+                            "${doc.snippet}"
+                        </p>
+                    </div>
+
+                    <!-- Extracted Entity Chips -->
+                    <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                        <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mr-1">Extracted Entities:</span>
+                        ${doc.entities
+                          .map(
+                            (e) => `
+                            <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded text-[11px] font-medium border border-slate-200 dark:border-slate-700">
+                                <strong class="text-slate-400 font-normal">${e.type}:</strong> ${e.name}
+                            </span>
+                        `,
+                          )
+                          .join("")}
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                        <button onclick="openDocModal('${doc.id}')" class="text-brand-600 dark:text-brand-400 font-semibold hover:underline flex items-center gap-1">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                            <span>View Full Audit Metadata & Checksum</span>
+                        </button>
+                        <a href="${doc.url}" target="_blank" rel="noopener noreferrer" class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-1">
+                            <span>Authoritative Portal</span>
+                            <i data-lucide="external-link" class="w-3 h-3"></i>
+                        </a>
+                    </div>
+                </div>
+            `,
+          )
+          .join("");
+
+        lucide.createIcons();
+      }
+
+      function applyPresetQuery(text) {
+        document.getElementById("searchInput").value = text;
+        executeSearch();
+      }
+
+      function clearSearch() {
+        document.getElementById("searchInput").value = "";
+        document.getElementById("filterRegion").value = "ALL";
+        document.getElementById("filterDocType").value = "ALL";
+        document.getElementById("filterProvenance").value = "ALL";
+        executeSearch();
+      }
+
+      // ==========================================
+      // 4. TOPIC TIMELINES MODULE
+      // ==========================================
+      const TIMELINE_DATA = {
+        housing: [
+          {
+            date: "Oct 2025",
+            stage: "Consultation",
+            council: "Suffolk County Council",
+            title: "Public Consultation Launched for East Suffolk Growth Area",
+            desc: "Consultation opened on housing density target increase to 12,500 units.",
+          },
+          {
+            date: "Dec 2025",
+            stage: "Officer Report",
+            council: "Suffolk County Council",
+            title: "Officer Recommendation: Approve Site Allocations",
+            desc: "Planning officers published 180-page assessment approving brownfield prioritisation.",
+          },
+          {
+            date: "Jan 2026",
+            stage: "Cabinet Decision",
+            council: "Suffolk County Council",
+            title: "Cabinet Voted 7-2 to Adopt Local Plan Framework",
+            desc: "Cabinet approved allocation subject to mandatory 15% biodiversity net gain.",
+          },
+          {
+            date: "Feb 2026",
+            stage: "Scrutiny Call-in",
+            council: "Suffolk County Council",
+            title: "Overview & Scrutiny Call-In Hearing Held",
+            desc: "Scrutiny committee reviewed transport mitigation funding agreements with developers.",
+          },
+        ],
+        climate: [
+          {
+            date: "Sep 2025",
+            stage: "Consultation",
+            council: "Bristol City Council",
+            title: "District Heat Network Expansion Feedback",
+            desc: "Stakeholder engagement on renewable heat connections across central wards.",
+          },
+          {
+            date: "Nov 2025",
+            stage: "Officer Report",
+            council: "Bristol City Council",
+            title: "Decarbonisation Capital Investment Plan",
+            desc: "Chief Finance Officer approved £45M borrowing strategy for solar PV installations.",
+          },
+          {
+            date: "Jan 2026",
+            stage: "Cabinet Decision",
+            council: "Bristol City Council",
+            title: "Net Zero Target 2030 Interim Review Approved",
+            desc: "Cabinet confirmed 42% carbon reduction achieved compared to 2018 baseline.",
+          },
+        ],
+        procurement: [
+          {
+            date: "Nov 2025",
+            stage: "Consultation",
+            council: "Camden Council",
+            title: "AI Ethics & Algorithmic Transparency Charter",
+            desc: "Public engagement on automated processing rules in local government.",
+          },
+          {
+            date: "Jan 2026",
+            stage: "Contract Award",
+            council: "Camden Council",
+            title: "Generative AI Administrative Tool Awarded",
+            desc: "Contract awarded to Faculty Science Ltd (£450k) for planning summarisation.",
+          },
+        ],
+        waste: [
+          {
+            date: "Aug 2025",
+            stage: "Consultation",
+            council: "Manchester City Council",
+            title: "Waste Strategy 2026-2036 Tender Procurement",
+            desc: "Prior Information Notice (PIN) published on UK Find a Tender service.",
+          },
+          {
+            date: "Feb 2026",
+            stage: "Contract Award",
+            council: "Manchester City Council",
+            title: "£142M Waste Collection Contract Awarded",
+            desc: "Cabinet approved Biffa Waste Services Ltd for 10-year municipal collection.",
+          },
+        ],
+      };
+
+      function renderTimelineTheme(theme) {
+        const items = TIMELINE_DATA[theme] || TIMELINE_DATA.housing;
+        const container = document.getElementById("timelineContainer");
+
+        container.innerHTML = items
+          .map((item, index) => {
+            const stageColors = {
+              Consultation: "bg-blue-500",
+              "Officer Report": "bg-amber-500",
+              "Cabinet Decision": "bg-purple-500",
+              "Scrutiny Call-in": "bg-red-500",
+              "Contract Award": "bg-emerald-500",
+            };
+
+            return `
+                    <div class="relative group">
+                        <div class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full ${stageColors[item.stage] || "bg-brand-500"} ring-4 ring-white dark:ring-slate-950"></div>
+                        <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="font-bold text-brand-600 dark:text-brand-400">${item.council}</span>
+                                <span class="px-2 py-0.5 rounded font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">${item.stage} • ${item.date}</span>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">${item.title}</h3>
+                            <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${item.desc}</p>
+                        </div>
+                    </div>
+                `;
+          })
+          .join("");
+      }
+
+      // ==========================================
+      // 5. COUNCILS & COUNCILLORS ACCOUNTABILITY
+      // ==========================================
+      function renderCouncilProfilesModule() {
+        const select = document.getElementById("councilSelector");
+        select.innerHTML = PILOT_COUNCILS.map(
+          (c) => `<option value="${c.name}">${c.name} (${c.gss})</option>`,
+        ).join("");
+        renderCouncilProfile(PILOT_COUNCILS[0].name);
+      }
+
+      function renderCouncilProfile(councilName) {
+        const council =
+          PILOT_COUNCILS.find((c) => c.name === councilName) || PILOT_COUNCILS[0];
+        const container = document.getElementById("councilProfileDetail");
+
+        container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="building-2" class="w-5 h-5 text-brand-600"></i>
+                            <h3 class="font-bold text-slate-900 dark:text-white">${council.name}</h3>
+                        </div>
+                        <div class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300">
+                            <div><strong>GSS Code:</strong> <span class="font-mono text-brand-600 dark:text-brand-400">${council.gss}</span></div>
+                            <div><strong>Governance Type:</strong> ${council.type}</div>
+                            <div><strong>Region:</strong> ${council.region}</div>
+                            <div><strong>Portal Ingestion Status:</strong> <span class="text-emerald-600 font-semibold">Live (24h Sync)</span></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                        <h4 class="font-bold text-slate-900 dark:text-white text-sm">Financial & Performance Snapshot</h4>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-800 rounded">
+                                <span class="text-slate-400 block">Reserves / Capita</span>
+                                <strong class="text-slate-800 dark:text-slate-200 text-sm">${council.reservesPerCap}</strong>
+                            </div>
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-800 rounded">
+                                <span class="text-slate-400 block">Recycling Rate</span>
+                                <strong class="text-slate-800 dark:text-slate-200 text-sm">${council.recyclingRate}</strong>
+                            </div>
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-800 rounded">
+                                <span class="text-slate-400 block">Planning Approval</span>
+                                <strong class="text-slate-800 dark:text-slate-200 text-sm">${council.planningApproval}</strong>
+                            </div>
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-800 rounded">
+                                <span class="text-slate-400 block">Net Zero Target</span>
+                                <strong class="text-slate-800 dark:text-slate-200 text-sm">${council.climateYear}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                        <h4 class="font-bold text-slate-900 dark:text-white text-sm">Upcoming Meetings & Agendas</h4>
+                        <div class="text-xs space-y-2">
+                            <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded flex justify-between">
+                                <span>Cabinet Ordinary Meeting</span>
+                                <strong class="text-brand-600">04 Mar 2026</strong>
+                            </div>
+                            <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded flex justify-between">
+                                <span>Planning Committee</span>
+                                <strong class="text-brand-600">12 Mar 2026</strong>
+                            </div>
+                            <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded flex justify-between">
+                                <span>Audit & Governance Board</span>
+                                <strong class="text-brand-600">18 Mar 2026</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        lucide.createIcons();
+      }
+
+      function renderCouncillorsList() {
+        const container = document.getElementById("councillorGrid");
+        container.innerHTML = COUNCILLORS_DATA.map(
+          (c) => `
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="font-bold text-slate-900 dark:text-white">${c.name}</h3>
+                            <p class="text-xs text-slate-500">${c.council} • ${c.ward} Ward</p>
+                        </div>
+                        <span class="px-2 py-0.5 text-xs font-semibold rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">${c.party}</span>
+                    </div>
+
+                    <div class="text-xs space-y-2 text-slate-600 dark:text-slate-300">
+                        <div><strong>Attendance Rate:</strong> <span class="text-emerald-600 font-semibold">${c.attendance}</span></div>
+                        <div><strong>Recent Voting Record:</strong> ${c.votes}</div>
+                        <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded text-[11px]">
+                            <strong class="text-slate-400 block mb-0.5">Declared Interests:</strong>
+                            ${c.declaration}
+                        </div>
+                    </div>
+                </div>
+            `,
+        ).join("");
+      }
+
+      function filterCouncillors() {
+        const query = document.getElementById("councillorSearch").value.toLowerCase();
+        const filtered = COUNCILLORS_DATA.filter(
+          (c) =>
+            c.name.toLowerCase().includes(query) ||
+            c.ward.toLowerCase().includes(query) ||
+            c.party.toLowerCase().includes(query) ||
+            c.council.toLowerCase().includes(query),
+        );
+
+        const container = document.getElementById("councillorGrid");
+        container.innerHTML = filtered
+          .map(
+            (c) => `
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="font-bold text-slate-900 dark:text-white">${c.name}</h3>
+                            <p class="text-xs text-slate-500">${c.council} • ${c.ward} Ward</p>
+                        </div>
+                        <span class="px-2 py-0.5 text-xs font-semibold rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">${c.party}</span>
+                    </div>
+
+                    <div class="text-xs space-y-2 text-slate-600 dark:text-slate-300">
+                        <div><strong>Attendance Rate:</strong> <span class="text-emerald-600 font-semibold">${c.attendance}</span></div>
+                        <div><strong>Recent Voting Record:</strong> ${c.votes}</div>
+                        <div class="p-2 bg-slate-50 dark:bg-slate-800 rounded text-[11px]">
+                            <strong class="text-slate-400 block mb-0.5">Declared Interests:</strong>
+                            ${c.declaration}
+                        </div>
+                    </div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      function renderRevisionsList() {
+        const container = document.getElementById("revisionList");
+        container.innerHTML = REVISIONS_DATA.map(
+          (r) => `
+                <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                        <span class="font-bold text-brand-600 dark:text-brand-400">${r.council}</span>
+                        <span class="text-slate-400">Detected Re-indexed Revision • ${r.date}</span>
+                    </div>
+
+                    <h3 class="font-bold text-slate-900 dark:text-white text-sm">${r.docTitle}</h3>
+
+                    <div class="p-3 bg-slate-900 text-slate-200 rounded-lg text-xs font-mono space-y-1">
+                        <div class="text-red-400">- Hash original: ${r.originalHash}</div>
+                        <div class="text-emerald-400">+ Hash revised:  ${r.revisedHash}</div>
+                    </div>
+
+                    <p class="text-xs text-slate-600 dark:text-slate-300 bg-amber-50/50 dark:bg-amber-950/20 p-2.5 rounded border border-amber-200/50 dark:border-amber-800/50">
+                        <strong>Extracted Amendment Diff:</strong> ${r.diffSummary}
+                    </p>
+                </div>
+            `,
+        ).join("");
+      }
+
+      // ==========================================
+      // 6. COUNCIL BENCHMARKING TABLE
+      // ==========================================
+      function renderBenchmarkingTable(councils) {
+        const tbody = document.getElementById("benchmarkTableBody");
+        tbody.innerHTML = councils
+          .map(
+            (c) => `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td class="p-4 font-semibold text-slate-900 dark:text-white">
+                        ${c.name}
+                        <span class="block text-[11px] font-mono text-slate-400">${c.gss}</span>
+                    </td>
+                    <td class="p-4 text-slate-600 dark:text-slate-300">${c.region}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                            ${c.climateYear}
+                        </span>
+                    </td>
+                    <td class="p-4 font-mono font-semibold text-emerald-600 dark:text-emerald-400">${c.reservesPerCap}</td>
+                    <td class="p-4 font-mono text-slate-700 dark:text-slate-300">${c.planningApproval}</td>
+                    <td class="p-4 font-mono text-slate-700 dark:text-slate-300">${c.recyclingRate}</td>
+                    <td class="p-4 font-mono text-amber-600 dark:text-amber-400 font-semibold">${c.senDeficit}</td>
+                </tr>
+            `,
+          )
+          .join("");
+      }
+
+      function filterBenchmarkGroup(group) {
+        if (group === "ALL") renderBenchmarkingTable(PILOT_COUNCILS);
+        if (group === "Statistical Neighbours") {
+          renderBenchmarkingTable(
+            PILOT_COUNCILS.filter((c) => c.region === "East Anglia"),
+          );
+        }
+        if (group === "Metropolitan") {
+          renderBenchmarkingTable(
+            PILOT_COUNCILS.filter((c) => c.type.includes("Metropolitan")),
+          );
+        }
+      }
+
+      // ==========================================
+      // 7. ALERTS ENGINE MODULE
+      // ==========================================
+      function renderActiveAlerts() {
+        const container = document.getElementById("activeAlertsList");
+        container.innerHTML = activeAlerts
+          .map(
+            (alt) => `
+                <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                    <div>
+                        <h4 class="font-bold text-slate-900 dark:text-white text-sm">${alt.title}</h4>
+                        <div class="text-xs text-slate-500 mt-0.5">
+                            Keywords: <span class="font-mono text-brand-600 dark:text-brand-400">${alt.keywords}</span> • Scope: ${alt.council}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 text-xs font-semibold bg-brand-100 text-brand-800 rounded">${alt.freq}</span>
+                        <button onclick="deleteAlert('${alt.id}')" class="text-slate-400 hover:text-red-500 p-1">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `,
+          )
+          .join("");
+        lucide.createIcons();
+      }
+
+      function handleCreateAlert(e) {
+        e.preventDefault();
+        const title = document.getElementById("alertTitle").value;
+        const keywords = document.getElementById("alertKeywords").value;
+        const council = document.getElementById("alertCouncilScope").value;
+        const freq = document.getElementById("alertFrequency").value;
+
+        const newAlert = {
+          id: `alt_${Date.now()}`,
+          title,
+          keywords,
+          council,
+          freq,
+        };
+
+        activeAlerts.unshift(newAlert);
+        renderActiveAlerts();
+        showToast("New CouncilWatch Alert activated successfully");
+        document.getElementById("alertForm").reset();
+      }
+
+      function deleteAlert(id) {
+        activeAlerts = activeAlerts.filter((a) => a.id !== id);
+        renderActiveAlerts();
+        showToast("Alert deleted");
+      }
+
+      function openCreateAlertModal() {
+        switchTab("alerts");
+      }
+
+      // ==========================================
+      // 8. OPEN API EXPLORER SIMULATOR
+      // ==========================================
+      let apiLang = "curl";
+
+      function setApiLang(lang) {
+        apiLang = lang;
+        ["curl", "python", "node"].forEach((l) => {
+          const btn = document.getElementById(`lang-btn-${l}`);
+          if (l === lang) {
+            btn.className = "px-3 py-1.5 font-mono rounded bg-brand-600 text-white";
+          } else {
+            btn.className =
+              "px-3 py-1.5 font-mono rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300";
+          }
+        });
+        updateApiCodeSample();
+      }
+
+      function updateApiCodeSample() {
+        const endpoint = document.getElementById("apiEndpointSelect").value;
+        const block = document.getElementById("apiCodeBlock");
+
+        if (apiLang === "curl") {
+          block.innerText = `curl -X GET "https://api.councilwatch.org.uk${endpoint.split(" ")[1]}?query=data+centre" \\\n  -H "Authorization: Bearer cw_live_8f3a901bc" \\\n  -H "Accept: application/json"`;
+        } else if (apiLang === "python") {
+          block.innerText = `import requests\n\nurl = "https://api.councilwatch.org.uk${endpoint.split(" ")[1]}"\nheaders = {"Authorization": "Bearer cw_live_8f3a901bc"}\nparams = {"query": "data centre"}\n\nresponse = requests.get(url, headers=headers, params=params)\nprint(response.json())`;
+        } else {
+          block.innerText = `const fetch = require('node-fetch');\n\nasync function searchCouncilWatch() {\n  const res = await fetch('https://api.councilwatch.org.uk${endpoint.split(" ")[1]}?query=data+centre', {\n    headers: { 'Authorization': 'Bearer cw_live_8f3a901bc' }\n  });\n  const data = await res.json();\n  console.log(data);\n}\nsearchCouncilWatch();`;
+        }
+
+        simulateApiCall();
+      }
+
+      function simulateApiCall() {
+        const endpoint = document.getElementById("apiEndpointSelect").value;
+        const resBlock = document.getElementById("apiResponseBlock");
+
+        if (endpoint.includes("/documents")) {
+          resBlock.innerText = JSON.stringify(
+            {
+              status: 200,
+              page: 1,
+              total_records: 12,
+              data: SEARCH_DOCUMENTS.slice(0, 2),
+            },
+            null,
+            2,
+          );
+        } else if (endpoint.includes("/entities")) {
+          resBlock.innerText = JSON.stringify(
+            {
+              status: 200,
+              canonical_entities: [
+                {
+                  canonical_id: "ENT_01",
+                  name: "Norfolk County Council",
+                  aliases: ["NCC", "Norfolk CC"],
+                },
+                {
+                  canonical_id: "ENT_02",
+                  name: "Horizon Tech Ltd",
+                  category: "Developer",
+                },
+              ],
+            },
+            null,
+            2,
+          );
+        } else {
+          resBlock.innerText = JSON.stringify(
+            {
+              status: 200,
+              count: 25,
+              data: PILOT_COUNCILS.slice(0, 3),
+            },
+            null,
+            2,
+          );
+        }
+      }
+
+      function copyCodeSnippet() {
+        const code = document.getElementById("apiCodeBlock").innerText;
+        const tempInput = document.createElement("textarea");
+        tempInput.value = code;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        showToast("Code snippet copied to clipboard");
+      }
+
+      // ==========================================
+      // 9. EXPORTS & MODALS
+      // ==========================================
+      function exportSearchData(format) {
+        if (format === "json") {
+          const dataStr =
+            "data:text/json;charset=utf-8," +
+            encodeURIComponent(JSON.stringify(SEARCH_DOCUMENTS, null, 2));
+          const downloadAnchor = document.createElement("a");
+          downloadAnchor.setAttribute("href", dataStr);
+          downloadAnchor.setAttribute(
+            "download",
+            `CouncilWatch_Export_${Date.now()}.json`,
+          );
+          document.body.appendChild(downloadAnchor);
+          downloadAnchor.click();
+          downloadAnchor.remove();
+        } else {
+          let csvContent =
+            "data:text/csv;charset=utf-8,Title,Council,GSS,Date,DocType,Provenance\n";
+          SEARCH_DOCUMENTS.forEach((d) => {
+            csvContent += `"${d.title}","${d.council}","${d.gss}","${d.date}","${d.docType}","${d.provenance}"\n`;
+          });
+          const encodedUri = encodeURI(csvContent);
+          const link = document.createElement("a");
+          link.setAttribute("href", encodedUri);
+          link.setAttribute("download", `CouncilWatch_Export_${Date.now()}.csv`);
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        }
+        showToast(`Exported search results as ${format.toUpperCase()}`);
+      }
+
+      function openDocModal(docId) {
+        const doc = SEARCH_DOCUMENTS.find((d) => d.id === docId) || SEARCH_DOCUMENTS[0];
+        document.getElementById("modalDocTitle").innerText = doc.title;
+        document.getElementById("modalDocTypeBadge").innerText = doc.docType;
+        document.getElementById("modalCouncilMeta").innerText =
+          `${doc.council} (${doc.gss}) • Published ${doc.date}`;
+        document.getElementById("modalFullContent").innerText = doc.content;
+        document.getElementById("modalChecksum").innerText = doc.checksum;
+        document.getElementById("modalSourceLink").href = doc.url;
+
+        const entitiesContainer = document.getElementById("modalEntitiesList");
+        entitiesContainer.innerHTML = doc.entities
+          .map(
+            (e) => `
+                <span class="px-2 py-1 bg-brand-50 dark:bg-brand-950 text-brand-800 dark:text-brand-200 text-xs rounded border border-brand-200 font-medium">
+                    ${e.type}: ${e.name}
+                </span>
+            `,
+          )
+          .join("");
+
+        document.getElementById("docModal").classList.remove("hidden");
+      }
+
+      function closeDocModal() {
+        document.getElementById("docModal").classList.add("hidden");
+      }
+
+      function showToast(message) {
+        const container = document.getElementById("toastContainer");
+        const toast = document.createElement("div");
+        toast.className =
+          "px-4 py-3 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 rounded-lg shadow-xl text-xs font-semibold flex items-center gap-2 border border-slate-700 animate-bounce";
+        toast.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i><span>${message}</span>`;
+        container.appendChild(toast);
+        lucide.createIcons();
+        setTimeout(() => {
+          toast.remove();
+        }, 3000);
+      }
+
+      // Initial Load Event
+      window.onload = function () {
+        lucide.createIcons();
+        executeSearch();
+        updateApiCodeSample();
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1281 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="theme-color" content="#0B0F1A" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SpaceTrend Keeper - Space Industry Intelligence Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      /* rjmlaird brand tokens (source: global.css). Palettes are re-mapped, so every
+           existing Tailwind utility (slate/gray/cyan/indigo/emerald/amber/rose...) now
+           resolves to a brand colour. */
+      const ramp = (o) => o;
+      const teal = {
+        50: "#E6FBF8",
+        100: "#C2F5EC",
+        200: "#8FEBDD",
+        300: "#7FE6D4",
+        400: "#33D1BA",
+        500: "#00C2A8",
+        600: "#00C2A8",
+        700: "#00A68F",
+        800: "#007F6D",
+        900: "#005348",
+        950: "#00302A",
+      };
+      const sky = {
+        50: "#E8F7FE",
+        100: "#C8ECFC",
+        200: "#9ADBF9",
+        300: "#7DD3FC",
+        400: "#38BDF8",
+        500: "#1FA5E3",
+        600: "#1589BF",
+        700: "#106B97",
+        800: "#0C506F",
+        900: "#083A52",
+        950: "#04222F",
+      };
+      const violet = {
+        50: "#F3EFFF",
+        100: "#E6DEFF",
+        200: "#D3C6FE",
+        300: "#C4B5FD",
+        400: "#A78BFA",
+        500: "#8B6FF0",
+        600: "#6F52D6",
+        700: "#5740AB",
+        800: "#3F2F7C",
+        900: "#2A2058",
+        950: "#191236",
+      };
+      const green = {
+        50: "#EBFCF1",
+        100: "#CFF8DD",
+        200: "#A6F0C0",
+        300: "#86EFAC",
+        400: "#4ADE80",
+        500: "#3BC470",
+        600: "#2C9E58",
+        700: "#217944",
+        800: "#185A33",
+        900: "#103D23",
+        950: "#082316",
+      };
+      const amber = {
+        50: "#FEF6E6",
+        100: "#FDEBC8",
+        200: "#FBD895",
+        300: "#F9C566",
+        400: "#F5A623",
+        500: "#E0950F",
+        600: "#B87A0C",
+        700: "#8F5F0B",
+        800: "#6B470A",
+        900: "#4A3107",
+        950: "#2B1C04",
+      };
+      const coral = {
+        50: "#FFF1F1",
+        100: "#FFE0E0",
+        200: "#FFC7C7",
+        300: "#FFB3B3",
+        400: "#FF8080",
+        500: "#F26363",
+        600: "#D14B4B",
+        700: "#A93A3A",
+        800: "#7F2C2C",
+        900: "#561F1F",
+        950: "#331212",
+      };
+      const slate = {
+        50: "#F6F4EF",
+        100: "#EDEAE3",
+        200: "#D8DBE2",
+        300: "#BAC2D1",
+        400: "#9AA4B8",
+        500: "#8A98B2",
+        600: "#2F3B57",
+        700: "#1F2940",
+        800: "#141B29",
+        900: "#0F1520",
+        950: "#0B0F1A",
+      };
+      const gray = {
+        50: "#F6F4EF",
+        100: "#EDEAE3",
+        200: "#D8DBE2",
+        300: "#BAC2D1",
+        400: "#9AA4B8",
+        500: "#8A98B2",
+        600: "#34405C",
+        700: "#252F48",
+        800: "#1E2740",
+        900: "#141B29",
+        950: "#0B0F1A",
+      };
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+              display: [
+                "Space Grotesk",
+                "system-ui",
+                "-apple-system",
+                "Segoe UI",
+                "sans-serif",
+              ],
+              mono: [
+                "JetBrains Mono",
+                "ui-monospace",
+                "SFMono-Regular",
+                "Menlo",
+                "Consolas",
+                "monospace",
+              ],
+            },
+            borderRadius: {
+              none: "0",
+              sm: "2px",
+              DEFAULT: "3px",
+              md: "3px",
+              lg: "6px",
+              xl: "6px",
+              "2xl": "6px",
+              full: "9999px",
+            },
+            colors: {
+              white: "#EDEAE3",
+              slate,
+              gray,
+              zinc: slate,
+              neutral: slate,
+              teal,
+              cyan: teal,
+              brand: teal,
+              sky,
+              blue: sky,
+              violet,
+              purple: violet,
+              indigo: violet,
+              green,
+              emerald: green,
+              amber,
+              yellow: amber,
+              orange: amber,
+              coral,
+              rose: coral,
+              red: coral,
+              space: {
+                900: "#0B0F1A",
+                800: "#141B29",
+                700: "#1A2236",
+                600: "#2A3450",
+                accent: "#00C2A8",
+                purple: "#A78BFA",
+                emerald: "#4ADE80",
+              },
+              positive: "#4ADE80",
+              negative: "#FF8080",
+              warning: "#F5A623",
+              official: "#4ADE80",
+              derived: "#F5A623",
+            },
+          },
+        },
+      };
+    </script>
+    <!-- Google Fonts -->
+    <!-- FontAwesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Chart.js for Trend Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      Chart.defaults.font.family = "Inter, system-ui, sans-serif";
+      Chart.defaults.color = "#9AA4B8";
+      Chart.defaults.borderColor = "rgba(255,255,255,.11)";
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #0b0f1a;
+        color: #edeae3;
+      }
+      /* Custom Scrollbars */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0b0f1a;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1a2236;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #2a3450;
+      }
+      .glow-effect {
+        box-shadow: 0 0 25px -5px rgba(56, 189, 248, 0.15);
+      }
+      .glow-effect-purple {
+        box-shadow: 0 0 25px -5px rgba(129, 140, 248, 0.15);
+      }
+      .glass-panel {
+        background: rgba(17, 24, 39, 0.75);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+      }
+
+      /* ===== rjmlaird brand layer (tokens from global.css) ===== */
+      :root {
+        --ink: #0b0f1a;
+        --ink2: #0f1520;
+        --card: #141b29;
+        --lift: #1a2236;
+        --w: #edeae3;
+        --mb: #9aa4b8;
+        --m: #8a98b2;
+        --teal: #00c2a8;
+        --amber: #f5a623;
+        --violet: #a78bfa;
+        --coral: #ff8080;
+        --green: #4ade80;
+        --sky: #38bdf8;
+        --bd: rgba(255, 255, 255, 0.11);
+        --bm: rgba(255, 255, 255, 0.2);
+        --focus: #7fe6d4;
+        --on-accent: var(--ink);
+        --font-display: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-mono:
+          "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+        color-scheme: dark;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        scroll-behavior: smooth;
+      }
+      html,
+      body {
+        background: var(--ink);
+      }
+      body {
+        font-family: var(--font-body);
+        color: var(--w);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: var(--font-display);
+        text-wrap: balance;
+      }
+      p {
+        text-wrap: pretty;
+      }
+      code,
+      kbd,
+      pre {
+        font-family: var(--font-mono);
+      }
+      ::selection {
+        background: var(--teal);
+        color: var(--ink);
+      }
+      main:focus {
+        outline: none;
+      }
+
+      /* Accessibility: brand focus ring + skip link + motion/forced-colours */
+      :focus-visible {
+        outline: 3px solid var(--focus) !important;
+        outline-offset: 4px !important;
+        border-radius: 2px;
+      }
+      .skip-link {
+        position: absolute;
+        top: -100%;
+        left: 1rem;
+        z-index: 1000;
+        background: var(--teal);
+        color: var(--ink);
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 0.875rem;
+        padding: 0.6rem 1.1rem;
+        border-radius: 3px;
+        text-decoration: none;
+        transition: top 0.2s;
+      }
+      .skip-link:focus {
+        top: 1rem;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          transition-duration: 0.001ms !important;
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+        }
+      }
+      @media (forced-colors: active) {
+        :focus-visible {
+          outline-color: Highlight !important;
+        }
+      }
+
+      /* Flat surfaces: brand uses borders and tone, not glow, glass or drop shadows */
+      [class*="shadow-"],
+      .glow-effect,
+      .glow-effect-purple {
+        box-shadow: none !important;
+      }
+      .glass-panel {
+        background: var(--card);
+        border: 1px solid var(--bd);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+      }
+      header.glass-panel {
+        background: rgba(11, 15, 26, 0.96);
+        -webkit-backdrop-filter: blur(18px);
+        backdrop-filter: blur(18px);
+        border-width: 0 0 1px 0;
+      }
+      footer.glass-panel {
+        background: var(--ink2);
+        border-width: 1px 0 0 0;
+      }
+
+      /* Text on filled teal surfaces is ink (8.46:1), never white */
+      html [class*="bg-brand-"].text-white,
+      html [class*="bg-cyan-500"].text-white {
+        color: var(--on-accent);
+      }
+
+      /* Scrollbars */
+      :root ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      :root ::-webkit-scrollbar-track {
+        background: var(--ink);
+      }
+      :root ::-webkit-scrollbar-thumb {
+        background: var(--lift);
+        border-radius: 3px;
+      }
+      :root ::-webkit-scrollbar-thumb:hover {
+        background: #2a3450;
+      }
+
+      /* Brand wordmark helpers */
+      .brand-link {
+        color: var(--teal);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .brand-link:hover {
+        opacity: 0.88;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen flex flex-col antialiased selection:bg-space-accent selection:text-space-900"
+  >
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <!-- Top Navigation / Header -->
+    <header class="sticky top-0 z-40 border-b border-gray-800 glass-panel">
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between"
+      >
+        <div class="flex items-center space-x-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-cyan-500 flex items-center justify-center text-white"
+          >
+            <i class="fa-solid font-bold fa-rocket text-xl"></i>
+          </div>
+          <div>
+            <h1
+              class="font-bold text-lg tracking-wide text-white flex items-center gap-2"
+            >
+              <span>Space<span class="text-cyan-400">Trend</span></span>
+              <span
+                class="text-xs px-2 py-0.5 rounded-sm bg-cyan-500/10 text-cyan-400 border border-cyan-500/30"
+                >Keeper MVP</span
+              >
+            </h1>
+            <p class="text-xs text-gray-400">
+              Target Source: <span class="text-gray-300 font-medium">spacenews.com</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Header Action Controls -->
+        <div class="flex items-center space-x-3">
+          <button
+            id="runCrawlerBtn"
+            onclick="triggerCrawlerSim()"
+            class="px-4 py-2 text-xs font-semibold rounded-lg bg-cyan-500 hover:bg-cyan-400 text-space-900 transition-all flex items-center space-x-2"
+          >
+            <i class="fa-solid fa-spider text-sm"></i>
+            <span>Run Scrapy Crawler</span>
+          </button>
+          <div class="h-6 w-px bg-gray-800 hidden sm:block"></div>
+          <button
+            onclick="exportData('csv')"
+            class="px-3 py-2 text-xs font-medium rounded-lg bg-space-700 hover:bg-space-600 text-gray-200 border border-gray-700 transition flex items-center space-x-1.5"
+            title="Export CSV"
+          >
+            <i class="fa-solid fa-file-csv text-cyan-400"></i>
+            <span class="hidden md:inline">CSV</span>
+          </button>
+          <button
+            onclick="exportData('json')"
+            class="px-3 py-2 text-xs font-medium rounded-lg bg-space-700 hover:bg-space-600 text-gray-200 border border-gray-700 transition flex items-center space-x-1.5"
+            title="Export JSON"
+          >
+            <i class="fa-solid fa-code text-indigo-400"></i>
+            <span class="hidden md:inline">JSON</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main
+      id="main"
+      tabindex="-1"
+      class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6"
+    >
+      <!-- Live Metrics Summary Bar -->
+      <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-panel p-4 rounded-xl border border-gray-800 glow-effect">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-xs text-gray-400 font-medium">Total Tracked Articles</p>
+              <h3 id="statTotalArticles" class="text-2xl font-bold text-white mt-1">
+                --
+              </h3>
+            </div>
+            <div class="p-2.5 bg-cyan-500/10 text-cyan-400 rounded-lg">
+              <i class="fa-solid fa-newspaper"></i>
+            </div>
+          </div>
+          <p class="text-[11px] text-gray-400 mt-2 flex items-center gap-1">
+            <span
+              id="statArticlesChange"
+              class="text-emerald-400 font-semibold flex items-center"
+              ><i class="fa-solid fa-arrow-up text-[9px] mr-1"></i>+12%</span
+            >
+            this week
+          </p>
+        </div>
+
+        <div class="glass-panel p-4 rounded-xl border border-gray-800 glow-effect-purple">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-xs text-gray-400 font-medium">Top Tagged Entity</p>
+              <h3 id="statTopEntity" class="text-2xl font-bold text-white mt-1">--</h3>
+            </div>
+            <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-lg">
+              <i class="fa-solid fa-tags"></i>
+            </div>
+          </div>
+          <p class="text-[11px] text-gray-400 mt-2">
+            Mentions:
+            <span id="statTopEntityCount" class="text-indigo-300 font-semibold">--</span>
+          </p>
+        </div>
+
+        <div class="glass-panel p-4 rounded-xl border border-gray-800">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-xs text-gray-400 font-medium">Dominant Sector</p>
+              <h3 id="statTopCategory" class="text-2xl font-bold text-white mt-1">--</h3>
+            </div>
+            <div class="p-2.5 bg-purple-500/10 text-purple-400 rounded-lg">
+              <i class="fa-solid fa-chart-pie"></i>
+            </div>
+          </div>
+          <p class="text-[11px] text-gray-400 mt-2">
+            Share:
+            <span id="statCategoryShare" class="text-purple-300 font-semibold">--</span>
+            of feed
+          </p>
+        </div>
+
+        <div class="glass-panel p-4 rounded-xl border border-gray-800">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-xs text-gray-400 font-medium">Pipeline Status</p>
+              <h3
+                id="statScrapeStatus"
+                class="text-xl font-bold text-emerald-400 mt-1 flex items-center gap-2"
+              >
+                <span class="relative flex h-3 w-3">
+                  <span
+                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+                  ></span>
+                  <span
+                    class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"
+                  ></span>
+                </span>
+                Ready
+              </h3>
+            </div>
+            <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-lg">
+              <i class="fa-solid fa-database"></i>
+            </div>
+          </div>
+          <p class="text-[11px] text-gray-400 mt-2">
+            Last Crawl:
+            <span id="statLastScrape" class="text-gray-300 font-medium">Just now</span>
+          </p>
+        </div>
+      </section>
+
+      <!-- Charts Row -->
+      <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Time Series Chart -->
+        <div
+          class="lg:col-span-2 glass-panel p-5 rounded-xl border border-gray-800 flex flex-col justify-between"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                <i class="fa-solid fa-chart-line text-cyan-400"></i> Sector Coverage
+                Volume (Weekly)
+              </h3>
+              <p class="text-xs text-gray-400">
+                Article publication velocity over recent weeks
+              </p>
+            </div>
+            <div
+              class="flex space-x-1 bg-space-900 p-1 rounded-lg border border-gray-800 text-[11px]"
+            >
+              <button class="px-2.5 py-1 rounded bg-space-700 text-white font-medium">
+                4 Weeks
+              </button>
+            </div>
+          </div>
+          <div class="h-56 w-full relative">
+            <canvas id="volumeChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Top Entity Breakdown Chart -->
+        <div
+          class="glass-panel p-5 rounded-xl border border-gray-800 flex flex-col justify-between"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                <i class="fa-solid fa-diagram-project text-indigo-400"></i> Share of Voice
+              </h3>
+              <p class="text-xs text-gray-400">Top organizations & programs</p>
+            </div>
+          </div>
+          <div class="h-56 w-full relative flex items-center justify-center">
+            <canvas id="entityChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Search & Filter Control Drawer -->
+      <section class="glass-panel p-5 rounded-xl border border-gray-800 space-y-4">
+        <!-- Search & Quick Clear Bar -->
+        <div class="flex flex-col md:flex-row gap-3 items-center justify-between">
+          <div class="relative w-full md:w-96">
+            <i
+              class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"
+            ></i>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search titles, summaries, entities..."
+              class="w-full pl-10 pr-4 py-2 bg-space-900 border border-gray-700 rounded-lg text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition"
+            />
+          </div>
+
+          <div class="flex items-center space-x-2 w-full md:w-auto justify-end">
+            <span id="activeCount" class="text-xs text-gray-400 mr-2"
+              >Showing 0 articles</span
+            >
+            <button
+              onclick="resetFilters()"
+              class="px-3 py-1.5 text-xs text-gray-400 hover:text-white bg-space-800 hover:bg-space-700 border border-gray-700 rounded-lg transition"
+            >
+              <i class="fa-solid fa-rotate-left mr-1"></i> Reset Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- Category Pills -->
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider"
+            >Categories</label
+          >
+          <div id="categoryPills" class="flex flex-wrap gap-2">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Entity Tag Pills -->
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider"
+            >Key Entities & Programs</label
+          >
+          <div id="entityPills" class="flex flex-wrap gap-2">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Article Feed Cards Container -->
+      <section class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-rss text-cyan-400"></i> Live Intelligence Feed
+          </h2>
+          <div class="flex items-center space-x-2 text-xs text-gray-400">
+            <span>Sort by:</span>
+            <select
+              id="sortSelect"
+              onchange="renderFeed()"
+              class="bg-space-900 border border-gray-700 text-gray-300 text-xs rounded-md px-2 py-1 focus:outline-none focus:border-cyan-500"
+            >
+              <option value="date-desc">Newest First</option>
+              <option value="date-asc">Oldest First</option>
+              <option value="title-asc">Title (A-Z)</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="articleFeed" class="space-y-4">
+          <!-- Dynamic Article Cards inserted here -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 glass-panel py-6 mt-12">
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 space-y-2 sm:space-y-0"
+      >
+        <p>
+          © 2026 SpaceTrend Keeper | Scrapy & Streamlit MVP Architecture Demo | Built by
+          <a href="https://rjmlaird.co.uk" class="brand-link">Ryan Laird</a>
+        </p>
+        <div class="flex space-x-4 text-gray-400">
+          <span class="hover:text-cyan-400 transition cursor-pointer"
+            ><i class="fa-solid fa-shield-halved mr-1"></i> Respecting spacenews.com
+            Robots.txt</span
+          >
+          <span class="hover:text-cyan-400 transition cursor-pointer"
+            ><i class="fa-solid fa-bolt mr-1"></i> Rate Limiter: 1.5s</span
+          >
+        </div>
+      </div>
+    </footer>
+
+    <!-- Notification Toast Element -->
+    <div
+      id="toast"
+      class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 ease-in-out glass-panel border border-cyan-500/40 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 pointer-events-none"
+    >
+      <div class="p-2 bg-cyan-500/20 text-cyan-400 rounded-lg">
+        <i id="toastIcon" class="fa-solid fa-circle-check"></i>
+      </div>
+      <div>
+        <h4 id="toastTitle" class="font-semibold text-xs text-white">Notification</h4>
+        <p id="toastMessage" class="text-xs text-gray-300">Operation finished.</p>
+      </div>
+    </div>
+
+    <!-- Application Engine JavaScript -->
+    <script>
+      // --- 1. INITIAL MOCK DATASET (Replicating Scraped SpaceNews Schema) ---
+      const INITIAL_ARTICLES = [
+        {
+          id: 1,
+          title:
+            "SpaceX prepares for next Starship orbital test flight following FAA license update",
+          url: "https://spacenews.com/spacex-prepares-for-starship-orbital-flight-faa/",
+          author: "Jeff Foust",
+          pub_date: "2026-10-25T14:30:00Z",
+          category: "Commercial",
+          summary:
+            "SpaceX has completed a static fire test of Super Heavy Booster 14 at Starbase, Boca Chica, clearing critical hurdles for the upcoming launch license approval from the FAA.",
+          content:
+            "BOCA CHICA, Texas — SpaceX conducted a full 33-engine static fire of its Starship Super Heavy booster on Sunday afternoon. The test represents one of the final remaining technical milestones prior to Integrated Flight Test 7. FAA officials confirmed that environmental impact reviews have been finalized with minor revisions to marine safety zones.",
+          entities: {
+            "Launch Operators": ["SpaceX"],
+            Agencies: ["FAA"],
+            Programs: ["Starship"],
+          },
+        },
+        {
+          id: 2,
+          title:
+            "US Space Force awards $1.2B launch contract options for National Security missions",
+          url: "https://spacenews.com/us-space-force-awards-1-2b-nssl-launch-contracts/",
+          author: "Sandra Erwin",
+          pub_date: "2026-10-24T09:15:00Z",
+          category: "Military",
+          summary:
+            "The Space Systems Command has assigned task orders under NSSL Phase 3 to ULA and SpaceX for upcoming classified payloads scheduled for late 2027.",
+          content:
+            "WASHINGTON — The U.S. Space Force Space Systems Command announced Friday it has assigned seven national security space launch task orders valued at a collective $1.2 billion. United Launch Alliance (ULA) received four missions to be launched via Vulcan Centaur, while SpaceX received three missions onboard Falcon Heavy rockets.",
+          entities: {
+            "Launch Operators": ["SpaceX", "ULA"],
+            Agencies: ["US Space Force"],
+            Programs: ["Vulcan"],
+          },
+        },
+        {
+          id: 3,
+          title:
+            "Rocket Lab successfully deploys commercial radar satellite on 50th Electron mission",
+          url: "https://spacenews.com/rocket-lab-50th-electron-launch-iceye/",
+          author: "Jeff Foust",
+          pub_date: "2026-10-22T18:45:00Z",
+          category: "Launch",
+          summary:
+            "Rocket Lab launched its 50th Electron rocket from Launch Complex 1 in New Zealand, delivering a next-generation Synthetic Aperture Radar (SAR) satellite for ICEYE.",
+          content:
+            "MAHIA, New Zealand — Rocket Lab achieved a major milestone Thursday with the successful liftoff of its 50th Electron orbital launch vehicle. The 'Owl's Night Continues' mission successfully deployed a commercial SAR satellite into low Earth orbit for Finnish manufacturer ICEYE.",
+          entities: {
+            "Launch Operators": ["Rocket Lab"],
+            "Satellite & Constellations": ["ICEYE"],
+            Programs: ["Electron"],
+          },
+        },
+        {
+          id: 4,
+          title:
+            "ESA selects industrial consortium for Next-Gen Earth Observation Constellation",
+          url: "https://spacenews.com/esa-selects-consortium-earth-observation-satellites/",
+          author: "Andrew Parsonson",
+          pub_date: "2026-10-20T11:00:00Z",
+          category: "NASA / Civil",
+          summary:
+            "The European Space Agency has formally signed contracts for a €450M multi-satellite climate monitoring constellation aiming for deployment starting 2028.",
+          content:
+            "PARIS — European Space Agency member states have approved funding for the Sentinel-NEXT constellation. The satellite network will monitor polar ice thickness and atmospheric methane levels with unprecedented sub-meter resolution using advanced optical sensors.",
+          entities: {
+            Agencies: ["ESA"],
+          },
+        },
+        {
+          id: 5,
+          title:
+            "Amazon Project Kuiper secures launch manifest expansion with Arianespace",
+          url: "https://spacenews.com/amazon-kuiper-arianespace-ariane-6-manifest/",
+          author: "Jason Rainbow",
+          pub_date: "2026-10-18T16:20:00Z",
+          category: "Satellites",
+          summary:
+            "Amazon has added three additional Ariane 6 launches to its manifest as production of its broadband constellation satellites ramps up at its Kirkland facility.",
+          content:
+            "SEATTLE — Amazon announced an agreement to reserve additional capacity on upcoming Ariane 6 flights. The company aims to fulfill FCC regulatory requirements requiring half of its planned 3,236 broadband satellite constellation to be operational by mid-2026.",
+          entities: {
+            "Launch Operators": ["Arianespace"],
+            "Satellite & Constellations": ["Kuiper"],
+            Programs: ["Ariane 6"],
+            Agencies: ["FCC"],
+          },
+        },
+        {
+          id: 6,
+          title:
+            "NASA Artemis IV lunar lander milestone cleared by Blue Origin engineering team",
+          url: "https://spacenews.com/nasa-artemis-iv-blue-origin-lander-milestone/",
+          author: "Jeff Foust",
+          pub_date: "2026-10-15T13:10:00Z",
+          category: "NASA / Civil",
+          summary:
+            "Blue Origin completed a critical design review for its Blue Moon Human Landing System (HLS), keeping the crewed lunar landing program on schedule.",
+          content:
+            "HUNTSVILLE, Ala. — NASA and Blue Origin engineers finished a rigorous three-week Critical Design Review (CDR) for the Blue Moon National Landership configuration. The system will carry astronauts from lunar orbit down to the South Pole surface during the Artemis IV mission.",
+          entities: {
+            "Launch Operators": ["Blue Origin"],
+            Agencies: ["NASA"],
+            Programs: ["Artemis"],
+          },
+        },
+      ];
+
+      // Global State Management
+      let articles = [...INITIAL_ARTICLES];
+      let selectedCategory = "ALL";
+      let selectedEntity = "ALL";
+      let searchQuery = "";
+      let volumeChartInstance = null;
+      let entityChartInstance = null;
+
+      // --- 2. INITIALIZATION & CHARTS ---
+      window.addEventListener("DOMContentLoaded", () => {
+        renderPills();
+        initCharts();
+        updateDashboard();
+      });
+
+      function getCategoriesList() {
+        const cats = new Set(articles.map((a) => a.category));
+        return ["ALL", ...Array.from(cats)];
+      }
+
+      function getEntitiesList() {
+        const entitySet = new Set();
+        articles.forEach((a) => {
+          if (a.entities) {
+            Object.values(a.entities)
+              .flat()
+              .forEach((e) => entitySet.add(e));
+          }
+        });
+        return ["ALL", ...Array.from(entitySet)];
+      }
+
+      // Render Filter Pills
+      function renderPills() {
+        const catContainer = document.getElementById("categoryPills");
+        catContainer.innerHTML = getCategoriesList()
+          .map(
+            (cat) => `
+                <button onclick="setCategory('${cat}')" 
+                    class="px-3 py-1.5 rounded-lg text-xs font-medium transition ${selectedCategory === cat ? "bg-cyan-500 text-space-900 font-bold" : "bg-space-900 text-gray-300 border border-gray-800 hover:border-gray-700 hover:text-white"}">
+                    ${cat}
+                </button>
+            `,
+          )
+          .join("");
+
+        const entContainer = document.getElementById("entityPills");
+        entContainer.innerHTML = getEntitiesList()
+          .map(
+            (ent) => `
+                <button onclick="setEntity('${ent}')" 
+                    class="px-3 py-1.5 rounded-lg text-xs font-medium transition ${selectedEntity === ent ? "bg-indigo-400 text-space-900 font-bold" : "bg-space-900 text-gray-300 border border-gray-800 hover:border-gray-700 hover:text-white"}">
+                    ${ent === "ALL" ? "ALL ENTITIES" : `#${ent}`}
+                </button>
+            `,
+          )
+          .join("");
+      }
+
+      // Chart.js Setup
+      function initCharts() {
+        // 1. Weekly Volume Chart
+        const ctxVol = document.getElementById("volumeChart").getContext("2d");
+        volumeChartInstance = new Chart(ctxVol, {
+          type: "line",
+          data: {
+            labels: ["Wk 1 (Oct 1)", "Wk 2 (Oct 8)", "Wk 3 (Oct 15)", "Wk 4 (Current)"],
+            datasets: [
+              {
+                label: "Articles Scraped",
+                data: [12, 18, 15, 24],
+                borderColor: "#00C2A8",
+                backgroundColor: "rgba(0,194,168,.13)",
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2,
+                pointBackgroundColor: "#00C2A8",
+                pointRadius: 4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                grid: { color: "rgba(255,255,255,.11)" },
+                ticks: { color: "#9AA4B8", font: { size: 10 } },
+              },
+              y: {
+                grid: { color: "rgba(255,255,255,.11)" },
+                ticks: { color: "#9AA4B8", font: { size: 10 } },
+              },
+            },
+          },
+        });
+
+        // 2. Entity Share Doughnut Chart
+        const ctxEnt = document.getElementById("entityChart").getContext("2d");
+        entityChartInstance = new Chart(ctxEnt, {
+          type: "doughnut",
+          data: {
+            labels: ["SpaceX", "NASA", "Rocket Lab", "ESA", "Blue Origin"],
+            datasets: [
+              {
+                data: [35, 25, 15, 15, 10],
+                backgroundColor: ["#00C2A8", "#A78BFA", "#38BDF8", "#FF8080", "#F5A623"],
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: { color: "#EDEAE3", font: { size: 10 }, boxWidth: 10 },
+              },
+            },
+            cutout: "65%",
+          },
+        });
+      }
+
+      // --- 3. FILTER & RENDER ENGINE ---
+      document.getElementById("searchInput").addEventListener("input", (e) => {
+        searchQuery = e.target.value.toLowerCase();
+        updateDashboard();
+      });
+
+      function setCategory(cat) {
+        selectedCategory = cat;
+        renderPills();
+        updateDashboard();
+      }
+
+      function setEntity(ent) {
+        selectedEntity = ent;
+        renderPills();
+        updateDashboard();
+      }
+
+      function resetFilters() {
+        selectedCategory = "ALL";
+        selectedEntity = "ALL";
+        searchQuery = "";
+        document.getElementById("searchInput").value = "";
+        document.getElementById("sortSelect").value = "date-desc";
+        renderPills();
+        updateDashboard();
+        showToast("Filters Reset", "All query parameters cleared.", "fa-filter");
+      }
+
+      function getFilteredArticles() {
+        return articles.filter((art) => {
+          // Category match
+          const matchCat =
+            selectedCategory === "ALL" || art.category === selectedCategory;
+
+          // Entity match
+          let matchEnt = selectedEntity === "ALL";
+          if (!matchEnt && art.entities) {
+            const allArtEntities = Object.values(art.entities).flat();
+            matchEnt = allArtEntities.includes(selectedEntity);
+          }
+
+          // Search Query match
+          const matchSearch =
+            !searchQuery ||
+            art.title.toLowerCase().includes(searchQuery) ||
+            art.summary.toLowerCase().includes(searchQuery) ||
+            art.content.toLowerCase().includes(searchQuery);
+
+          return matchCat && matchEnt && matchSearch;
+        });
+      }
+
+      function updateDashboard() {
+        const filtered = getFilteredArticles();
+
+        // 1. Update Metrics
+        document.getElementById("statTotalArticles").innerText = articles.length;
+        document.getElementById("activeCount").innerText =
+          `Showing ${filtered.length} of ${articles.length} articles`;
+
+        // Calculate Entity Counts
+        const entityCounts = {};
+        articles.forEach((a) => {
+          if (a.entities) {
+            Object.values(a.entities)
+              .flat()
+              .forEach((e) => {
+                entityCounts[e] = (entityCounts[e] || 0) + 1;
+              });
+          }
+        });
+        const topEnt = Object.entries(entityCounts).sort((a, b) => b[1] - a[1])[0];
+        if (topEnt) {
+          document.getElementById("statTopEntity").innerText = topEnt[0];
+          document.getElementById("statTopEntityCount").innerText =
+            `${topEnt[1]} articles`;
+        }
+
+        // Calculate Category Distribution
+        const catCounts = {};
+        articles.forEach((a) => {
+          catCounts[a.category] = (catCounts[a.category] || 0) + 1;
+        });
+        const topCat = Object.entries(catCounts).sort((a, b) => b[1] - a[1])[0];
+        if (topCat) {
+          document.getElementById("statTopCategory").innerText = topCat[0];
+          const pct = Math.round((topCat[1] / articles.length) * 100);
+          document.getElementById("statCategoryShare").innerText = `${pct}%`;
+        }
+
+        // 2. Render Article Cards Feed
+        renderFeed(filtered);
+      }
+
+      function renderFeed(filteredData = null) {
+        const data = filteredData || getFilteredArticles();
+        const feedContainer = document.getElementById("articleFeed");
+        const sortVal = document.getElementById("sortSelect").value;
+
+        // Sort
+        data.sort((a, b) => {
+          if (sortVal === "date-desc") return new Date(b.pub_date) - new Date(a.pub_date);
+          if (sortVal === "date-asc") return new Date(a.pub_date) - new Date(b.pub_date);
+          if (sortVal === "title-asc") return a.title.localeCompare(b.title);
+          return 0;
+        });
+
+        if (data.length === 0) {
+          feedContainer.innerHTML = `
+                    <div class="glass-panel p-12 text-center rounded-xl border border-gray-800 space-y-3">
+                        <i class="fa-solid fa-satellite-dish text-4xl text-gray-600"></i>
+                        <h4 class="text-base font-semibold text-gray-300">No Intelligence Data Found</h4>
+                        <p class="text-xs text-gray-500 max-w-md mx-auto">No scraped items matched your selected filters or search terms. Try adjusting your query parameters.</p>
+                        <button onclick="resetFilters()" class="px-4 py-2 text-xs bg-space-700 text-cyan-400 rounded-lg border border-gray-700 hover:bg-space-600">Reset Filters</button>
+                    </div>
+                `;
+          return;
+        }
+
+        feedContainer.innerHTML = data
+          .map((item) => {
+            // Flatten entities for pills
+            const entityPills = [];
+            if (item.entities) {
+              Object.entries(item.entities).forEach(([grp, list]) => {
+                list.forEach((e) => {
+                  entityPills.push(
+                    `<span class="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-[10px] font-medium">#${e}</span>`,
+                  );
+                });
+              });
+            }
+
+            const pubFormatted = new Date(item.pub_date).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            });
+
+            return `
+                    <article class="glass-panel p-5 rounded-xl border border-gray-800 hover:border-gray-700 transition duration-200 group space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="px-2.5 py-0.5 rounded-sm text-[11px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                                    ${item.category}
+                                </span>
+                                <span class="text-xs text-gray-400"><i class="fa-regular fa-calendar mr-1"></i>${pubFormatted}</span>
+                            </div>
+                            <span class="text-xs text-gray-500"><i class="fa-regular fa-user mr-1"></i>${item.author}</span>
+                        </div>
+
+                        <div>
+                            <h3 class="text-base font-bold text-white group-hover:text-cyan-400 transition">
+                                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="hover:underline flex items-start gap-1.5">
+                                    <span>${item.title}</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-xs text-gray-500 mt-1 flex-shrink-0"></i>
+                                </a>
+                            </h3>
+                            <p class="text-xs text-gray-300 mt-2 leading-relaxed">${item.summary}</p>
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-gray-800/60">
+                            <div class="flex flex-wrap gap-1.5">
+                                ${entityPills.join("")}
+                            </div>
+                            <button onclick="toggleDrawer(${item.id})" class="text-xs text-gray-400 hover:text-cyan-400 flex items-center gap-1 transition">
+                                <i class="fa-solid fa-code text-[11px]"></i>
+                                <span id="drawerBtnText-${item.id}">Raw Metadata</span>
+                            </button>
+                        </div>
+
+                        <!-- Metadata / Full Snippet Drawer (Hidden by default) -->
+                        <div id="drawer-${item.id}" class="hidden mt-3 p-3 bg-space-900/90 rounded-lg border border-gray-800 text-xs space-y-2">
+                            <div class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Full Extracted Content</div>
+                            <p class="text-gray-300 text-xs italic leading-relaxed">${item.content}</p>
+                            <div class="pt-2 border-t border-gray-800 text-[10px] text-gray-500 font-mono">
+                                RAW_ID: ${item.id} | CRAWLED_URL: ${item.url}
+                            </div>
+                        </div>
+                    </article>
+                `;
+          })
+          .join("");
+      }
+
+      function toggleDrawer(id) {
+        const drawer = document.getElementById(`drawer-${id}`);
+        const btnText = document.getElementById(`drawerBtnText-${id}`);
+        if (drawer.classList.contains("hidden")) {
+          drawer.classList.remove("hidden");
+          btnText.innerText = "Hide Metadata";
+        } else {
+          drawer.classList.add("hidden");
+          btnText.innerText = "Raw Metadata";
+        }
+      }
+
+      // --- 4. SCRAPY CRAWLER SIMULATOR ---
+      function triggerCrawlerSim() {
+        const btn = document.getElementById("runCrawlerBtn");
+        const statusEl = document.getElementById("statScrapeStatus");
+
+        // Visual loading state
+        btn.disabled = true;
+        btn.classList.add("opacity-75", "cursor-not-allowed");
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sm"></i> <span>Scraping spacenews.com...</span>`;
+        statusEl.innerHTML = `<span class="text-cyan-400 flex items-center gap-1"><i class="fa-solid fa-spinner fa-spin text-xs"></i> Crawling...</span>`;
+
+        showToast(
+          "Scrapy Pipeline Initiated",
+          "Fetching recent items from spacenews.com RSS & HTML tags.",
+          "fa-spider",
+        );
+
+        // Simulate incoming scraped item delay
+        setTimeout(() => {
+          const newArticle = {
+            id: Date.now(),
+            title: `Live Scraping Test: New Space sector development #${articles.length + 1}`,
+            url: "https://spacenews.com/simulated-live-scrape-item/",
+            author: "Scrapy Pipeline Bot",
+            pub_date: new Date().toISOString(),
+            category: ["Commercial", "Military", "Launch", "Satellites"][
+              Math.floor(Math.random() * 4)
+            ],
+            summary:
+              "Automated ingestion pipeline active. Extracted fresh content parameters, parsed timestamps, and executed standard SpaCy entity linking.",
+            content:
+              "This article was dynamically scraped via the Python Scrapy Spider pipeline simulation. Entity recognition successfully tagged active aerospace operators.",
+            entities: {
+              Operators: ["SpaceX", "Rocket Lab"][Math.floor(Math.random() * 2)],
+              Agencies: ["NASA"],
+            },
+          };
+
+          articles.unshift(newArticle);
+
+          // Reset button & status
+          btn.disabled = false;
+          btn.classList.remove("opacity-75", "cursor-not-allowed");
+          btn.innerHTML = `<i class="fa-solid fa-spider text-sm"></i> <span>Run Scrapy Crawler</span>`;
+
+          statusEl.innerHTML = `
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </span>
+                    Ready
+                `;
+
+          document.getElementById("statLastScrape").innerText = "Just now";
+
+          renderPills();
+          updateDashboard();
+
+          showToast(
+            "Scraping Complete",
+            `Injected 1 new article into SQLite database.`,
+            "fa-circle-check",
+          );
+        }, 2000);
+      }
+
+      // --- 5. EXPORT DATA PIPELINE ---
+      function exportData(format) {
+        const filtered = getFilteredArticles();
+        let dataStr = "";
+        let fileName = `spacenews_export_${new Date().toISOString().slice(0, 10)}`;
+
+        if (format === "json") {
+          dataStr =
+            "data:text/json;charset=utf-8," +
+            encodeURIComponent(JSON.stringify(filtered, null, 2));
+          fileName += ".json";
+        } else if (format === "csv") {
+          const headers = ["id", "title", "category", "author", "pub_date", "url"];
+          const rows = filtered.map((a) => [
+            a.id,
+            `"${a.title.replace(/"/g, '""')}"`,
+            `"${a.category}"`,
+            `"${a.author}"`,
+            `"${a.pub_date}"`,
+            `"${a.url}"`,
+          ]);
+          const csvContent = [headers.join(","), ...rows.map((e) => e.join(","))].join(
+            "\n",
+          );
+          dataStr = "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+          fileName += ".csv";
+        }
+
+        const downloadAnchor = document.createElement("a");
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", fileName);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+
+        showToast(
+          "Export Triggered",
+          `Downloaded ${filtered.length} records as ${format.toUpperCase()}.`,
+          "fa-file-arrow-down",
+        );
+      }
+
+      // --- 6. UTILITY TOAST NOTIFICATIONS ---
+      function showToast(title, message, iconClass = "fa-circle-check") {
+        const toast = document.getElementById("toast");
+        document.getElementById("toastTitle").innerText = title;
+        document.getElementById("toastMessage").innerText = message;
+        document.getElementById("toastIcon").className = `fa-solid ${iconClass}`;
+
+        toast.classList.remove("translate-y-20", "opacity-0", "pointer-events-none");
+
+        setTimeout(() => {
+          toast.classList.add("translate-y-20", "opacity-0", "pointer-events-none");
+        }, 3500);
+      }
+    </script>
+  </body>
+</html>

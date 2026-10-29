@@ -51,7 +51,10 @@ const appFolders = readdirSync(appsDir)
 const targets = [
   { path: join(PKG, "brand.css"), render: (css) => css },
   { path: join(appsDir, "index/src/brand-css.ts"), render: tsModule },
-  ...appFolders.map((n) => ({ path: join(appsDir, n, "public/brand.css"), render: (css) => css })),
+  ...appFolders.map((n) => ({
+    path: join(appsDir, n, "public/brand.css"),
+    render: (css) => css,
+  })),
 ];
 
 function sync() {
@@ -65,15 +68,36 @@ function sync() {
 // ---------------------------------------------------------------- check ----
 // Values that belonged to the pre-brand palettes. Reintroducing them is drift.
 const LEGACY_HEX = [
-  "#0f172a", "#1e293b", "#334155", "#f8fafc", "#94a3b8",
-  "#080c15", "#0e1523", "#121b2d", "#e0a844", "#e7ecf4",
-  "#0a0f1e", "#131b30", "#7cc4ff", "#ffd166",
-  "#f6f3ed", "#496d56", "#28342f", "#dfe8dc",
-  "#121826", "#eef2f6", "#9aa5b1",
+  "#0f172a",
+  "#1e293b",
+  "#334155",
+  "#f8fafc",
+  "#94a3b8",
+  "#080c15",
+  "#0e1523",
+  "#121b2d",
+  "#e0a844",
+  "#e7ecf4",
+  "#0a0f1e",
+  "#131b30",
+  "#7cc4ff",
+  "#ffd166",
+  "#f6f3ed",
+  "#496d56",
+  "#28342f",
+  "#dfe8dc",
+  "#121826",
+  "#eef2f6",
+  "#9aa5b1",
 ];
 const LEGACY_TEXT = [
-  "Familjen Grotesk", "IBM Plex", "DM Sans", "Playfair", "cdn.tailwindcss.com",
-  "font-awesome/6", "exp-example",
+  "Familjen Grotesk",
+  "IBM Plex",
+  "DM Sans",
+  "Playfair",
+  "cdn.tailwindcss.com",
+  "font-awesome/6",
+  "exp-example",
 ];
 const REQUIRED_FONT_FAMILIES = ["Space+Grotesk", "Inter", "JetBrains+Mono"];
 
@@ -88,22 +112,27 @@ function checkApp(name, problems) {
   need(/<meta[^>]+name="theme-color"/.test(html), "missing meta theme-color");
   need(/<link[^>]+rel="icon"[^>]+favicon\.svg/.test(html), "missing favicon link");
   need(/<link[^>]+href="\/brand\.css"/.test(html), "does not link /brand.css");
-  for (const f of REQUIRED_FONT_FAMILIES) need(html.includes(`family=${f}`), `Google Fonts link lacks ${f}`);
+  for (const f of REQUIRED_FONT_FAMILIES)
+    need(html.includes(`family=${f}`), `Google Fonts link lacks ${f}`);
 
   const scanned = [["index.html", html]];
   const srcDir = join(dir, "src");
   if (existsSync(srcDir)) {
     for (const f of readdirSync(srcDir)) {
-      if (/\.(css|tsx?)$/.test(f) && !/\.test\./.test(f)) scanned.push([`src/${f}`, read(join(srcDir, f))]);
+      if (/\.(css|tsx?)$/.test(f) && !/\.test\./.test(f))
+        scanned.push([`src/${f}`, read(join(srcDir, f))]);
     }
   }
   for (const [file, text] of scanned) {
     const lower = text.toLowerCase();
-    for (const hex of LEGACY_HEX) if (lower.includes(hex)) problems.push(`apps/${name}/${file}: legacy colour ${hex}`);
-    for (const s of LEGACY_TEXT) if (text.includes(s)) problems.push(`apps/${name}/${file}: legacy reference "${s}"`);
+    for (const hex of LEGACY_HEX)
+      if (lower.includes(hex))
+        problems.push(`apps/${name}/${file}: legacy colour ${hex}`);
+    for (const s of LEGACY_TEXT)
+      if (text.includes(s))
+        problems.push(`apps/${name}/${file}: legacy reference "${s}"`);
   }
 }
-
 
 // ------------------------------------------------------------- contrast ----
 const hexOf = (css, name) => {
@@ -112,7 +141,8 @@ const hexOf = (css, name) => {
   return m[1];
 };
 const lum = (hex) => {
-  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
+  const [r, g, b] = [1, 3, 5]
+    .map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
     .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 };
@@ -129,21 +159,40 @@ function checkContrast(problems) {
   const cases = [];
   // Dark theme: text and accents (used as text) on every surface; filled-accent text; focus ring (3:1 non-text).
   for (const surf of ["ink", "ink2", "card", "lift"]) {
-    for (const fg of ["w", "mb", "m", "teal", "amber", "coral", "green", "sky", "violet"]) cases.push([`dark ${fg} on ${surf}`, c(fg), c(surf), 4.5]);
+    for (const fg of ["w", "mb", "m", "teal", "amber", "coral", "green", "sky", "violet"])
+      cases.push([`dark ${fg} on ${surf}`, c(fg), c(surf), 4.5]);
     cases.push([`dark focus on ${surf}`, c("focus"), c(surf), 3]);
   }
   cases.push(["dark ink on teal (buttons)", c("ink"), c("teal"), 4.5]);
   // Light theme: every semantic text/accent colour on every light surface.
   for (const surf of ["bg", "bg-alt", "surface", "surface-raised"]) {
-    for (const fg of ["text", "text-muted", "text-subtle", "primary", "secondary", "info", "success", "danger", "category"]) {
+    for (const fg of [
+      "text",
+      "text-muted",
+      "text-subtle",
+      "primary",
+      "secondary",
+      "info",
+      "success",
+      "danger",
+      "category",
+    ]) {
       cases.push([`light ${fg} on ${surf}`, l(fg), l(surf), 4.5]);
     }
     cases.push([`light focus on ${surf}`, l("focus"), l(surf), 3]);
   }
-  cases.push(["light on-primary on primary (buttons)", l("on-primary"), l("primary"), 4.5]);
+  cases.push([
+    "light on-primary on primary (buttons)",
+    l("on-primary"),
+    l("primary"),
+    4.5,
+  ]);
   for (const [name, fg, bg, min] of cases) {
     const r = ratio(fg, bg);
-    if (r < min) problems.push(`contrast ${name}: ${r.toFixed(2)}:1 is below ${min}:1 (${fg} on ${bg})`);
+    if (r < min)
+      problems.push(
+        `contrast ${name}: ${r.toFixed(2)}:1 is below ${min}:1 (${fg} on ${bg})`,
+      );
   }
   return cases.length;
 }
@@ -154,7 +203,8 @@ function check() {
   const css = buildBrandCss();
   for (const t of targets) {
     const want = t.render(css);
-    if (!existsSync(t.path) || read(t.path) !== want) problems.push(`${rel(t.path)} is out of date (run: pnpm brand:sync)`);
+    if (!existsSync(t.path) || read(t.path) !== want)
+      problems.push(`${rel(t.path)} is out of date (run: pnpm brand:sync)`);
   }
   for (const n of appFolders) checkApp(n, problems);
 
@@ -162,20 +212,32 @@ function check() {
   const seen = new Map();
   for (const n of appFolders) {
     const p = join(appsDir, n, "public/favicon.svg");
-    if (!existsSync(p)) { problems.push(`apps/${n}: public/favicon.svg is missing`); continue; }
+    if (!existsSync(p)) {
+      problems.push(`apps/${n}: public/favicon.svg is missing`);
+      continue;
+    }
     const body = read(p);
-    if (seen.has(body)) problems.push(`apps/${n}: favicon is identical to apps/${seen.get(body)}`);
+    if (seen.has(body))
+      problems.push(`apps/${n}: favicon is identical to apps/${seen.get(body)}`);
     seen.set(body, n);
   }
 
   if (problems.length) {
-    console.error(`Brand check failed (${problems.length}):\n` + problems.map((p) => " - " + p).join("\n"));
+    console.error(
+      `Brand check failed (${problems.length}):\n` +
+        problems.map((p) => " - " + p).join("\n"),
+    );
     process.exit(1);
   }
-  console.log(`Brand check passed: ${appFolders.length} apps, ${contrastCases} contrast pairs, generated files in sync.`);
+  console.log(
+    `Brand check passed: ${appFolders.length} apps, ${contrastCases} contrast pairs, generated files in sync.`,
+  );
 }
 
 const cmd = process.argv[2];
 if (cmd === "sync") sync();
 else if (cmd === "check") check();
-else { console.error("usage: node scripts/brand.mjs sync|check"); process.exit(2); }
+else {
+  console.error("usage: node scripts/brand.mjs sync|check");
+  process.exit(2);
+}

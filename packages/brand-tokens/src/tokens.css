@@ -11,28 +11,40 @@
 :root {
   /* 1. CORE ------------------------------------------------------------- */
   /* Surfaces */
-  --ink: #0B0F1A;
-  --ink2: #0F1520;
-  --card: #141B29;
-  --lift: #1A2236;
+  --ink: #0b0f1a;
+  --ink2: #0f1520;
+  --card: #141b29;
+  --lift: #1a2236;
 
   /* Text */
-  --w: #EDEAE3;
-  --mb: #9AA4B8;   /* body-secondary: >= 4.5:1 on --ink, --card and --lift */
-  --m: #8A98B2;    /* muted: >= 4.5:1 on --ink, --card and --lift (5.4:1) */
+  --w: #edeae3;
+  --mb: #9aa4b8; /* body-secondary: >= 4.5:1 on --ink, --card and --lift */
+  --m: #8a98b2; /* muted: >= 4.5:1 on --ink, --card and --lift (5.4:1) */
 
   /* Accents with dim fill / border variants */
-  --teal: #00C2A8;   --td: rgba(0,194,168,.13);   --tb: rgba(0,194,168,.26);
-  --amber: #F5A623;  --ad: rgba(245,166,35,.11);  --ab: rgba(245,166,35,.26);
-  --violet: #A78BFA; --vd: rgba(167,139,250,.11); --vb: rgba(167,139,250,.26);
-  --coral: #FF8080;  --cd: rgba(255,128,128,.11); --cb: rgba(255,128,128,.3);
-  --green: #4ADE80;  --gd: rgba(74,222,128,.11);  --gb: rgba(74,222,128,.26);
-  --sky: #38BDF8;    --sd: rgba(56,189,248,.11);  --sb: rgba(56,189,248,.26);
+  --teal: #00c2a8;
+  --td: rgba(0, 194, 168, 0.13);
+  --tb: rgba(0, 194, 168, 0.26);
+  --amber: #f5a623;
+  --ad: rgba(245, 166, 35, 0.11);
+  --ab: rgba(245, 166, 35, 0.26);
+  --violet: #a78bfa;
+  --vd: rgba(167, 139, 250, 0.11);
+  --vb: rgba(167, 139, 250, 0.26);
+  --coral: #ff8080;
+  --cd: rgba(255, 128, 128, 0.11);
+  --cb: rgba(255, 128, 128, 0.3);
+  --green: #4ade80;
+  --gd: rgba(74, 222, 128, 0.11);
+  --gb: rgba(74, 222, 128, 0.26);
+  --sky: #38bdf8;
+  --sd: rgba(56, 189, 248, 0.11);
+  --sb: rgba(56, 189, 248, 0.26);
 
   /* Lines and focus */
-  --bd: rgba(255,255,255,.11);
-  --bm: rgba(255,255,255,.2);
-  --focus: #7FE6D4;
+  --bd: rgba(255, 255, 255, 0.11);
+  --bm: rgba(255, 255, 255, 0.2);
+  --focus: #7fe6d4;
 
   /* Layout */
   --content-max: 1320px;
@@ -43,7 +55,8 @@
   /* Type roles: display = headings, body = interface text, mono = values/ids/code */
   --font-display: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-mono:
+    "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
   /* 2. SEMANTIC (dark is the default theme) ----------------------------- */
   color-scheme: dark;

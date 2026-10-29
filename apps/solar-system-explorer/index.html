@@ -1,0 +1,949 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Solar System Explorer — Interiors, Magnetic Fields and Rings</title>
+    <style>
+      :root {
+        --ink: #0b0f1a;
+        --ink2: #0f1520;
+        --card: #141b29;
+        --lift: #1a2236;
+        --w: #edeae3;
+        --mb: #9aa4b8;
+        --m: #8a98b2;
+        --teal: #00c2a8;
+        --amber: #f5a623;
+        --violet: #a78bfa;
+        --coral: #ff8080;
+        --green: #4ade80;
+        --sky: #38bdf8;
+        --td: rgba(0, 194, 168, 0.13);
+        --bd: rgba(255, 255, 255, 0.11);
+        --bm: rgba(255, 255, 255, 0.2);
+        --focus: #7fe6d4;
+        --font-display: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --radius: 6px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--ink);
+        color: var(--w);
+        font-family: var(--font-body);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 82rem;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 4rem;
+      }
+      .kicker {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        margin-bottom: 1rem;
+        font-family: var(--font-display);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--teal);
+      }
+      .kicker::before {
+        content: "";
+        width: 26px;
+        height: 1px;
+        background: var(--teal);
+      }
+      h1 {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 4.6vw, 3.2rem);
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+        margin-bottom: 1rem;
+      }
+      .lead {
+        max-width: 52rem;
+        color: var(--mb);
+        font-size: 1.05rem;
+        line-height: 1.75;
+        margin-bottom: 2rem;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.9fr);
+        gap: 1.5rem;
+        align-items: start;
+      }
+      @media (max-width: 1020px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--bd);
+        border-left: 3px solid var(--teal);
+        border-radius: var(--radius);
+        padding: 1.25rem;
+      }
+      .panel h2 {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        margin-bottom: 0.9rem;
+      }
+      .planet-row {
+        display: flex;
+        gap: 0.45rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .planet-chip {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font: inherit;
+        font-size: 0.85rem;
+        padding: 0.45rem 0.8rem;
+        border: 1px solid var(--bm);
+        border-radius: 999px;
+        background: transparent;
+        color: var(--mb);
+        cursor: pointer;
+        min-height: 44px;
+      }
+      .planet-chip[aria-pressed="true"] {
+        background: var(--td);
+        border-color: var(--teal);
+        color: var(--w);
+      }
+      .planet-chip:hover,
+      .planet-chip:focus-visible {
+        border-color: var(--teal);
+      }
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex: none;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .chip {
+        font: inherit;
+        font-size: 0.85rem;
+        padding: 0.45rem 0.85rem;
+        border: 1px solid var(--bm);
+        border-radius: 999px;
+        background: transparent;
+        color: var(--mb);
+        cursor: pointer;
+        min-height: 44px;
+      }
+      .chip[aria-pressed="true"] {
+        background: var(--td);
+        border-color: var(--teal);
+        color: var(--w);
+      }
+      .chip:hover,
+      .chip:focus-visible {
+        border-color: var(--teal);
+      }
+      .stage {
+        border: 1px solid var(--bd);
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: radial-gradient(circle at 50% 35%, #101a2c 0%, #0b0f1a 74%);
+      }
+      .stage svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .star {
+        fill: #edeae3;
+      }
+      .planet-hit {
+        cursor: pointer;
+      }
+      .planet-hit:hover .planet-body,
+      .planet-hit:focus-visible .planet-body {
+        stroke: var(--w);
+        stroke-width: 2.5;
+      }
+      .planet-body {
+        transition:
+          stroke 0.15s,
+          stroke-width 0.15s;
+      }
+      .orbit {
+        fill: none;
+        stroke: rgba(255, 255, 255, 0.14);
+        stroke-dasharray: 3 6;
+      }
+      .body-label {
+        font-family: var(--font-display);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        fill: var(--w);
+      }
+      .body-sub {
+        font-family: var(--font-body);
+        font-size: 11px;
+        fill: rgba(237, 234, 227, 0.82);
+      }
+      .small-label {
+        font-family: var(--font-body);
+        font-size: 10.5px;
+        fill: var(--mb);
+      }
+      .pill {
+        fill: rgba(11, 15, 26, 0.88);
+        stroke: var(--bm);
+      }
+      .pill-text {
+        font-family: var(--font-body);
+        font-size: 11px;
+        fill: var(--w);
+      }
+      .info h3 {
+        font-family: var(--font-display);
+        font-size: 1.4rem;
+        color: var(--teal);
+        margin-bottom: 0.5rem;
+      }
+      .info p {
+        color: var(--mb);
+        margin-bottom: 1rem;
+      }
+      .facts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+        margin-bottom: 1.25rem;
+      }
+      @media (max-width: 540px) {
+        .facts {
+          grid-template-columns: 1fr;
+        }
+      }
+      .fact {
+        background: var(--lift);
+        border: 1px solid var(--bd);
+        border-radius: var(--radius);
+        padding: 0.75rem;
+      }
+      .fact b {
+        display: block;
+        font-family: var(--font-display);
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--mb);
+        margin-bottom: 0.2rem;
+      }
+      .plain-list {
+        list-style: none;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .plain-list li {
+        position: relative;
+        padding-left: 1.25rem;
+        color: var(--mb);
+        line-height: 1.65;
+      }
+      .plain-list li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.72em;
+        width: 0.5rem;
+        height: 1px;
+        background: var(--teal);
+      }
+      .plain-list strong {
+        color: var(--w);
+        font-weight: 600;
+      }
+      .subhead {
+        font-family: var(--font-display);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--mb);
+        margin: 1.25rem 0 0.6rem;
+      }
+      .table-wrap {
+        overflow-x: auto;
+        margin-top: 1.5rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+        min-width: 900px;
+      }
+      th,
+      td {
+        padding: 0.65rem 0.75rem;
+        border-bottom: 1px solid var(--bd);
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        font-family: var(--font-display);
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--mb);
+      }
+      td strong {
+        color: var(--w);
+      }
+      .note {
+        margin-top: 1.5rem;
+        padding: 1rem 1.25rem;
+        background: var(--ink2);
+        border: 1px solid var(--bd);
+        border-radius: var(--radius);
+        color: var(--mb);
+        font-size: 0.92rem;
+      }
+      .note strong {
+        color: var(--w);
+      }
+      :focus-visible {
+        outline: 3px solid var(--focus);
+        outline-offset: 3px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <p class="kicker">Solar System Explorer</p>
+      <h1>Planets: interiors, magnetic fields and rings</h1>
+      <p class="lead">
+        Compare all eight planets by interior structure, magnetic field, atmosphere,
+        rings, gravity and exploration. Select a planet, then switch views to see what
+        lies beneath its surface and how each world interacts with the solar wind.
+      </p>
+      <div class="layout">
+        <section class="panel">
+          <div class="planet-row" role="group" aria-label="Select a planet"></div>
+          <div class="controls" role="group" aria-label="Diagram view">
+            <button class="chip" data-view="profile" aria-pressed="true">
+              Planet profile
+            </button>
+            <button class="chip" data-view="interior" aria-pressed="false">
+              Interior
+            </button>
+            <button class="chip" data-view="magnetic" aria-pressed="false">
+              Magnetic field
+            </button>
+            <button class="chip" data-view="rings" aria-pressed="false">Rings</button>
+            <button class="chip" data-view="atmospheres" aria-pressed="false">
+              Atmospheres
+            </button>
+            <button class="chip" data-view="size" aria-pressed="false">
+              Relative sizes
+            </button>
+            <button class="chip" data-view="orbits" aria-pressed="false">Orbits</button>
+          </div>
+          <div id="stage" class="stage" aria-live="polite"></div>
+          <p class="note">
+            <strong>Reading the diagrams:</strong> interior boundaries, magnetic-field
+            shapes and ring structures are schematic rather than exact. Interior layers
+            are always drawn with the crust or atmosphere outermost and the core at the
+            centre; layer thicknesses are illustrative rather than to a single linear
+            scale.
+          </p>
+        </section>
+        <aside class="panel info" id="info" aria-live="polite"></aside>
+      </div>
+      <section class="panel table-wrap" style="margin-top: 1.5rem">
+        <h2>Planetary data at a glance</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Planet</th>
+              <th>Distance</th>
+              <th>Diameter</th>
+              <th>Gravity</th>
+              <th>Day</th>
+              <th>Year</th>
+              <th>Moons</th>
+              <th>Global magnetic field</th>
+              <th>Interior type</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable"></tbody>
+        </table>
+      </section>
+    </main>
+    <script>
+      const planets = [
+        {
+          name: "Mercury",
+          color: "#A8A29E",
+          radius: 10,
+          au: 0.39,
+          diameter: "4,879 km",
+          gravity: "3.7 m/s²",
+          day: "59 Earth days",
+          year: "88 Earth days",
+          moons: 0,
+          temp: "−173 to 427 °C",
+          magnetic: "Weak global field, about 1% of Earth’s surface field",
+          interior: "Large iron core, thin silicate mantle and crust",
+          atmosphere: "Almost none; a very thin exosphere",
+          rings: "None",
+          fieldType: "Weak dipole",
+          interiorLayers: [
+            ["Crust", 0.05, "#4ADE80", "Crust"],
+            ["Silicate mantle", 0.17, "#F5A623", "Mantle"],
+            ["Iron-rich core", 0.78, "#FF8080", "Iron-rich core"],
+          ],
+          summary:
+            "The smallest planet and closest to the Sun. Its huge iron core, thin mantle and lack of atmosphere create extreme surface temperature swings.",
+          science: [
+            "Mercury’s core occupies roughly 85% of its radius, leaving only a thin rocky mantle and crust.",
+            "Its weak magnetic field is likely generated by convection in part of its liquid outer core.",
+            "With almost no atmosphere, heat escapes rapidly at night, producing a surface temperature range of about 600 °C.",
+            "Its heavily cratered surface preserves a long record of impacts from the early Solar System.",
+          ],
+          moonsInfo: [
+            "Mercury has no known moons.",
+            "Its small mass and proximity to the Sun make stable natural satellites difficult.",
+            "The planet is instead accompanied by a sparse exosphere and a magnetosphere.",
+          ],
+          exploration: [
+            "NASA’s Mariner 10 made three flybys in 1974–75.",
+            "NASA’s MESSENGER orbited Mercury from 2011 to 2015.",
+            "ESA and JAXA’s BepiColombo mission is en route to orbit Mercury.",
+          ],
+        },
+        {
+          name: "Venus",
+          color: "#E9C46A",
+          radius: 15,
+          au: 0.72,
+          diameter: "12,104 km",
+          gravity: "8.9 m/s²",
+          day: "243 Earth days",
+          year: "225 Earth days",
+          moons: 0,
+          temp: "About 465 °C",
+          magnetic: "No global dipole field; induced magnetosphere from the solar wind",
+          interior: "Iron core, silicate mantle and basaltic crust",
+          atmosphere: "96.5% carbon dioxide, 3.5% nitrogen; sulphuric-acid clouds",
+          rings: "None",
+          fieldType: "Induced magnetosphere",
+          interiorLayers: [
+            ["Basaltic crust", 0.06, "#4ADE80", "Crust"],
+            ["Silicate mantle", 0.44, "#F5A623", "Mantle"],
+            ["Iron core", 0.5, "#FF8080", "Iron core"],
+          ],
+          summary:
+            "Earth’s closest planetary neighbour and the hottest planet, heated by an extreme greenhouse effect beneath dense carbon-dioxide clouds.",
+          science: [
+            "Venus has a similar size and bulk composition to Earth, but evolved into a runaway greenhouse world.",
+            "Its surface pressure is about 92 times Earth’s, and its clouds contain sulphuric acid.",
+            "It rotates backwards relative to most planets and more slowly than it orbits the Sun.",
+            "Venus lacks a strong internal dynamo, possibly because its core cools differently or lacks sufficient convective motion.",
+          ],
+          moonsInfo: [
+            "Venus has no known moons.",
+            "Its slow, retrograde rotation remains an open question in planetary science.",
+            "The planet’s thick atmosphere creates a strong induced magnetosphere as the solar wind interacts with it.",
+          ],
+          exploration: [
+            "Soviet Venera landers transmitted from the surface in the 1970s and early 1980s.",
+            "NASA’s Magellan radar mapped much of the surface in the 1990s.",
+            "ESA’s EnVision and NASA’s VERITAS and DAVINCI are major future Venus missions.",
+          ],
+        },
+        {
+          name: "Earth",
+          color: "#38BDF8",
+          radius: 16,
+          au: 1,
+          diameter: "12,742 km",
+          gravity: "9.8 m/s²",
+          day: "24 hours",
+          year: "365.25 days",
+          moons: 1,
+          temp: "About 15 °C average",
+          magnetic: "Strong global dipole field generated by the outer-core geodynamo",
+          interior: "Solid inner core, liquid outer core, mantle and crust",
+          atmosphere:
+            "78% nitrogen, 21% oxygen, water vapour, carbon dioxide and trace gases",
+          rings: "None",
+          fieldType: "Strong dipole",
+          interiorLayers: [
+            ["Crust", 0.05, "#4ADE80", "Crust"],
+            ["Mantle", 0.61, "#F5A623", "Mantle"],
+            ["Liquid outer core", 0.15, "#FF8080", "Liquid outer core"],
+            ["Solid inner core", 0.19, "#A78BFA", "Solid inner core"],
+          ],
+          summary:
+            "The only known world with stable surface liquid water, a biosphere and an oxygen-rich atmosphere maintained by life.",
+          science: [
+            "Earth’s liquid outer core generates a global magnetic field through the geodynamo.",
+            "This magnetosphere deflects many charged solar particles and helps protect the atmosphere from erosion.",
+            "Plate tectonics recycles the crust and regulates long-term carbon cycling between the interior, oceans and atmosphere.",
+            "The Moon stabilises Earth’s axial tilt over long timescales and drives substantial ocean tides.",
+          ],
+          moonsInfo: [
+            "Earth has one natural satellite: the Moon.",
+            "The Moon is unusually large relative to its planet, likely formed after a giant impact.",
+            "It causes ocean tides and slowly recedes from Earth by about 3.8 cm per year.",
+          ],
+          exploration: [
+            "Earth is observed continuously by thousands of satellites for weather, climate, oceans, land and disasters.",
+            "Crewed spaceflight began with orbital flight in 1961 and lunar landing in 1969.",
+            "Earth-observation satellites underpin weather forecasting, climate monitoring and geospatial science.",
+          ],
+        },
+        {
+          name: "Mars",
+          color: "#E76F51",
+          radius: 12,
+          au: 1.52,
+          diameter: "6,779 km",
+          gravity: "3.7 m/s²",
+          day: "24 hours 37 minutes",
+          year: "687 Earth days",
+          moons: 2,
+          temp: "About −63 °C average",
+          magnetic: "No global field today; local crustal magnetic patches remain",
+          interior: "Iron-rich core, silicate mantle and basaltic crust",
+          atmosphere: "95% carbon dioxide, 2.6% nitrogen, 1.9% argon; very thin",
+          rings: "None",
+          fieldType: "Crustal remnants",
+          interiorLayers: [
+            ["Crust", 0.05, "#4ADE80", "Crust"],
+            ["Mantle", 0.42, "#F5A623", "Mantle"],
+            ["Iron-rich core", 0.53, "#FF8080", "Iron-rich core"],
+          ],
+          summary:
+            "A cold desert world with polar ice caps, ancient river valleys, volcanoes and evidence that liquid water once flowed across its surface.",
+          science: [
+            "Mars once likely had a stronger global magnetic field, but its dynamo shut down billions of years ago.",
+            "Without a global magnetosphere, solar wind has helped strip away much of its early atmosphere.",
+            "Ancient river channels, deltas and clay minerals indicate past surface or near-surface water.",
+            "Olympus Mons and Valles Marineris reveal a geologically dramatic history of volcanism and tectonics.",
+          ],
+          moonsInfo: [
+            "Mars has exactly two known moons: Phobos and Deimos.",
+            "Both are small, irregular bodies and may be captured asteroids or impact debris.",
+            "Phobos orbits close enough to Mars that it will eventually break apart or impact the planet.",
+          ],
+          exploration: [
+            "More than 50 spacecraft have targeted Mars since the 1960s.",
+            "NASA’s Perseverance rover is caching samples for eventual return to Earth.",
+            "ESA’s ExoMars programme and other missions continue the search for past habitable environments.",
+          ],
+        },
+        {
+          name: "Jupiter",
+          color: "#D4A373",
+          radius: 45,
+          au: 5.2,
+          diameter: "139,820 km",
+          gravity: "24.8 m/s²",
+          day: "9 hours 56 minutes",
+          year: "11.9 Earth years",
+          moons: 95,
+          temp: "About −110 °C cloud-top",
+          magnetic: "Strongest planetary magnetic field in the Solar System",
+          interior:
+            "Possible rocky/dilute core, metallic hydrogen, liquid hydrogen and atmosphere",
+          atmosphere:
+            "Mostly hydrogen and helium, with ammonia, methane and water vapour",
+          rings: "Faint dust rings",
+          fieldType: "Very strong and complex",
+          interiorLayers: [
+            ["Atmosphere", 0.1, "#38BDF8", "Atmosphere"],
+            ["Liquid molecular hydrogen", 0.35, "#F5A623", "Liquid hydrogen"],
+            ["Metallic hydrogen", 0.35, "#FF8080", "Metallic hydrogen"],
+            ["Dense / dilute core", 0.2, "#A78BFA", "Core"],
+          ],
+          summary:
+            "The largest planet: a gas giant with no solid surface, powerful storms, faint rings and a vast system of moons.",
+          science: [
+            "Jupiter has more than twice the mass of all the other planets combined.",
+            "Deep inside, pressure compresses hydrogen into a metallic state that conducts electricity and helps generate its immense magnetic field.",
+            "Its rapid rotation drives strong winds, banded clouds and powerful auroras.",
+            "Its magnetosphere is the largest structure in the Solar System and traps intense radiation belts.",
+          ],
+          moonsInfo: [
+            "Jupiter has 95 officially recognised moons.",
+            "The four Galilean moons—Io, Europa, Ganymede and Callisto—are planetary worlds in their own right.",
+            "Europa and Ganymede are major targets in the search for subsurface liquid-water oceans.",
+          ],
+          exploration: [
+            "NASA’s Pioneer and Voyager spacecraft flew by in the 1970s.",
+            "The Galileo orbiter studied Jupiter and its moons from 1995 to 2003.",
+            "NASA’s Juno has orbited Jupiter since 2016; ESA’s JUICE will study Jupiter and its icy moons.",
+          ],
+        },
+        {
+          name: "Saturn",
+          color: "#E9C46A",
+          radius: 38,
+          au: 9.54,
+          diameter: "116,460 km",
+          gravity: "10.4 m/s²",
+          day: "10 hours 33 minutes",
+          year: "29.4 Earth years",
+          moons: 146,
+          temp: "About −140 °C cloud-top",
+          magnetic: "Strong field, generated in its metallic-hydrogen layer",
+          interior:
+            "Possible rocky/dilute core, metallic hydrogen, liquid hydrogen and atmosphere",
+          atmosphere:
+            "Mostly hydrogen and helium, with methane, ammonia and other trace gases",
+          rings: "Spectacular water-ice ring system",
+          fieldType: "Strong dipole",
+          interiorLayers: [
+            ["Atmosphere", 0.1, "#38BDF8", "Atmosphere"],
+            ["Liquid molecular hydrogen", 0.35, "#F5A623", "Liquid hydrogen"],
+            ["Metallic hydrogen", 0.3, "#FF8080", "Metallic hydrogen"],
+            ["Core / dilute core", 0.25, "#A78BFA", "Core"],
+          ],
+          summary:
+            "The ringed gas giant: a low-density planet surrounded by thousands of ringlets and a rich family of moons.",
+          science: [
+            "Saturn’s rings are mostly water ice, from tiny grains to house-sized boulders.",
+            "Its average density is lower than water, making it the least dense planet in the Solar System.",
+            "Its magnetic field is generated in a metallic-hydrogen layer and is unusually aligned with its rotation axis.",
+            "Enceladus vents water vapour and ice into space, feeding material into Saturn’s E ring.",
+          ],
+          moonsInfo: [
+            "Saturn has 146 recognised moons.",
+            "Titan has a dense nitrogen atmosphere and lakes and seas of liquid methane and ethane.",
+            "Enceladus has a global subsurface ocean and erupts water-rich plumes from cracks near its south pole.",
+          ],
+          exploration: [
+            "Pioneer 11 made the first Saturn flyby in 1979.",
+            "NASA’s Cassini orbited Saturn from 2004 to 2017 and delivered the Huygens probe to Titan.",
+            "Cassini revealed Enceladus’s plumes and mapped Titan’s surface through its opaque atmosphere.",
+          ],
+        },
+        {
+          name: "Uranus",
+          color: "#7FDBDA",
+          radius: 25,
+          au: 19.2,
+          diameter: "50,724 km",
+          gravity: "8.7 m/s²",
+          day: "17 hours 14 minutes",
+          year: "84 Earth years",
+          moons: 28,
+          temp: "About −195 °C cloud-top",
+          magnetic: "Off-centre, highly tilted magnetic field",
+          interior: "Rocky core, icy mantle and hydrogen-helium atmosphere",
+          atmosphere: "Hydrogen, helium and methane; methane gives its cyan colour",
+          rings: "Narrow dark rings",
+          fieldType: "Tilted and offset",
+          interiorLayers: [
+            ["Hydrogen-helium atmosphere", 0.2, "#38BDF8", "Atmosphere"],
+            ["Icy mantle", 0.6, "#FF8080", "Icy mantle"],
+            ["Rocky core", 0.2, "#A78BFA", "Rocky core"],
+          ],
+          summary:
+            "An ice giant tipped almost completely on its side, with a muted cyan atmosphere, narrow rings and an unusual seasonal cycle.",
+          science: [
+            "Uranus rotates on its side, likely following a giant impact early in its history.",
+            "Each pole experiences 42 years of sunlight followed by 42 years of darkness.",
+            "Its magnetic field is tilted about 59° from its rotation axis and offset from the planet’s centre.",
+            "The interior is dominated by a hot, dense ‘icy’ fluid of water, ammonia and methane—not a liquid-water ocean like Earth’s.",
+          ],
+          moonsInfo: [
+            "Uranus has 28 known moons, named after Shakespearean and Alexander Pope characters.",
+            "Its five major moons include Titania, Oberon, Umbriel, Ariel and Miranda.",
+            "Miranda shows extreme geological features, including tall cliff-like scarps.",
+          ],
+          exploration: [
+            "Only NASA’s Voyager 2 has visited Uranus, flying past in 1986.",
+            "Voyager 2 discovered 10 new moons and two new rings.",
+            "No dedicated Uranus orbiter has yet flown, although one is a high priority in planetary-decadal planning.",
+          ],
+        },
+        {
+          name: "Neptune",
+          color: "#3B82F6",
+          radius: 24,
+          au: 30.06,
+          diameter: "49,244 km",
+          gravity: "11.2 m/s²",
+          day: "16 hours 6 minutes",
+          year: "164.8 Earth years",
+          moons: 16,
+          temp: "About −200 °C cloud-top",
+          magnetic: "Strong, tilted and offset magnetic field",
+          interior: "Rocky core, icy mantle and hydrogen-helium atmosphere",
+          atmosphere:
+            "Hydrogen, helium and methane; fast winds and transient storm systems",
+          rings: "Faint rings and ring arcs",
+          fieldType: "Tilted and offset",
+          interiorLayers: [
+            ["Hydrogen-helium atmosphere", 0.2, "#38BDF8", "Atmosphere"],
+            ["Icy mantle", 0.55, "#FF8080", "Icy mantle"],
+            ["Rocky core", 0.25, "#A78BFA", "Rocky core"],
+          ],
+          summary:
+            "The most distant planet: an ice giant with the fastest winds measured in the Solar System and a dynamic, deep-blue atmosphere.",
+          science: [
+            "Neptune’s winds can exceed 2,000 km/h despite receiving very little energy from the distant Sun.",
+            "Its magnetic field is tilted about 47° from its rotation axis and offset from its centre.",
+            "Its blue colour comes mainly from methane absorbing red light in the upper atmosphere.",
+            "Its largest moon, Triton, orbits backwards and is likely a captured Kuiper Belt object.",
+          ],
+          moonsInfo: [
+            "Neptune has 16 known moons.",
+            "Triton has a thin nitrogen atmosphere, nitrogen-ice plains and active cryovolcanic plumes.",
+            "Its retrograde orbit strongly suggests it was captured from the Kuiper Belt.",
+          ],
+          exploration: [
+            "Voyager 2 remains the only spacecraft to visit Neptune, flying past in 1989.",
+            "It discovered Neptune’s Great Dark Spot, rings and several moons.",
+            "Future mission concepts propose a dedicated Neptune orbiter and Triton exploration.",
+          ],
+        },
+      ];
+      const stage = document.getElementById("stage"),
+        info = document.getElementById("info"),
+        planetRow = document.querySelector(".planet-row"),
+        dataTable = document.getElementById("dataTable");
+      let selected = 2,
+        view = "profile";
+      const W = 780,
+        H = 540,
+        cx = W / 2,
+        cy = 250;
+      function starfield(n = 90) {
+        let s = "";
+        for (let i = 0; i < n; i++) {
+          const x = Math.random() * W,
+            y = Math.random() * H,
+            r = Math.random() * 1.25 + 0.25,
+            o = (Math.random() * 0.5 + 0.35).toFixed(2);
+          s += `<circle class="star" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(2)}" opacity="${o}"/>`;
+        }
+        return s;
+      }
+      function pill(x, y, text) {
+        return `<rect class="pill" x="${x}" y="${y - 13}" width="${text.length * 6.1 + 22}" height="24" rx="12"/><text class="pill-text" x="${x + 11}" y="${y + 3}">${text}</text>`;
+      }
+      function planetSVG(p, x, y, r, interactive = true) {
+        const gid = "g" + p.name.replace(/\W/g, "");
+        return `<g class="${interactive ? "planet-hit" : ""}" ${interactive ? `tabindex="0" role="button" aria-label="${p.name}" data-planet="${planets.indexOf(p)}"` : ""}><defs><radialGradient id="${gid}" cx="35%" cy="30%"><stop offset="0" stop-color="${p.color}"/><stop offset="1" stop-color="${p.color}" stop-opacity=".4"/></radialGradient></defs><circle class="planet-body" cx="${x}" cy="${y}" r="${r}" fill="url(#${gid})" stroke="${p.color}" stroke-width="1.5"/></g>`;
+      }
+      function profileSVG() {
+        const p = planets[selected],
+          r = Math.min(145, 40 + p.radius * 2.2);
+        return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Illustration of ${p.name}">${starfield(110)}${planetSVG(p, cx, cy, r, false)}<text class="body-label" x="${cx - r}" y="${cy + r + 48}" font-size="22">${p.name}</text><text class="body-sub" x="${cx - r}" y="${cy + r + 69}">${p.diameter} diameter · ${p.moons} known moon${p.moons === 1 ? "" : "s"} · ${p.au} au from Sun</text><text class="body-sub" x="${cx - r}" y="${cy + r + 89}">${p.interior}</text></svg>`;
+      }
+      function interiorSVG() {
+        const p = planets[selected],
+          R = 180;
+        let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Schematic interior of ${p.name}, with crust or atmosphere outermost and core at the centre">${starfield(60)}`;
+        let currentR = R;
+        // Data order: outermost first, innermost last.
+        p.interiorLayers.forEach(([name, frac, color, label], i) => {
+          const r = Math.max(
+            8,
+            R * (1 - p.interiorLayers.slice(0, i).reduce((a, x) => a + x[1], 0)),
+          );
+          s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}" fill-opacity=".94" stroke="rgba(255,255,255,.28)" stroke-width="1.2"/>`;
+        });
+        let ly = 64;
+        p.interiorLayers.forEach(([name, frac, color, label]) => {
+          s += `<rect x="30" y="${ly - 10}" width="18" height="18" rx="4" fill="${color}" stroke="rgba(255,255,255,.25)"/><text class="body-label" x="58" y="${ly + 4}" font-size="13">${label}</text><text class="body-sub" x="58" y="${ly + 22}">${name}</text>`;
+          ly += 52;
+        });
+        s +=
+          pill(430, 90, `Interior type: ${p.interior}`) +
+          pill(430, 125, `Magnetic field: ${p.fieldType}`);
+        s += `<text class="layer-label" x="${cx - 52}" y="${cy + R + 38}" font-size="13">CENTRE = CORE</text><text class="small-label" x="30" y="${H - 18}">Layers are shown in the correct order: outermost crust or atmosphere at the edge; densest core at the centre. Thicknesses are schematic.</text></svg>`;
+        return s;
+      }
+      function magneticSVG() {
+        const p = planets[selected];
+        let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Magnetic field of ${p.name}">${starfield(80)}`;
+        const tilt =
+          p.fieldType === "Tilted and offset"
+            ? 38
+            : p.fieldType === "Weak dipole"
+              ? 10
+              : 0;
+        s += `<g transform="rotate(${tilt} ${cx} ${cy})">`;
+        for (let i = -2; i <= 2; i++) {
+          const off = i * 42;
+          s += `<path d="M${cx - off * 0.32} ${cy - 80} C${cx - off * 1.55} ${cy - 185} ${cx - off * 1.55} ${cy + 185} ${cx - off * 0.32} ${cy + 80}" fill="none" stroke="#38BDF8" stroke-width="${i === 0 ? 3 : 1.8}" opacity="${0.9 - Math.abs(i) * 0.13}"/>`;
+        }
+        s += `<line x1="${cx}" y1="${cy - 170}" x2="${cx}" y2="${cy + 170}" stroke="#38BDF8" stroke-width="3"/><path d="M${cx - 7} ${cy - 160} l7 -14 l7 14 Z" fill="#38BDF8"/></g>`;
+        s +=
+          planetSVG(p, cx, cy, 72, false) +
+          pill(45, 60, `Field type: ${p.fieldType}`) +
+          pill(45, 95, p.magnetic) +
+          pill(45, 130, "Solar wind approaches from the left");
+        s += `<path d="M18 ${cy - 60} q60 18 120 42" stroke="#F5A623" stroke-width="2.5" stroke-dasharray="8 5" fill="none"/><path d="M18 ${cy + 60} q60 -18 120 -42" stroke="#F5A623" stroke-width="2.5" stroke-dasharray="8 5" fill="none"/><text class="small-label" x="22" y="${cy - 75}">Solar wind</text><text class="small-label" x="30" y="${H - 18}">Field-line geometry is schematic. Gas giants often have compressed dayside magnetospheres and long magnetotails.</text></svg>`;
+        return s;
+      }
+      function ringsSVG() {
+        const p = planets[selected];
+        let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Ring system of ${p.name}">${starfield(70)}`;
+        s += planetSVG(p, cx, cy, 72, false);
+        if (p.rings !== "None") {
+          s += `<ellipse cx="${cx}" cy="${cy}" rx="160" ry="44" fill="none" stroke="${p.color}" stroke-width="14" opacity=".28" transform="rotate(-14 ${cx} ${cy})"/><ellipse cx="${cx}" cy="${cy}" rx="132" ry="35" fill="none" stroke="#EDEAE3" stroke-width="3" opacity=".35" transform="rotate(-14 ${cx} ${cy})"/>`;
+        }
+        s +=
+          pill(45, 60, p.rings === "None" ? "Rings: None" : `Rings: ${p.rings}`) +
+          pill(45, 95, `Known moons: ${p.moons}`);
+        s += `<text class="body-sub" x="45" y="145">${p.moonsInfo[0]}</text><text class="body-sub" x="45" y="168">${p.moonsInfo[1]}</text><text class="body-sub" x="45" y="191">${p.moonsInfo[2]}</text><text class="small-label" x="30" y="${H - 18}">This view shows rings only; it does not illustrate moons or their orbits.</text></svg>`;
+        return s;
+      }
+      function atmospheresSVG() {
+        let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Comparison of planetary atmospheres">${starfield(50)}`;
+        planets.forEach((p, i) => {
+          const y = 92 + i * 52,
+            active = i === selected;
+          s += `<g class="planet-hit" tabindex="0" role="button" aria-label="${p.name}" data-planet="${i}"><rect x="35" y="${y - 20}" width="${W - 70}" height="40" rx="8" fill="${active ? "rgba(0,194,168,.13)" : "rgba(255,255,255,.03)"}" stroke="${active ? "#00C2A8" : "rgba(255,255,255,.11)"}"/><circle cx="62" cy="${y}" r="10" fill="${p.color}"/><text class="body-label" x="84" y="${y + 5}">${p.name}</text><text class="body-sub" x="205" y="${y + 5}">${p.atmosphere}</text></g>`;
+        });
+        return (
+          s +
+          `<text class="body-label" x="35" y="46">Atmospheres: composition and surface conditions</text></svg>`
+        );
+      }
+      function sizeSVG() {
+        let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="True relative diameters of the eight planets">${starfield(60)}`;
+        let x = 44;
+        planets.forEach((p, i) => {
+          const r = Math.max(4, p.radius * 0.78),
+            y = 260;
+          s += planetSVG(p, x, y, r, i === selected);
+          s += `<text class="body-sub" x="${x - r}" y="${y + r + 21}">${p.name}</text>`;
+          x += r * 2 + 28;
+        });
+        return (
+          s +
+          `<text class="body-label" x="44" y="52">Relative diameters — Jupiter is about 11 times Earth’s diameter</text><text class="body-sub" x="44" y="74">The Sun, about 1.39 million km across, is roughly 109 times Earth’s diameter.</text></svg>`
+        );
+      }
+      function orbitsSVG() {
+        let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Compressed orbital distances of the planets">${starfield(70)}`;
+        const maxR = Math.min(W, H) / 2 - 45;
+        planets.forEach((p, i) => {
+          const rr = 48 + (Math.log10(p.au * 10 + 1) / Math.log10(301)) * (maxR - 48);
+          s += `<circle class="orbit" cx="${cx}" cy="${cy}" r="${rr}"/>`;
+          const ang = -Math.PI / 2 + i * 0.72,
+            px = cx + rr * Math.cos(ang),
+            py = cy + rr * Math.sin(ang);
+          s += planetSVG(
+            p,
+            px,
+            py,
+            Math.max(5, Math.min(15, p.radius * 0.3)),
+            i === selected,
+          );
+          s += `<text class="body-sub" x="${px + 12}" y="${py + 4}">${p.name} · ${p.au} au</text>`;
+        });
+        return (
+          s +
+          `<circle cx="${cx}" cy="${cy}" r="16" fill="#F5A623"/><text class="body-label" x="${cx - 15}" y="${cy + 38}">SUN</text><text class="body-sub" x="30" y="28">Orbital distances are logarithmically compressed; planet sizes are not to scale.</text></svg>`
+        );
+      }
+      function render() {
+        const views = {
+          profile: profileSVG,
+          interior: interiorSVG,
+          magnetic: magneticSVG,
+          rings: ringsSVG,
+          atmospheres: atmospheresSVG,
+          size: sizeSVG,
+          orbits: orbitsSVG,
+        };
+        stage.innerHTML = views[view]();
+        stage.querySelectorAll(".planet-hit").forEach((el) => {
+          const go = () => {
+            selected = +el.dataset.planet;
+            renderPlanetButtons();
+            show();
+          };
+          el.addEventListener("click", (e) => {
+            e.stopPropagation();
+            go();
+          });
+          el.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              go();
+            }
+          });
+        });
+        show();
+      }
+      function renderPlanetButtons() {
+        planetRow.innerHTML = planets
+          .map(
+            (p, i) =>
+              `<button class="planet-chip" aria-pressed="${i === selected}" data-planet="${i}"><span class="dot" style="background:${p.color}"></span>${p.name}</button>`,
+          )
+          .join("");
+        planetRow.querySelectorAll(".planet-chip").forEach(
+          (b) =>
+            (b.onclick = () => {
+              selected = +b.dataset.planet;
+              renderPlanetButtons();
+              render();
+            }),
+        );
+      }
+      function show() {
+        const p = planets[selected];
+        info.innerHTML = `<h3>${p.name}</h3><p>${p.summary}</p><div class="facts"><div class="fact"><b>Distance from Sun</b>${p.au} au</div><div class="fact"><b>Diameter</b>${p.diameter}</div><div class="fact"><b>Surface gravity</b>${p.gravity}</div><div class="fact"><b>Day length</b>${p.day}</div><div class="fact"><b>Year length</b>${p.year}</div><div class="fact"><b>Known moons</b>${p.moons}</div><div class="fact"><b>Atmosphere</b>${p.atmosphere}</div><div class="fact"><b>Magnetic field</b>${p.magnetic}</div></div><p class="subhead">Interior and magnetic field</p><ul class="plain-list">${p.science.map((t) => `<li>${t}</li>`).join("")}</ul><p class="subhead">Moons and rings</p><ul class="plain-list">${p.moonsInfo.map((t) => `<li>${t}</li>`).join("")}</ul><p class="subhead">Exploration</p><ul class="plain-list">${p.exploration.map((t) => `<li>${t}</li>`).join("")}</ul>`;
+      }
+      dataTable.innerHTML = planets
+        .map(
+          (p) =>
+            `<tr><td><strong>${p.name}</strong></td><td>${p.au} au</td><td>${p.diameter}</td><td>${p.gravity}</td><td>${p.day}</td><td>${p.year}</td><td>${p.moons}</td><td>${p.magnetic}</td><td>${p.interior}</td></tr>`,
+        )
+        .join("");
+      document.querySelectorAll(".controls .chip").forEach((btn) =>
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".controls .chip")
+            .forEach((b) => b.setAttribute("aria-pressed", "false"));
+          btn.setAttribute("aria-pressed", "true");
+          view = btn.dataset.view;
+          render();
+        }),
+      );
+      renderPlanetButtons();
+      render();
+    </script>
+  </body>
+</html>

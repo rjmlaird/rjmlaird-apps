@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Atmosphere Explorer — Surface to 100 km</title>
+    <style>
+      :root {
+        --ink: #0b0f1a;
+        --ink2: #0f1520;
+        --card: #141b29;
+        --lift: #1a2236;
+        --w: #edeae3;
+        --mb: #9aa4b8;
+        --m: #8a98b2;
+        --teal: #00c2a8;
+        --amber: #f5a623;
+        --violet: #a78bfa;
+        --coral: #ff8080;
+        --green: #4ade80;
+        --sky: #38bdf8;
+        --td: rgba(0, 194, 168, 0.13);
+        --tb: rgba(0, 194, 168, 0.26);
+        --bd: rgba(255, 255, 255, 0.11);
+        --bm: rgba(255, 255, 255, 0.2);
+        --focus: #7fe6d4;
+        --font-display: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --radius: 6px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--ink);
+        color: var(--w);
+        font-family: var(--font-body);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 78rem;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 4rem;
+      }
+      .kicker {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        margin-bottom: 1rem;
+        font-family: var(--font-display);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--teal);
+      }
+      .kicker::before {
+        content: "";
+        width: 26px;
+        height: 1px;
+        background: var(--teal);
+      }
+      h1 {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 4.6vw, 3.2rem);
+        line-height: 1.08;
+        letter-spacing: -0.025em;
+        margin-bottom: 1rem;
+      }
+      .lead {
+        max-width: 48rem;
+        color: var(--mb);
+        font-size: 1.05rem;
+        line-height: 1.75;
+        margin-bottom: 2rem;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+        gap: 1.5rem;
+        align-items: start;
+      }
+      @media (max-width: 960px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--bd);
+        border-left: 3px solid var(--teal);
+        border-radius: var(--radius);
+        padding: 1.25rem;
+      }
+      .panel h2 {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        margin-bottom: 0.9rem;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .chip {
+        font: inherit;
+        font-size: 0.85rem;
+        padding: 0.45rem 0.85rem;
+        border: 1px solid var(--bm);
+        border-radius: 999px;
+        background: transparent;
+        color: var(--mb);
+        cursor: pointer;
+        min-height: 44px;
+      }
+      .chip[aria-pressed="true"] {
+        background: var(--td);
+        border-color: var(--teal);
+        color: var(--w);
+      }
+      .chip:hover,
+      .chip:focus-visible {
+        border-color: var(--teal);
+      }
+      .stage-wrap {
+        position: relative;
+      }
+      .stage {
+        border: 1px solid var(--bd);
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: linear-gradient(180deg, #05070d 0%, #0b0f1a 64%, #0f1520 100%);
+      }
+      .stage svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        cursor: zoom-in;
+      }
+      .stage.zoomed svg {
+        cursor: zoom-out;
+      }
+      .layer-hit {
+        cursor: pointer;
+      }
+      .layer-hit:hover .layer-band,
+      .layer-hit:focus-visible .layer-band {
+        opacity: 0.95;
+        stroke: var(--w);
+      }
+      .layer-band {
+        transition:
+          opacity 0.15s,
+          stroke 0.15s;
+      }
+      .layer-label {
+        font-family: var(--font-display);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        fill: var(--w);
+      }
+      .layer-sub {
+        font-family: var(--font-body);
+        fill: rgba(237, 234, 227, 0.82);
+      }
+      .tick {
+        stroke: var(--bm);
+        stroke-dasharray: 3 5;
+      }
+      .tick-label {
+        font-family: var(--font-body);
+        font-size: 11px;
+        fill: var(--mb);
+      }
+      .object-label {
+        font-family: var(--font-body);
+        font-size: 11px;
+        fill: var(--w);
+      }
+      .object-pill {
+        fill: rgba(11, 15, 26, 0.85);
+        stroke: var(--bm);
+      }
+      .marker {
+        stroke: var(--amber);
+        stroke-width: 2;
+        stroke-dasharray: 6 4;
+      }
+      .info h3 {
+        font-family: var(--font-display);
+        font-size: 1.35rem;
+        color: var(--teal);
+        margin-bottom: 0.5rem;
+      }
+      .info p {
+        color: var(--mb);
+        margin-bottom: 1rem;
+      }
+      .facts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.6rem;
+        margin-bottom: 1.25rem;
+      }
+      @media (max-width: 520px) {
+        .facts {
+          grid-template-columns: 1fr;
+        }
+      }
+      .fact {
+        background: var(--lift);
+        border: 1px solid var(--bd);
+        border-radius: var(--radius);
+        padding: 0.75rem;
+      }
+      .fact b {
+        display: block;
+        font-family: var(--font-display);
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--mb);
+        margin-bottom: 0.2rem;
+      }
+      .plain-list {
+        list-style: none;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .plain-list li {
+        position: relative;
+        padding-left: 1.25rem;
+        color: var(--mb);
+        line-height: 1.65;
+      }
+      .plain-list li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.72em;
+        width: 0.5rem;
+        height: 1px;
+        background: var(--teal);
+      }
+      .plain-list strong {
+        color: var(--w);
+        font-weight: 600;
+      }
+      .subhead {
+        font-family: var(--font-display);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--mb);
+        margin: 1.25rem 0 0.6rem;
+      }
+      .note {
+        margin-top: 1.5rem;
+        padding: 1rem 1.25rem;
+        background: var(--ink2);
+        border: 1px solid var(--bd);
+        border-radius: var(--radius);
+        color: var(--mb);
+        font-size: 0.92rem;
+      }
+      .note strong {
+        color: var(--w);
+      }
+      .zoom-hint {
+        margin-top: 0.7rem;
+        font-size: 0.85rem;
+        color: var(--m);
+      }
+      .zoom-hint strong {
+        color: var(--w);
+      }
+      :focus-visible {
+        outline: 3px solid var(--focus);
+        outline-offset: 3px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <p class="kicker">Atmosphere Explorer</p>
+      <h1>Earth’s atmosphere: surface to the edge of space</h1>
+      <p class="lead">
+        Explore the troposphere, stratosphere and mesosphere on a true 0–100 km scale,
+        then click to zoom into the thermosphere and low-Earth-orbit region. Select any
+        layer for its radiation, temperature, pressure and spaceflight context.
+      </p>
+
+      <div class="layout">
+        <section class="panel">
+          <div class="controls" role="group" aria-label="Diagram view">
+            <button class="chip" data-view="altitude" aria-pressed="true">
+              Layered atmosphere
+            </button>
+            <button class="chip" data-view="temperature" aria-pressed="false">
+              Temperature profile
+            </button>
+            <button class="chip" data-view="pressure" aria-pressed="false">
+              Pressure profile
+            </button>
+          </div>
+          <div class="stage-wrap">
+            <div id="stage" class="stage" aria-live="polite"></div>
+          </div>
+          <p class="zoom-hint" id="zoomHint">
+            <strong>Click the diagram to zoom.</strong> The first view uses an undistorted
+            0–100 km altitude scale; clicking switches to a compressed 0–1,000 km view
+            that includes the ISS orbit.
+          </p>
+          <p class="note">
+            <strong>Reading the diagram:</strong> the 0–100 km view is drawn with a
+            consistent kilometres-per-pixel scale. The zoomed view compresses altitudes
+            above 100 km so the thermosphere, Kármán line and ISS orbit can be shown
+            together. Values are illustrative standard-atmosphere figures and vary with
+            latitude, season and weather.
+          </p>
+        </section>
+
+        <aside class="panel info" id="info" aria-live="polite"></aside>
+      </div>
+    </main>
+
+    <script>
+      const layers = [
+        {
+          id: "troposphere",
+          name: "Troposphere",
+          bottom: 0,
+          top: 12,
+          color: "#38BDF8",
+          fill: "rgba(56,189,248,.22)",
+          stroke: "#38BDF8",
+          altitude: "0–12 km",
+          temp: "+15 °C at sea level to about −60 °C",
+          pressure: "About 1,013 hPa to 200 hPa",
+          trend: "Temperature decreases upward",
+          summary:
+            "The lowest, densest layer of the atmosphere. It contains roughly 75–80% of atmospheric mass, nearly all water vapour, and the weather experienced at the surface.",
+          science: [
+            "Sunlight warms Earth’s surface, which heats the air above and drives convection, clouds, storms and wind.",
+            "Temperature generally falls by about 6.5 °C per kilometre in the standard atmosphere.",
+            "The tropopause limits vertical mixing between the troposphere and stratosphere.",
+            "Greenhouse gases absorb outgoing infrared radiation, warming the lower atmosphere.",
+          ],
+          context: [
+            "Commercial airliners commonly cruise at 9–12 km.",
+            "Mount Everest reaches 8.8 km, where available oxygen is much lower.",
+            "Weather balloons are launched from the surface and rise through this layer.",
+          ],
+        },
+        {
+          id: "stratosphere",
+          name: "Stratosphere",
+          bottom: 12,
+          top: 50,
+          color: "#00C2A8",
+          fill: "rgba(0,194,168,.17)",
+          stroke: "#00C2A8",
+          altitude: "12–50 km",
+          temp: "About −60 °C to −3 °C",
+          pressure: "About 200 hPa to 1 hPa",
+          trend: "Temperature increases upward",
+          summary:
+            "A stable, dry layer containing the ozone layer. Temperature rises with altitude because ozone absorbs solar ultraviolet radiation.",
+          science: [
+            "Ozone concentrated around 15–35 km absorbs much of the Sun’s harmful UV-B and UV-C radiation.",
+            "Absorbed ultraviolet energy becomes heat, warming the upper stratosphere.",
+            "The temperature structure suppresses convection, so everyday weather is largely absent.",
+            "The ozone layer is both a UV shield and a major control on atmospheric temperature structure.",
+          ],
+          context: [
+            "Weather balloons often burst near 30–35 km as pressure becomes extremely low.",
+            "High-altitude research balloons operate in the lower and middle stratosphere.",
+            "Some specialised aircraft, including Concorde, cruised near 18 km.",
+          ],
+        },
+        {
+          id: "mesosphere",
+          name: "Mesosphere",
+          bottom: 50,
+          top: 85,
+          color: "#A78BFA",
+          fill: "rgba(167,139,250,.16)",
+          stroke: "#A78BFA",
+          altitude: "50–85 km",
+          temp: "About −3 °C to below −90 °C",
+          pressure: "About 1 hPa to 0.01 hPa",
+          trend: "Temperature decreases upward",
+          summary:
+            "The coldest part of the atmosphere. Its air is extremely thin, and it is where most meteors become visible and burn up.",
+          science: [
+            "Too little ozone remains to absorb substantial solar radiation, so temperature decreases with height.",
+            "Meteors typically glow around 75–100 km as they compress and heat the thin air ahead of them.",
+            "Noctilucent clouds form near 76–85 km around meteoric dust and ice crystals.",
+            "The mesopause near 85 km is often the coldest region of the atmosphere.",
+          ],
+          context: [
+            "Meteors, or shooting stars, are commonly visible in this layer.",
+            "Sounding rockets cross it rapidly.",
+            "Neither aircraft nor balloons can operate here: the air is too thin for wings and too dense for orbit.",
+          ],
+        },
+        {
+          id: "thermosphere",
+          name: "Thermosphere",
+          bottom: 85,
+          top: 600,
+          color: "#F5A623",
+          fill: "rgba(245,166,35,.13)",
+          stroke: "#F5A623",
+          altitude: "85–600 km",
+          temp: "Particle temperatures can exceed 1,000–2,000 °C",
+          pressure: "Near-vacuum",
+          trend: "Temperature increases strongly upward",
+          summary:
+            "A vast, tenuous region heated by solar X-rays and extreme ultraviolet radiation. It contains the International Space Station’s orbital altitude and much of the aurora.",
+          science: [
+            "Solar X-rays and extreme ultraviolet radiation heat and ionise sparse gas.",
+            "High kinetic temperature does not make a spacecraft hot in the everyday sense, because the air is too sparse to transfer much heat.",
+            "The ionosphere overlaps this region and affects radio propagation.",
+            "Auroras occur roughly between 80 and 600 km when charged particles excite oxygen and nitrogen.",
+          ],
+          context: [
+            "The International Space Station orbits at about 400 km.",
+            "Many satellites occupy low Earth orbit in the lower thermosphere.",
+            "Residual drag at ISS altitude gradually lowers its orbit and requires periodic reboosts.",
+          ],
+        },
+        {
+          id: "exosphere",
+          name: "Exosphere",
+          bottom: 600,
+          top: 10000,
+          color: "#FF8080",
+          fill: "rgba(255,128,128,.10)",
+          stroke: "#FF8080",
+          altitude: "Above about 600 km",
+          temp: "High particle energies; effectively space",
+          pressure: "Effectively vacuum",
+          trend: "Transitions into interplanetary space",
+          summary:
+            "The outermost fringe of the atmosphere, where particles are so sparse that many can travel long distances without colliding and some escape into space.",
+          science: [
+            "Light gases, especially hydrogen and helium, dominate the exosphere.",
+            "Particles may follow long ballistic paths and escape Earth’s gravity if they exceed escape velocity.",
+            "There is no sharp upper boundary; the exosphere merges gradually with interplanetary space.",
+            "Satellites can orbit here, but lower orbits still encounter residual drag.",
+          ],
+          context: [
+            "Many Earth-observation and communications satellites orbit within or above this region.",
+            "Geostationary satellites orbit at about 35,786 km, beyond the diagram’s compressed range.",
+            "The Moon, at about 384,400 km, lies far beyond Earth’s atmosphere.",
+          ],
+        },
+      ];
+
+      const nearObjects = [
+        { label: "Commercial aircraft · 9–12 km", alt: 10.5, icon: "✈" },
+        { label: "Weather-balloon burst · ~30–35 km", alt: 32, icon: "◉" },
+        { label: "Noctilucent clouds · 76–85 km", alt: 80, icon: "☁" },
+        { label: "Meteors burn up · ~75–100 km", alt: 88, icon: "✦" },
+        { label: "Kármán line · ~100 km", alt: 100, icon: "" },
+      ];
+      const farObjects = [
+        { label: "Kármán line · ~100 km", alt: 100, icon: "" },
+        { label: "ISS · ~400 km", alt: 400, icon: "🛰" },
+        { label: "Low Earth orbit satellites · ~160–2,000 km", alt: 550, icon: "🛰" },
+      ];
+
+      const stage = document.getElementById("stage"),
+        info = document.getElementById("info"),
+        hint = document.getElementById("zoomHint");
+      let view = "altitude",
+        selected = 0,
+        zoomed = false;
+      const W = 760,
+        H = 520,
+        pad = { l: 78, r: 24, t: 30, b: 58 };
+      const plotTop = pad.t,
+        plotBottom = H - pad.b,
+        plotLeft = pad.l,
+        plotRight = W - pad.r;
+
+      function yNear(a) {
+        return plotBottom - (a / 100) * (plotBottom - plotTop);
+      }
+      function yFar(a) {
+        const a2 = Math.min(a, 1000);
+        return a2 <= 100
+          ? plotBottom - (a2 / 100) * ((plotBottom - plotTop) * 0.42)
+          : plotBottom -
+              (plotBottom - plotTop) * 0.42 -
+              ((a2 - 100) / 900) * ((plotBottom - plotTop) * 0.58);
+      }
+      const yFor = (a) => (zoomed ? yFar(a) : yNear(a));
+
+      function baseSVG() {
+        return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${zoomed ? "Compressed diagram of Earth's atmosphere from the surface to low Earth orbit" : "True-scale diagram of Earth's lower and middle atmosphere from the surface to 100 km"}">
+  <defs>
+   <linearGradient id="ocean" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0e7490"/><stop offset="1" stop-color="#082f49"/></linearGradient>
+   <linearGradient id="land" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#166534"/><stop offset="1" stop-color="#052e16"/></linearGradient>
+   <radialGradient id="sun" cx="50%" cy="50%"><stop offset="0" stop-color="#F5A623" stop-opacity=".95"/><stop offset="1" stop-color="#F5A623" stop-opacity="0"/></radialGradient>
+  </defs>`;
+      }
+
+      function earthSurface() {
+        return `<g>
+  <ellipse cx="${W / 2}" cy="${H - 18}" rx="${W / 2 - 8}" ry="30" fill="url(#ocean)"/>
+  <path d="M${plotLeft} ${H - 18} C${plotLeft + 80} ${H - 46} ${plotLeft + 180} ${H - 38} ${plotLeft + 250} ${H - 26} C${plotLeft + 330} ${H - 14} ${plotLeft + 430} ${H - 38} ${plotLeft + 520} ${H - 24} C${plotLeft + 590} ${H - 15} ${plotLeft + 630} ${H - 20} ${plotRight} ${H - 18} L${plotRight} ${H} L${plotLeft} ${H} Z" fill="url(#land)"/>
+  <path d="M${plotLeft + 130} ${H - 27} q18 -12 36 -2 q18 10 36 -1" fill="none" stroke="#4ADE80" stroke-width="3" opacity=".8"/>
+  <path d="M${plotLeft + 370} ${H - 30} q20 -12 40 0 q18 9 36 -2" fill="none" stroke="#4ADE80" stroke-width="3" opacity=".8"/>
+  <text class="layer-label" x="${W / 2 - 56}" y="${H - 8}" font-size="12">EARTH’S SURFACE</text>
+ </g>`;
+      }
+
+      function altitudeSVG() {
+        const y = yFor;
+        let s = baseSVG();
+        s += `<circle cx="${W - 70}" cy="52" r="48" fill="url(#sun)"/><circle cx="${W - 70}" cy="52" r="13" fill="#F5A623"/>`;
+        layers.forEach((L, i) => {
+          const yT = y(L.top),
+            yB = y(L.bottom),
+            h = Math.max(3, yB - yT);
+          const visible = zoomed || L.bottom < 100;
+          if (!visible) return;
+          const clippedTop = Math.max(yT, plotTop),
+            clippedBottom = Math.min(yB, plotBottom);
+          s += `<g class="layer-hit" tabindex="0" role="button" aria-label="${L.name}, ${L.altitude}" data-layer="${i}">
+   <rect class="layer-band" x="${plotLeft}" y="${clippedTop}" width="${plotRight - plotLeft}" height="${Math.max(3, clippedBottom - clippedTop)}" fill="${L.fill}" stroke="${L.stroke}" stroke-opacity=".55"/>
+   <text class="layer-label" x="${plotLeft + 14}" y="${Math.min(clippedTop + 23, clippedBottom - 8)}">${L.name}</text>
+   <text class="layer-sub" x="${plotLeft + 14}" y="${Math.min(clippedTop + 41, clippedBottom + 8)}">${L.altitude}</text>
+  </g>`;
+        });
+        const ticks = zoomed
+          ? [0, 12, 50, 85, 100, 200, 400, 600, 1000]
+          : [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+        ticks.forEach((a) => {
+          const yy = y(a);
+          s += `<line class="tick" x1="${plotLeft - 10}" y1="${yy}" x2="${plotRight}" y2="${yy}"/>
+      <text class="tick-label" x="8" y="${yy + 4}">${a} km</text>`;
+        });
+        const objs = zoomed ? farObjects : nearObjects;
+        objs.forEach((o) => {
+          const yy = y(o.alt);
+          if (yy < plotTop || yy > plotBottom) return;
+          const pillX = o.alt < 100 ? plotLeft + 330 : plotLeft + 350;
+          s += `<line class="marker" x1="${plotLeft}" y1="${yy}" x2="${plotRight}" y2="${yy}"/>
+      <rect class="object-pill" x="${pillX}" y="${yy - 14}" width="${o.label.length * 6.1 + 34}" height="24" rx="12"/>
+      <text class="object-label" x="${pillX + 18}" y="${yy + 3}">${o.icon ? o.icon + " " : ""}${o.label}</text>`;
+        });
+        s += earthSurface();
+        s += `<text class="layer-sub" x="${plotLeft}" y="18">${
+          zoomed
+            ? "Compressed view: 0–100 km occupies the lower 42% of the plot; 100–1,000 km occupies the upper 58%."
+            : "True 0–100 km scale: every 10 km has the same vertical height."
+        }</text>`;
+        s += `<path d="M${W - 105} 78 q-25 42 -52 78" stroke="#F5A623" stroke-width="2" fill="none" opacity=".8"/>
+     <path d="M${W - 155} 190 q18 34 40 58" stroke="#FF8080" stroke-width="2" fill="none" opacity=".65"/>
+     <text class="tick-label" x="${W - 190}" y="72">Solar UV / X-rays</text>
+     <text class="tick-label" x="${W - 190}" y="268">Infrared escape</text>`;
+        return s + `</svg>`;
+      }
+
+      function profileSVG(kind) {
+        const isTemp = kind === "temperature";
+        const data = isTemp
+          ? [
+              [0, 15],
+              [12, -60],
+              [20, -55],
+              [32, -45],
+              [47, -3],
+              [50, -3],
+              [70, -75],
+              [85, -90],
+              [100, -75],
+              [200, 500],
+              [400, 900],
+              [600, 1500],
+            ]
+          : [
+              [0, 1013],
+              [5, 540],
+              [11, 226],
+              [12, 193],
+              [20, 55],
+              [32, 8.7],
+              [50, 1],
+              [70, 0.05],
+              [85, 0.005],
+              [100, 0.0003],
+              [200, 0.001],
+              [400, 1e-7],
+              [600, 1e-8],
+              [1000, 1e-9],
+            ];
+        let s = baseSVG();
+        const yA = yFor;
+        const x = (v) =>
+          isTemp
+            ? plotLeft + ((v + 120) / (1600 + 120)) * (plotRight - plotLeft)
+            : plotLeft +
+              ((Math.log10(Math.max(v, 1e-9)) + 9) / (3.1 + 9)) * (plotRight - plotLeft);
+        layers.forEach((L, i) => {
+          const visible = zoomed || L.bottom < 100;
+          if (!visible) return;
+          const yT = Math.max(yA(Math.min(L.top, 1000)), plotTop),
+            yB = Math.min(yA(L.bottom), plotBottom);
+          s += `<g class="layer-hit" tabindex="0" role="button" aria-label="${L.name}" data-layer="${i}">
+   <rect class="layer-band" x="${plotLeft}" y="${yT}" width="${plotRight - plotLeft}" height="${Math.max(2, yB - yT)}" fill="${L.fill}" stroke="${L.stroke}" stroke-opacity=".35"/>
+   <text class="layer-label" x="${plotLeft + 10}" y="${Math.min(yT + 18, yB - 4)}" font-size="13">${L.name}</text></g>`;
+        });
+        const pts = data
+          .filter(([a]) => zoomed || a <= 100)
+          .map(([a, v]) => `${x(v)},${yA(a)}`)
+          .join(" ");
+        s += `<polyline points="${pts}" fill="none" stroke="#F5A623" stroke-width="3" stroke-linejoin="round"/>`;
+        const ticks = zoomed
+          ? [0, 12, 50, 85, 100, 200, 400, 600, 1000]
+          : [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+        ticks.forEach((a) => {
+          s += `<line class="tick" x1="${plotLeft}" y1="${yA(a)}" x2="${plotRight}" y2="${yA(a)}"/>
+      <text class="tick-label" x="8" y="${yA(a) + 4}">${a} km</text>`;
+        });
+        if (isTemp) {
+          [-100, 0, 500, 1000, 1500].forEach((v) => {
+            s += `<line class="tick" x1="${x(v)}" y1="${plotTop}" x2="${x(v)}" y2="${plotBottom}"/><text class="tick-label" x="${x(v) - 12}" y="${H - 30}">${v}°C</text>`;
+          });
+          s += `<text class="layer-sub" x="${plotLeft}" y="18">${zoomed ? "Temperature profile to 1,000 km — compressed above 100 km" : "Temperature profile on a true 0–100 km scale"}</text>`;
+        } else {
+          [1000, 100, 10, 1, 0.1, 0.01, 0.001, 0.0001, 1e-5, 1e-7, 1e-9].forEach((v) => {
+            s += `<line class="tick" x1="${x(v)}" y1="${plotTop}" x2="${x(v)}" y2="${plotBottom}"/><text class="tick-label" x="${x(v) - 18}" y="${H - 30}">${v}</text>`;
+          });
+          s += `<text class="layer-sub" x="${plotLeft}" y="18">${zoomed ? "Pressure profile to 1,000 km — logarithmic scale" : "Pressure profile on a true 0–100 km scale — logarithmic"}</text>`;
+        }
+        s += earthSurface();
+        return s + `</svg>`;
+      }
+
+      function render() {
+        stage.innerHTML = view === "altitude" ? altitudeSVG() : profileSVG(view);
+        stage.classList.toggle("zoomed", zoomed);
+        hint.innerHTML = zoomed
+          ? `<strong>Zoomed view:</strong> click again to return to the true-scale 0–100 km atmosphere.`
+          : `<strong>Click the diagram to zoom.</strong> The first view uses an undistorted 0–100 km altitude scale; clicking switches to a compressed 0–1,000 km view that includes the ISS orbit.`;
+        stage.querySelectorAll(".layer-hit").forEach((el) => {
+          const go = () => {
+            selected = +el.dataset.layer;
+            show();
+          };
+          el.addEventListener("click", (e) => {
+            e.stopPropagation();
+            go();
+          });
+          el.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              go();
+            }
+          });
+        });
+        show();
+      }
+
+      function show() {
+        const L = layers[selected];
+        info.innerHTML = `<h3>${L.name}</h3><p>${L.summary}</p>
+ <div class="facts">
+  <div class="fact"><b>Altitude</b>${L.altitude}</div>
+  <div class="fact"><b>Temperature</b>${L.temp}</div>
+  <div class="fact"><b>Pressure</b>${L.pressure}</div>
+  <div class="fact"><b>Trend</b>${L.trend}</div>
+ </div>
+ <p class="subhead">Radiation and physics</p>
+ <ul class="plain-list">${L.science.map((t) => `<li>${t}</li>`).join("")}</ul>
+ <p class="subhead">Aircraft, balloons and orbit</p>
+ <ul class="plain-list">${L.context.map((t) => `<li>${t}</li>`).join("")}</ul>`;
+      }
+
+      document.querySelectorAll(".chip").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".chip")
+            .forEach((b) => b.setAttribute("aria-pressed", "false"));
+          btn.setAttribute("aria-pressed", "true");
+          view = btn.dataset.view;
+          render();
+        });
+      });
+      stage.addEventListener("click", () => {
+        zoomed = !zoomed;
+        render();
+      });
+      render();
+    </script>
+  </body>
+</html>

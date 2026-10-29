@@ -1,30 +1,37 @@
-# Spice Cupboard
+# Spice Cupboard & Mix Manager
 
-Track the spices you have, then see which spice mixes you can make now or are one ingredient short of, with batch scaling.
+Track which spices you have and see which spice mixes you can make, for **spice-cupboard.apps.rjmlaird.co.uk**.
 
-**Live:** https://spice-cupboard.apps.rjmlaird.co.uk · **Part of** [rjmlaird.co.uk apps](https://apps.rjmlaird.co.uk)
+## Using it
 
-## Views
+**Cupboard tab.** A list of spices, each marked in stock or out of stock. Filter by category (ground spice, dried herb, chilli / heat, whole / seed, blend) and by stock status. Add, edit or delete spices, and toggle stock with one tap. It starts with 30 default spices; **Reset** restores them.
 
-My Cupboard (inventory) and Mixes (recipes and scaling).
+**Mixes tab.** 24 built-in mixes, from Peri-Peri and Cajun to Rogan Josh, Jamaican jerk, za'atar-style and dry chimichurri. Filter by readiness (can make now, missing 1, missing 2 or more), heat (mild, medium, hot) and cuisine. Open a mix to see its ingredients scaled to **1, 2, 3, 4, 6 or 8** batches, with quantities shown as culinary fractions, and copy the recipe to the clipboard.
 
-## Data
+## How matching works
 
-Stored in the browser under `spice_cupboard_data`. No server, no account.
+A mix ingredient counts as available only if a spice marked in stock has exactly the same name, ignoring case and surrounding spaces. If you add "hot paprika" and a mix needs "paprika", the mix will show it as missing. Name custom spices to match the mix ingredients.
 
-## Build
+Mixes are built into the page. You can edit spices, but not add or edit mixes.
 
-`pnpm build` first runs `build:assets`: Tailwind CLI (brand preset in `tailwind.config.cjs`) writes `public/tailwind.css`, and Font Awesome is copied from npm to `public/vendor/fontawesome`. Both are generated and gitignored.
+## Data and privacy
 
-## Commands
+Your spices are stored in `localStorage` under `spice_cupboard_data` and never leave the device. There is no backup or import. Clearing site data, or using another browser or device, starts from the defaults.
+
+## Stack
+
+Single `index.html` of vanilla JavaScript. Styling uses the Tailwind Play CDN, icons use Font Awesome, and fonts come from Google Fonts, so the page needs a network connection to look right. The React files in `src/` are an unused scaffold.
+
+## Development
 
 ```sh
-pnpm --filter spice-cupboard dev       # builds assets, then vite dev server
-pnpm --filter spice-cupboard build     # production build into dist/
-pnpm --filter spice-cupboard cf:dev    # wrangler dev against dist/ (build first)
-pnpm --filter spice-cupboard deploy    # build + wrangler deploy
+pnpm --filter ./apps/spice-cupboard dev
+pnpm --filter ./apps/spice-cupboard build
+pnpm --filter ./apps/spice-cupboard run cf:dev
+pnpm --filter ./apps/spice-cupboard run deploy
 ```
 
-## Branding
+## Known issues
 
-Uses `/brand.css` (generated; run `pnpm brand:sync` from the repo root). See [docs/branding.md](../../docs/branding.md).
+- Tailwind Play CDN is not intended for production. Replace it with locally built CSS, and do the same for `apps/mini-bar`, which shares this pattern.
+- No data export, so a cleared browser loses your cupboard.
